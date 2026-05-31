@@ -1324,6 +1324,59 @@ body{
       js: `// No JS needed for this CSS magic!`
     },
     {
+      title: "Responsive TubeLight Text",
+      html: `<h2 contenteditable="true">HIRE ME</h2>`,
+      css: `*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial;
+}
+
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #08242c;
+}
+
+h2{
+    position: relative;
+    font-size: 4em;
+    letter-spacing: 15px;
+    color: #0f333d;
+    text-transform: uppercase;
+    width: 100%;
+    text-align: center;
+    -webkit-box-reflect: below 1px linear-gradient(transparent,#0f333d);
+    line-height: 0.70em;
+    outline: none;
+    animation: animate 5s linear infinite;
+}
+
+@keyframes animate
+{
+    0%,18%,20%,50.1%,60%,65.1%,79%,90.1%,92%
+    {
+        color: #0e3742;
+        text-shadow: none;
+    }
+    18.1%,20.1%,30%,50%,60.1%,65%,80.1%,90%,92.1%,100%
+    {
+        color: #fff;
+        text-shadow: 0 0 10px #03bcf4,
+                     0 0 20px #03bcf4,
+                     0 0 40px #03bcf4,
+                     0 0 80px #03bcf4,
+                     0 0 160px #03bcf4;
+
+    }
+
+}`,
+      js: `// No JS needed for this CSS magic!`
+    },
+    {
       title: "Cashel House",
       html: `<main class="cashel">
               <div class="home"> 
@@ -4660,6 +4713,964 @@ body{
       js: `// No JS needed for this CSS magic!`
     },
     {
+      title: "Liquid Drop",
+      html: `<div id="liquid_drop">
+        <div class="container">
+            <div class="drop" style="--clr:#ff0f5b;">
+                <div class="content">
+                    <h2 id="h2">01</h2>
+                    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>
+                    <a href="#">Read More</a>
+                </div>
+            </div>
+            <div class="drop" style="--clr:#be01fe;">
+                <div class="content">
+                    <h2 id="h2">02</h2>
+                    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>
+                    <a href="#">Read More</a>
+                </div>
+            </div>
+            <div class="drop" style="--clr:#01b4ff;">
+                <div class="content">
+                    <h2 id="h2">03</h2>
+                    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>
+                    <a href="#">Read More</a>
+                </div>
+            </div>
+            
+        </div>
+
+    </div>`,
+      css: `
+          *{
+              margin: 0;
+              padding: 0;
+          }
+          /* body */
+          #liquid_drop{
+              display: flex;
+              font-family:sans-serif;
+              justify-content: center;
+              align-items: center;
+              
+              min-height: 100vh;
+              margin: 2% 5%;
+              
+              /* extra */
+              /* background-color: blue; */
+          }
+
+          #liquid_drop >.container{
+              position: relative;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              flex-wrap: wrap;
+              padding: 50px 0;
+              gap: 40px 60px;
+              
+              /* extra */
+              /* background-color: brown; */
+              /* border: 2px solid; */
+          }
+
+          .container .drop{
+              position: relative;
+              width: 250px;
+              height: 250px;
+              /* background: transparent; */
+              box-shadow: inset 60px 30px 30px rgba(0,0,0,0.05),
+              25px 25px 30px rgba(0,0,0,0.08),
+              25px 20px 35px rgba(0,0,0,0.09),
+              inset -20px -20px 25px rgba(255, 255, 255, 0.9);
+              transition: 0.5s ease-in-out;
+              display: flex;
+              justify-content:center;
+              align-items: center;
+          }
+
+          .container .drop:nth-child(1){
+              border-radius: 60% 40% 51% 49% / 41% 40% 60% 59% ;
+              animation-name: anime_1;
+              animation-duration: 10s;
+              animation-delay: 1s;
+              animation-iteration-count:infinite;
+              animation-direction: alternate;
+
+          }
+          @keyframes anime_1{
+              25%{ border-radius: 63% 37% 21% 79% / 66% 58% 42% 34% ;}
+              50%{ border-radius: 33% 67% 85% 15% / 50% 32% 68% 50% ;}
+              75%{ border-radius: 66% 34% 17% 83% / 35% 70% 30% 65% ;}
+              100%{ border-radius: 23% 77% 60% 40% / 26% 44% 56% 74% ;}
+          }
+          .container .drop:nth-child(2){
+              border-radius: 36% 64% 33% 67% / 63% 55% 45% 37% ;
+              animation-name: anime_2;
+              animation-duration: 10s;
+              animation-delay: 1s;
+              animation-iteration-count:infinite;
+              animation-direction: alternate;
+
+
+          }
+          @keyframes anime_2{
+              25%{ border-radius: 32% 68% 53% 47% / 42% 16% 84% 58%   ;}
+              50%{ border-radius: 16% 84% 16% 84% / 24% 60% 40% 76%  ;}
+              75%{ border-radius: 23% 77% 25% 75% / 80% 16% 84% 20%  ;}
+              100%{ border-radius: 33% 67% 85% 15% / 50% 32% 68% 50% ;}
+          }
+
+          .container .drop:nth-child(3){
+              border-radius: 32% 68% 76% 24% / 47% 41% 59% 53%  ;
+              animation-name: anime_3;
+              animation-duration: 10s;
+              animation-delay: 1s;
+              animation-iteration-count:infinite;
+              animation-direction: alternate;
+
+
+          }
+          @keyframes anime_3{
+              25%{ border-radius: 32% 68% 53% 47% / 89% 70% 30% 11%  ;}
+              50%{ border-radius: 76% 24% 53% 47% / 36% 59% 41% 64% }
+              75%{ border-radius: 63% 37% 21% 79% / 66% 58% 42% 34% ;}
+              100%{ border-radius: 33% 67% 85% 15% / 50% 32% 68% 50% ;}
+          }
+
+
+          .container .drop:hover{
+              animation-play-state: paused;
+              cursor: pointer;
+              /* border-radius: 50%; */
+
+          }
+
+          .container .drop::before{
+              content: '';
+              position: absolute;
+              top: 40px;
+              left: 35px;
+              width: 25px;
+              height: 25px;
+              background: #fff;
+              border-radius: 50%;
+              opacity: 0.9;
+          }
+          .container .drop::after{
+              content: '';
+              position: absolute;
+              top: 70px;
+              left: 55px;
+              width: 10px;
+              height: 10px;
+              background: #fff;
+              border-radius: 50%;
+              opacity: 0.9;
+          }
+
+          .container .drop .content{
+              position:relative;
+              display: grid;
+              justify-content: center;
+              align-items: center;
+              text-align: center;
+              padding: 40px;
+              gap: 15px;
+          }
+
+          .container .drop .content> #h2{
+              position: relative ;
+              justify-content: center;
+              left: 30%;
+              text-align: center;
+              align-items: center;
+              width: 50px;
+              height: 50px;
+              background: #eff0f4;
+              border-radius: 50%;
+              box-shadow: inset 2px 5px 10px rgba(0,0,0,0.1),
+              15px 15px 10px rgba(0,0,0,0.05),
+              15px 10px 15px rgba(0,0,0,0.025),
+              inset -2px -5px 10px rgba(255, 255, 255, 1);
+              display: flex;
+              font-size: 1.3em;
+              color: var(--clr);
+          }
+
+          .container .drop .content a{
+              
+              position: relative;
+              padding: 10px 20px;
+              border: 1px solid;
+              background: var(--clr);
+              color: #fff;
+              text-decoration: none;
+              border-radius: 25px;
+              font-weight: 500;
+              width:fit-content;
+              align-items: center;
+              text-align: center;
+              justify-content: center;
+              left: 15%;
+              right: auto;
+              text-shadow: 0 2px 2px rgba(0 ,0 ,0 ,0 ,0.25);
+              opacity: 0.75;
+              transition: 0.5s;
+
+          }
+          .container .drop .content a:hover{
+              opacity: 1;
+          }
+          .container .drop .content a::before{
+              content: '';
+              position: absolute;
+              top: 2px;
+              width: 65%;
+              height: 3px;
+              background: rgba(255, 255, 255, 0.5);
+              border-radius: 5px;
+          }`,
+      js: `// No JS needed for this CSS magic!`
+    },
+    {
+      title: "Hot Coffee",
+      html: `<div class="container">
+        <div class="plate"></div>
+        <div class="cup">
+              <div class="top">
+                  <div class="vapour">
+                      <span style="--i:1"></span>
+                      <span style="--i:16"></span>
+                      <span style="--i:2"></span>
+                      <span style="--i:4"></span>
+                      <span style="--i:11"></span>
+                      <span style="--i:6"></span>
+                      <span style="--i:14"></span>
+                      <span style="--i:8"></span>
+                      <span style="--i:9"></span>
+                      <span style="--i:18"></span>
+                      <span style="--i:19"></span>
+                      <span style="--i:10"></span>
+                      <span style="--i:5"></span>
+                      <span style="--i:12"></span>
+                      <span style="--i:13"></span>
+                      <span style="--i:7"></span>
+                      <span style="--i:15"></span>
+                      <span style="--i:3"></span>
+                      <span style="--i:17"></span>
+                      <span style="--i:20"></span>
+                  </div>
+                  <div class="circle">
+                      <div class="coffee">
+                      </div>
+                  </div>
+              </div>
+            <div class="handle"></div>
+        </div>
+    </div>`,
+      css: `*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(45deg,red,gold);
+}
+
+.container{
+    position: relative;
+    top: 50px;
+}
+
+.cup{
+    position: relative;
+    width: 280px;
+    height: 290px;
+    background: linear-gradient(to right,#f9f9f9,#d9d9d9);
+    border-bottom-left-radius: 45%;
+    border-bottom-right-radius: 45%;
+    /* border-image: url(images/King_DD.png); */
+
+}
+
+.top{
+    position: absolute;
+    top: -30px;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: linear-gradient(to right,#f9f9f9,#d9d9d9);
+    border-radius: 50%;
+}
+
+.circle{
+    position: absolute;
+    top: 5px;
+    left: 10px;
+    width: calc(100% - 20px);
+    height: 50px;
+    background: linear-gradient(to left,#f9f9f9,#d9d9d9);
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.coffee
+{
+    position: absolute;
+    top: 15px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(#c57e65,#e28462);
+    border-radius: 50%;
+}
+
+.handle
+{
+    position: absolute;
+    right: -70px;
+    top: 30px;
+    width: 150px;
+    height: 170px;
+    border: 25px solid #d9d9d9;
+    border-left: 25px solid transparent;
+    border-bottom: 25px solid transparent;
+    border-radius: 50%;
+    transform: rotate(40deg);
+}
+
+.plate{
+    position: absolute;
+    bottom: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    height: 200px;
+    background: linear-gradient(to right,#f9f9f9,#d9d9d9);
+    border-radius: 50%;
+    box-shadow: 0 35px 35px rgba(0,0,0,0.5);
+
+}
+
+.plate::before
+{
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    border-radius: 50%;
+    background: linear-gradient(to left,#f9f9f9,#d9d9d9);
+
+}
+
+.plate::after
+{
+    content: '';
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    right: 30px;
+    bottom: 30px;
+    border-radius: 50%;
+    background: radial-gradient(rgba(0,0,0,0.3)25%,transparent,transparent);
+}
+
+.vapour{
+    position: relative;
+    display: flex;
+    z-index: 1;
+    padding: 0 20px;
+}
+
+.vapour span{
+    position: relative;
+    bottom: 50px;
+    display: block;
+    margin: 0 2px 50px;
+    min-width: 8px;
+    height: 120px;
+    background: #fff;
+    border-radius: 50%;
+    animation: animate 5s linear infinite;
+    opacity: 0;
+    filter: blur(8px);
+    animation-delay: calc(var(--i) * -0.5s);
+}
+
+@keyframes animate
+{
+    0%
+    {
+        transform: translateY(0) scaleX(1);
+        opacity: 0;
+    }
+    15%
+    {
+        opacity: 1;
+    }
+    50%
+    {
+        transform: translateY(-150px) scaleX(5);
+    }
+    100%
+    {
+        transform: translateY(-300px) scaleX(10);
+    }
+}`,
+      js: `// No JS needed for this CSS magic!`
+    },
+    {
+      title: "Firefly Background",
+      html: `<div class="firefly">
+        <div class="container">
+            <div class="bubbles">
+                <span style="--i:11;"></span>
+                <span style="--i:5;"></span>
+                <span style="--i:12;"></span>
+                <span style="--i:18;"></span>
+                <span style="--i:25;"></span>
+                <span style="--i:19;"></span>
+                <span style="--i:7;"></span>
+                <span style="--i:10;"></span>
+                <span style="--i:21;"></span>
+                <span style="--i:12;"></span>
+                <span style="--i:11;"></span>
+                <span style="--i:9;"></span>
+                <span style="--i:6;"></span>
+                <span style="--i:11;"></span>
+                <span style="--i:32;"></span>
+                <span style="--i:24;"></span>
+                <span style="--i:16;"></span>
+                <span style="--i:12;"></span>
+                <span style="--i:9;"></span>
+                <span style="--i:8;"></span>
+                <span style="--i:16;"></span>
+                <span style="--i:17;"></span>
+                <span style="--i:19;"></span>
+                <span style="--i:22;"></span>
+                <span style="--i:12;"></span>
+                <span style="--i:14;"></span>
+                <span style="--i:8;"></span>
+                <span style="--i:9;"></span>
+                <span style="--i:5;"></span>
+                <span style="--i:3;"></span>
+                <span style="--i:11;"></span>
+                <span style="--i:21;"></span>
+                <span style="--i:24;"></span>
+                <span style="--i:22;"></span>
+                <span style="--i:14;"></span>
+                <span style="--i:17;"></span>
+                <span style="--i:24;"></span>
+                <span style="--i:19;"></span>
+                <span style="--i:16;"></span>
+                <span style="--i:19;"></span>
+                <span style="--i:22;"></span>
+                <span style="--i:15;"></span>
+                <span style="--i:18;"></span>
+                <span style="--i:21;"></span>
+                <span style="--i:11;"></span>
+            </div>
+        </div>
+    </div>`,
+      css: `*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.firefly{
+    min-height: 100vh;
+    background-color: #0c192c;
+
+    /* margin: 10px; */
+}
+.firefly .container{
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.firefly .container .bubbles{
+    position: relative;
+    display: flex;   
+}
+
+.firefly .container .bubbles span{
+    position: relative;
+    width: 30px;
+    height: 30px;
+    background: #4fc3dc;
+    margin: 0 2px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 10px #4fc3dc44,
+    0 0 50px #4fc3dc,
+    0 0 100px #4fc3dc;
+    animation: firefly_animate 20s linear infinite;
+    animation-duration: calc(120s / var(--i));
+}
+
+.firefly .container .bubbles span:nth-child(even){
+    /* #ff2d75 */
+    background: #ccf760;
+    box-shadow: 0 0 0 10px #ccf76044,
+    0 0 50px #ccf760,
+    0 0 100px #ccf760;
+}
+
+
+@keyframes firefly_animate{
+    0%{
+        transform: translateY(100vh) scale(0);
+    }
+    100%{
+        transform: translateY(-100vh) scale(1);
+    }
+}`,
+      js: `// No JS needed for this CSS magic!`
+    },
+    {
+      title: "Day & Night Analog Clock",
+      html: `
+        <div class="clock">
+        
+        <div class="hour">
+            <div class="hr" id="hr"></div>
+        </div>
+
+        <div class="min">
+            <div class="mn" id="mn"></div>
+        </div>
+
+        <div class="sec">
+            <div class="sc" id="sc"></div>
+        </div>
+
+    </div>
+
+    <div class="toggleClass" onclick="toggleClass()"></div>
+    `,
+      css: `*
+{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    
+}
+
+body
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #091921;
+    transition-duration: 10s;
+    
+}
+
+/* light mode */
+body.light
+{
+    background: #d1dae3;
+
+
+}
+/* end */
+
+.clock
+{
+    width: 350px;
+    height: 350px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #091921 url(images/clock.png);
+    background-size: cover;
+    border: 4px solid #091921;
+    border-radius: 50%;
+    box-shadow: -8px -8px 15px rgba(255,255,255,0.05),
+                20px 20px 20px rgba(0,0,0,0.3),
+                inset -8px -8px 15px rgba(255,255,255,0.05),
+                inset 20px 20px 20px rgba(0,0,0,0.3); 
+}
+
+/* light mode */
+
+body.light .clock
+{
+    background: #d1dae3 url(images/clock.png);
+    background-size: cover;
+    border: 4px solid #cad3dc;
+    box-shadow: -8px -8px 15px rgba(255,255,255,0.5),
+                10px 10px 10px rgba(0,0,0,0.1),
+                inset -8px -8px 15px rgba(255,255,255,0.5),
+                inset 10px 10px 10px rgba(0,0,0,0.1); 
+
+}
+/* end */
+
+.clock::before
+{
+    content: '';
+    position: absolute;
+    background:#ff1e;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    z-index: 1000;
+
+}
+
+/* light mode */
+
+body.light .clock::before
+{
+    background: #008eff;
+
+}
+/* end */
+
+.clock .hour,
+.clock .min,
+.clock .sec
+{
+    position: absolute;
+}
+
+.clock .hour, .hr
+{
+    width: 160px;
+    height: 160px;
+}
+
+.clock .min, .mn
+{
+    width: 190px;
+    height: 190px;
+}
+
+.clock .sec, .sc
+{
+    width: 230px;
+    height: 230px;
+}
+
+.hr, .mn, .sc
+{
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    border-radius: 50%;
+}
+
+.hr::before
+{
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 80px;
+    background: #ff105e;
+    z-index: 10;
+    border-radius: 6px 6px 0 0;
+}
+/* light mode */
+body.light .hr::before
+{
+    background: #49b808;
+}
+/* End */
+
+.mn::before
+{
+    content: '';
+    position: absolute;
+    width: 4px;
+    height: 90px;
+    background: #fff;
+    z-index: 11;
+    border-radius: 6px 6px 0 0;
+}
+
+/* light mode */
+body.light .mn::before
+{
+    background: #091921;
+}
+/* End */
+
+.sc::before
+{
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 150px;
+    background: #ff1e;
+    z-index: 12;
+    border-radius: 6px 6px 0 0;
+}
+/* light mode */
+body.light .sc::before
+{
+    background: #008eff;
+}
+/* End */
+
+/* main IMPORTANT section */
+/* toggleClass */
+.toggleClass
+{
+    position:absolute;
+    top: 30px;
+    right: 150px;
+    width: 20px;
+    height: 20px;
+    font-size: 18px;
+    border-radius: 50%;
+    background: #d1dae3;
+    color: #d1dae3;
+    font-family: consolas;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    /* transition-delay: 1s; */
+    transition-duration: 10s;
+
+
+}
+
+.toggleClass::before
+{
+    position: absolute;
+    left: 25px;
+    content: 'Light Mode';
+    font-weight: bolder;
+    white-space: nowrap;
+    
+}
+
+/* fxn toggleClass */
+
+body.light .toggleClass
+{
+    background: #091921;
+    color: #091921;
+    
+}
+
+body.light .toggleClass::before
+{
+
+    content: 'Dark Mode';
+    font-weight: bolder;
+
+}`,
+      js: `
+        function toggleClass(){
+            const body = document.querySelector('body');
+            body.classList.toggle('light');
+        }
+
+        const deg = 6;
+        const hr = document.querySelector('#hr');
+        const mn = document.querySelector('#mn');
+        const sc = document.querySelector('#sc'); 
+
+
+        setInterval(() => {
+
+            let day = new Date();
+            let hh = day.getHours() * 30;
+            let mm = day.getMinutes() * deg;
+            let ss = day.getSeconds() * deg;
+
+            hr.style.transform = \`rotateZ(\${(hh)+(mm/12)}deg)\`;
+            mn.style.transform = \`rotateZ(\${mm}deg)\`;
+            sc.style.transform = \`rotateZ(\${ss}deg)\`;
+
+        })`,
+    },
+    {
+      title: "Interactive Digital Clock",
+      html: `<div id="clock" class="clock">00:00:00</div>`,
+      css: `.clock {\n  font-size: 3rem;\n  font-family: monospace;\n  font-weight: bold;\n  color: #333;\n  padding: 20px;\n  border-radius: 10px;\n  background: #f0f0f0;\n  box-shadow: inset 5px 5px 10px #d9d9d9, inset -5px -5px 10px #ffffff;\n}`,
+      js: `function updateClock() {\n  const now = new Date();\n  const time = now.toLocaleTimeString('en-US', { hour12: true });\n  document.getElementById('clock').textContent = time;\n}\nsetInterval(updateClock, 1000);\nupdateClock();`
+    },
+    {
+      title: "Minion",
+      html: `<div class="box">
+        <div class="eye"></div>
+        <div class="eye"></div>
+        <div class="smilee"></div>
+    </div>`,
+      css: `*{
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: radial-gradient(#f2761e,#ef4921);
+
+}
+
+ .box{
+    display: flex;
+}
+
+.box .eye{
+position: relative;
+width: 200px;
+height: 200px;
+display: block;
+background: #fff;
+margin: 0 20px;
+border-radius: 50%;
+box-shadow: 0 5px 45px rgba(0,0,0,0.2),
+            inset 0 0 15px #f2761e,
+            inset 0 0 25px #f2761e,
+            inset 0 0 50px #f2761e;
+}
+
+.box .eye::before{
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 40px;
+    transform: translate(-50%,-50%);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #000;
+    border: 7px solid #2196f9;
+}
+
+.box .smilee{
+    position: fixed;
+    margin-top: 13%;
+    width: 500px;
+    height: 200px;
+    display: flex;
+    background: transparent;
+    border: 15px solid black;
+    border-radius: 50%;
+    border-top: hidden;
+    border-left: hidden;
+    border-right: hidden;
+    box-shadow:0 10px 5px #f2762e;
+
+}`,
+      js: `document.querySelector('body').addEventListener('mousemove',eyeball)
+
+        function eyeball(){
+            const eye = document.querySelectorAll('.eye');
+            eye.forEach(function(eye){
+                let x= (eye.getBoundingClientRect().left) + (eye.clientWidth / 2);
+
+                let y= (eye.getBoundingClientRect().top) + (eye.clientHeight / 2);
+
+                let radian = Math.atan2(event.pageX - x, event.pageY - y);
+                let rotation = (radian * (180 / Math.PI) * -1) + 270;
+                eye.style.transform = "rotate("+rotation+"deg)"
+            })
+        }`
+    },
+    {
+      title: "Rainbow Ring",
+      html: ` <div class="loader">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>`,
+      css: `body
+{
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #240229;
+
+}
+
+.loader
+{
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(#14ffe9, #ffeb3b, #ff00e0);
+    animation: animate 0.5s linear infinite;
+}
+
+@keyframes animate 
+{
+    0%
+    {
+        transform: rotate(0deg);
+    }
+    100%
+    {
+        transform: rotate(360deg)
+    } 
+}
+
+.loader span
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(#14ffe9, #ffeb3b, #ff00e0);
+}
+
+.loader span:nth-child(1)
+{
+    filter: blur(5px);
+}
+
+.loader span:nth-child(2)
+{
+    filter: blur(10px);
+}
+
+.loader span:nth-child(3)
+{
+    filter: blur(25px);
+}
+
+.loader span:nth-child(4)
+{
+    filter: blur(50px);
+}
+
+.loader:after
+{
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    background: #240229;
+    border-radius: 50%;
+}`,
+      js: `// No JS needed for this CSS magic!`
+    },
+    {
       title: "Neon Glowing Button",
       html: `<button class="neon-btn">Hover Me</button>`,
       css: `.neon-btn {\n  padding: 15px 30px;\n  font-size: 1.2rem;\n  color: #0ff;\n  background: transparent;\n  border: 2px solid #0ff;\n  border-radius: 8px;\n  cursor: pointer;\n  transition: 0.3s;\n  text-transform: uppercase;\n  font-weight: bold;\n}\n.neon-btn:hover {\n  background: #0ff;\n  color: #000;\n  box-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 40px #0ff;\n}`,
@@ -4670,12 +5681,6 @@ body{
       html: `<div class="loader"></div>`,
       css: `.loader {\n  width: 50px;\n  height: 50px;\n  border: 5px solid #f3f3f3;\n  border-top: 5px solid #3498db;\n  border-radius: 50%;\n  animation: spin 1s linear infinite;\n}\n@keyframes spin {\n  0% { transform: rotate(0deg); }\n  100% { transform: rotate(360deg); }\n}`,
       js: `// Pure CSS Loader`
-    },
-    {
-      title: "Interactive Digital Clock",
-      html: `<div id="clock" class="clock">00:00:00</div>`,
-      css: `.clock {\n  font-size: 3rem;\n  font-family: monospace;\n  font-weight: bold;\n  color: #333;\n  padding: 20px;\n  border-radius: 10px;\n  background: #f0f0f0;\n  box-shadow: inset 5px 5px 10px #d9d9d9, inset -5px -5px 10px #ffffff;\n}`,
-      js: `function updateClock() {\n  const now = new Date();\n  const time = now.toLocaleTimeString('en-US', { hour12: false });\n  document.getElementById('clock').textContent = time;\n}\nsetInterval(updateClock, 1000);\nupdateClock();`
     },
     {
       title: "3D Hover Card",
