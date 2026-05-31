@@ -290,7 +290,7 @@ function AnimatedThemeToggle({ isDark, toggle }) {
     </button>
   );
 }
-
+// --- 4.1 ANIMATED TILT CARD COMPONENTS ---
 function TiltCard({ children, className = "" }) {
   const { isDark } = useContext(AppContext);
   const [transform, setTransform] = useState("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
@@ -807,67 +807,3920 @@ function LiveProjectsSection() {
 
   const miniProjects = [
     {
-      title: "1. Neon Glowing Button",
+      title: "Hunter's Licence",
+      html: `<div class="licence-card">
+        <div class="card-inside-left"></div>
+        <div class="card-inside-right">
+        </div>
+        <div class="bar">
+            <div>|</div>
+            <div>|</div>
+            <div>|</div>
+            <div>|</div>
+            <div>|</div>
+            <div>|</div>
+            <div>|</div>
+            <div>|</div>
+            <div>|</div>
+            <div>|</div>
+            <div>|</div>
+            <div>|</div>
+            <div>|</div>
+            <div>|</div>
+            <div>|</div>
+            <div>|</div>
+            <div>|</div>
+            <div>|</div>
+        </div>
+        <div class="heading">
+            <p class="main">Hunter's Licence</p>
+            <p class="sub">Hunter's Association</p>
+        </div>
+        <div class="profile">
+            <div class="section-1">
+                <!-- <div class="pic"><img src="player6.png" alt=""></div> -->
+                <div class="pic">
+                    <img src="https://raw.githubusercontent.com/Mr-Debi/codePen_Assets/refs/heads/main/Jin_Woo.png" alt="">
+                </div>
+                <div class="chip">
+                    <div class="chip-line"></div>
+                    <div class="chip-line"></div>
+                    <div class="chip-line"></div>
+                    <div class="chip-main"></div>
+                </div>
+            </div>
+            <div class="section-2">
+                <div class="licence-no">
+                    <label for="licence-code">Licence No.:</label>
+                    <p id="licence_no">401058132519</p>
+                </div>
+
+                <div  class="name">
+                    <label for="name">Name:</label>
+                    <p id="name">Sung Jinwoo</p>
+                </div>
+
+                <div class="rank">
+                    <label for="rank">Rank:</label>
+                    <p id="rank">S</p>
+                </div>
+                <div class="catagory">
+                    <label for="power">Catagory:</label>
+                    <table>
+                        <tr>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                        </tr>
+                        <tr>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>Mage</td>
+                        </tr>
+                        <tr>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                        </tr>
+                    </table>
+        
+                </div>
+            </div>
+            
+        </div>
+        
+    </div>`,
+      css: `*{
+    padding: 0;
+    margin: 0;
+}
+body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: linear-gradient(45deg, #0045e7, #ff2c7d);
+}
+
+.licence-card{
+    min-height: 250px;
+    min-width: 400px;
+    /* border: 1px solid red; */
+    border-top: 30px solid gray;
+    /* border-color: rgba(gray, 0.5); */
+    border-bottom: 15px solid gray;
+    border-right: 25px solid gray;
+    border-radius: 2%;
+    /* background: rgb(219, 222, 223); */
+    background: rgba(219, 222, 223,1);
+    backdrop-filter: blur(10px);
+    /* border-left-color: rgb(219, 222, 223); */
+    box-shadow: 40px 40px 30px 1px rgba(44, 44, 44, 0.70);
+}
+
+/* card left-side border start */
+.card-inside-left{
+    height: 165px;
+    width: 0;
+    border: 25px solid transparent;
+    border-left: 25px solid gray;
+    /* margin-left: 25px; */
+    margin-top: 20px;
+    overflow: hidden;
+    position: absolute;
+}
+/* card left-side border end */
+
+
+/* card right-side border start */
+.card-inside-right{
+    height: 125px;
+    /* width: 0; */
+    border: 25px solid transparent;
+    border-right: 25px solid rgb(219, 222, 223);
+    transform: rotate(180deg);
+    margin-top: 35px;
+    margin-left: 400px;
+    display: grid;
+    overflow: hidden;
+    position: absolute;
+}
+
+/* card left-side border start */
+
+/* card top heading start */
+.heading{
+    overflow: hidden;
+    margin-top: -7%;
+    margin-left: 5%;
+}
+/* for (1st) main heading */
+.heading >.main{
+    display: inline;
+    font-size: larger;
+    color: aliceblue;
+    font-weight: 700;
+    text-shadow: 5px 4px 5px black;
+}
+/* for (2nd) sub heading */
+.heading >.sub{
+    display: inline;
+    margin-left: 20%;
+    text-decoration: underline;
+    font-size:smaller;
+    color: aliceblue;
+    font-weight: 500;
+    text-shadow: 5px 1px 5px black;
+}
+/* card top heading end */
+
+/* for profile start */
+.profile{
+    overflow: hidden;
+    display: flex;
+}
+
+/* for section-1 start */
+.profile>.section-1{
+    margin: 5px;
+}
+.pic{
+    height: 150px;
+    width: 115px;
+    /* background: rgb(44, 43, 43); */
+    margin-top: 25px;
+    margin-left: 35px;
+    /* position: fixed; */
+    /* box-shadow: 5px 4px 5px black;    */
+    filter: drop-shadow(-15px 0px 15px rgba(0, 0, 0, .90));
+    overflow: hidden;
+}
+
+.pic img{
+    margin-left: -22px;
+    width: 160px;
+    height: auto;
+}
+
+/* for chip start */
+.chip{
+    overflow: hidden;
+    height: 50px;
+    width: 75px;
+    background-image: linear-gradient(to bottom left, #ffecc7,gold, #d0b978);
+    border-radius: 15%;
+    margin-top: 15px;
+    margin-left: 50px;
+    box-shadow: 2px 2px 3px rgb(82, 61, 7);
+}
+
+.chip-line{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 1px;
+    background-color: #333;
+    /* margin-bottom: 12px; */
+    margin-top: 12px;
+}
+.chip-main{
+    position: relative;
+    margin-top: -33px;
+    margin-left: 25px;
+    width: 25px;
+    height: 40px;
+    border-left: 1px solid #333;
+    border-right: 1px solid #333;
+    border-radius: 30%;
+    /* top: -60px; */
+    /* transform: rotateY(90deg); */
+    
+    /* top: 20px; */
+    background-image: linear-gradient(to bottom left, #ffecc7,gold, #d0b978);
+}
+
+
+/* for chip end */
+/* for section-1 end */
+
+/* for section-2 start */
+.section-2{
+    /* border: 1PX SOLID; */
+    display: grid;
+    margin-left: 5px;
+    font-size:medium;
+    color: rgb(87, 79, 79);
+    font-weight: 700;
+    text-shadow: 1px 0px 15px gray;
+    height: max-content;
+    width: 100%;
+    
+}
+
+.section-2>.licence-no{
+    margin-top: 30px;
+    /* border: 1px solid; */
+}
+.section-2>.name{
+    margin-top: 10px;
+}
+.section-2>.licence-no>p, .section-2>.name>p{
+    margin-left: 10px;
+    color: black;
+    font-style: normal;
+    text-shadow: none;
+}
+.section-2>.rank{
+    z-index: 1;
+    margin-left:60%;
+    margin-top: -84px;
+    display: initial;
+}
+
+.section-2>.rank>p{
+    margin-left: 50px;
+    font-size: xxx-large;
+    text-shadow: none;
+    margin-top: -25px;
+    color: rgb(187, 26, 5);
+    text-shadow: 5px 4px 5px black;
+    font-family: serif;
+    overflow: hidden;
+}
+.section-2>.catagory{
+    margin-top: 10px;
+}
+
+.section-2>.catagory tr{
+    width: fit-content;
+}
+.section-2>.catagory td{
+    border: 1px solid gray;
+    width: 70px;
+    text-align: center;
+    color: rgb(70, 56, 56);
+    /* color: black; */
+    /* filter: drop-shadow(4px 2px 0px rgba(0, 0, 0, 1)); */
+    box-shadow: 0 0 1px 0 black;
+    /* text-shadow: 5px 4px 20px black; */
+
+}
+
+
+/* for section-2 end */
+
+/* for profile end */
+
+/*.bar:nth-child(3){
+    overflow: hidden;
+    font-size:medium;
+    color: gray;
+    font-weight: 700;
+}*/
+
+/* barcode start*/
+.bar{
+    display: inline-flex;
+    transform: rotate(90deg);
+    font-weight: 600;
+    font-size: x-large;
+    margin-top: 100px;
+    margin-left: 365px;
+    width: fit-content;
+    position: fixed;
+}
+.bar>div:nth-child(3){
+    margin-right: -4px;
+
+}
+.bar>div:nth-child(7){
+    margin-right: -4px;
+
+}
+.bar>div:nth-child(8){
+    margin-right: -4px;
+
+}
+.bar>div:nth-child(18){
+    margin-right: -4px;
+
+}
+.bar>div:nth-child(11){
+    margin-right: -4px;
+
+}
+.bar>div:nth-child(16){
+    margin-right: -4px;
+
+}
+
+      /* barcode end*/`,
+      js: `// No JS needed for this CSS magic!`
+    },
+    // {
+    //   title: "",
+    //   html: ``,
+    //   css: ``,
+    //   js: `// No JS needed for this CSS magic!`
+    // },
+    {
+      title: "Thor's Hammer Mjolnir",
+      html: `<main class="hammer">
+            <div class="hammer-head">
+              <div class="cube">
+                <div class="face front">
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                </div>
+                <div class="face back">
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                </div>
+                <div class="face right"></div>
+                <div class="face left"></div>
+                <div class="face top"></div>
+                <div class="face bottom"></div>
+              </div>		
+            </div>
+            <div class="handle">
+              <div></div>
+            </div>
+          </main>`,
+      css: `*{
+            margin: 0;
+            padding: 0;
+            top: 0;
+            bottom: 0;
+            left: 0;
+          }
+          body{
+            width: 100%;
+            height: 100vh;
+            align-items: center;
+              justify-content: center;
+              display: flex;
+              background: #111;
+          }
+          .hammer{
+            width: 400px;
+            height: 600px;
+            /*border: 1px solid white;*/
+            align-items: center;
+            justify-content: center;
+            display: grid;
+          }
+          .hammer-head{
+            width: 300px;
+              height: 150px;
+              perspective: 1000px;
+          }
+          .cube{
+            width: 100%;
+            height: 100%;
+            position: relative;
+              transform-style: preserve-3d;
+              /*transform: rotateX(0deg) rotateY(0deg);*/
+              animation: rotateCube 10s infinite linear;
+
+          }
+          .face{
+            position: absolute;
+            width: 260px;
+            height: 110px;
+            border: 20px solid gray;
+            border-style: outset;
+              background: darkgray;
+              justify-content: center;
+              align-items: center;
+          }
+
+          .face:nth-child(3){
+            width: 160px;
+              margin-left: 100px;
+          }
+          .face:nth-child(4){
+            width: 160px;
+              margin-right: 100px;
+          }
+
+          .front{
+            display: flex;
+            transform: rotateY(0deg) translateZ(100px);
+          }
+          .back{
+            display: flex;
+            transform: rotateY(180deg) translateZ(100px);
+          }
+          .right{
+            transform: rotateY(90deg) translateZ(100px);
+          }
+          .left{
+            transform: rotateY(-90deg) translateZ(100px);
+          }
+          .top{
+            transform: rotateX(90deg) translateZ(100px);
+              /* margin-top: 0px; */
+              height: 160px;
+          }
+          .bottom{
+            transform: rotateX(90deg) translateZ(100px);
+              margin-top: 150px;
+              height: 160px;
+          }
+          .front div, .back div{
+            height: 60px;
+              width: 25px;
+              border: 5px double white;
+              border-radius: 100%;
+          }
+          .front div:nth-child(1), .back div:nth-child(1){
+            transform: rotateZ(60deg);
+              margin-right: -20px;
+              margin-top: 40px;
+          }
+          .front div:nth-child(2), .back div:nth-child(2){
+            margin-top: -10px;
+          }
+
+          .front div:nth-child(3), .back div:nth-child(3){
+            transform: rotateZ(-60deg);
+              margin-left: -20px;
+              margin-top: 40px;
+          }
+
+          @keyframes rotateCube{
+            from{
+              transform: rotateX(0deg) rotateY(0deg);
+            }
+            to{
+              transform: rotateX(0deg) rotateY(360deg);
+            }
+          }
+          .handle{
+            height: 300px;
+              width: 50px;
+              background: brown;
+              /* border-right: 4px solid navajowhite; */
+              /* border-right: groove; */
+              border-bottom-right-radius: 30%;
+              border-bottom-left-radius: 30%;
+              /* margin-left: 50%; */
+              /* margin-right: 50%; */
+              margin: auto;
+              margin-top: -15%;
+          }
+          .handle div{
+              height: 50px;
+              width: 30px;
+              background: black;
+              border-radius: 100%;
+              margin: auto;
+              margin-top: 475%;
+              border-right-style: groove;
+              animation: rotateCube 10s infinite linear;
+		      }`,
+      js: `// No JS needed for this CSS magic!`
+    },
+    {
+      title: "Cashel House",
+      html: `<main class="cashel">
+              <div class="home"> 
+                <div class="main-cube">
+          <!-- ground floor start -->
+                  <div class="face front">
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
+                  <div class="face back">
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
+                  <div class="face right">
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
+                  <div class="face left">
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
+                  <div class="face top"></div>
+                  <div class="face bottom"></div>
+            <!-- 4sideface start -->
+                  <div class="sideface cF">
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
+                  <div class="sideface cB">
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
+                  <div class="sideface cR">
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
+                  <div class="sideface cL">
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
+            <!-- 4sideface end -->
+
+            <!-- 4side bar start -->
+                  <div class="sidebar F">
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
+                  <div class="sidebar B">
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
+                  <div class="sidebar R">
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
+                  <div class="sidebar L">
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="pattern">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
+            <!-- 4side bar end -->
+          <!-- ground floor end  -->
+
+          <!-- 4corners start -->
+                  <div class="front-left topface sidetop1">
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div> -->
+                    </div>	
+                  </div>
+                  <div class="left-left topface sidetop2">
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div> -->
+                    </div>
+                  </div>
+
+                  <div class="front-right topface sidetop1">
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div> -->
+                    </div>
+                  </div>
+                  <div class="right-left topface sidetop2">
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div> -->
+                    </div>
+                  </div>
+
+                  <div class="back-left topface sidetop1">
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div> -->
+                    </div>
+                  </div>
+                  <div class="left-right topface sidetop2">
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div> -->
+                    </div>
+                  </div>
+
+                  <div class="back-right topface sidetop1">
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div> -->
+                    </div>
+                  </div>
+                  <div class="right-right topface sidetop2">
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div> -->
+                    </div>
+                  </div>
+          <!-- 4corner end -->
+
+          <!-- top floor start -->
+                  <div class="topface frnt">
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
+                  <div class="topface bak">
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
+                  <div class="topface rit">
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
+                  <div class="topface let">
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
+
+                  <div class="topface top1">
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
+                  <div class="topface top2">
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div id="roof-top">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
+
+                  <div class="topface side-left">
+                  </div>
+                  <div class="topface side-right">
+                  </div>
+
+                  <div class="top-left-side-glass">
+                    <div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
+                  <div class="top-right-side-glass">
+                    <div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
+          <!-- top floor end -->
+
+          <!-- chimni start -->
+                  <div class="chimni ft">
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div></div>
+                  <div class="chimni bk">
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div></div>
+                  <div class="chimni rt">
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div></div>
+                  <div class="chimni lf">
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div></div>
+
+                  <div class="chimni up ch1">
+                    <div class="vapper">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
+                  <div class="chimni up ch2">
+                    <div class="vapper">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
+                  <div class="chimni up ch3">
+                    <div class="vapper">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
+          <!-- chimni end -->
+
+          <!-- all dore & windows start -->
+                  <div class="dore d1">
+                    <div class="side1">
+                      <div></div>
+                      <div></div>
+                      <div></div>	
+                    </div>
+                    <div class="side2">
+                      <div></div>
+                      <div></div>
+                      <div></div>	
+                    </div>				
+                  </div>
+
+                  <div class="window w1">
+                    <div class="side1">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div>	 -->
+                    </div>
+                    <div class="side2">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div>	 -->
+                    </div>				
+                  </div>
+                  <div class="window w2">
+                    <div class="side1">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div>	 -->
+                    </div>
+                    <div class="side2">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div>	 -->
+                    </div>				
+                  </div>
+                  <div class="window w3">
+                    <div class="side1">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div>	 -->
+                    </div>
+                    <div class="side2">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div>	 -->
+                    </div>				
+                  </div>
+                  <div class="window w4">
+                    <div class="side1">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div>	 -->
+                    </div>
+                    <div class="side2">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div>	 -->
+                    </div>				
+                  </div>
+                  <div class="window w5">
+                    <div class="side1">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div>	 -->
+                    </div>
+                    <div class="side2">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div>	 -->
+                    </div>				
+                  </div>
+                  <div class="window w6">
+                    <div class="side1">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div>	 -->
+                    </div>
+                    <div class="side2">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div>	 -->
+                    </div>				
+                  </div>
+
+                  <div class="dore Td1">
+                    <div class="side1">
+                      <div></div>
+                      <div></div>
+                      <div></div>	
+                    </div>
+                    <div class="side2">
+                      <div></div>
+                      <div></div>
+                      <div></div>	
+                    </div>				
+                  </div>
+                  <div class="window Tw1">
+                    <div class="side1">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div>	 -->
+                    </div>
+                    <div class="side2">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div>	 -->
+                    </div>				
+                  </div>
+                  <div class="window Tw2">
+                    <div class="side1">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div>	 -->
+                    </div>
+                    <div class="side2">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div>	 -->
+                    </div>				
+                  </div>
+                  <div class="window Tw3">
+                    <div class="side1">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div>	 -->
+                    </div>
+                    <div class="side2">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div>	 -->
+                    </div>				
+                  </div>
+                  <div class="window Tw4">
+                    <div class="side1">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div>	 -->
+                    </div>
+                    <div class="side2">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div>	 -->
+                    </div>				
+                  </div>
+                  <div class="window Tw5">
+                    <div class="side1">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div>	 -->
+                    </div>
+                    <div class="side2">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div>	 -->
+                    </div>				
+                  </div>
+                  <div class="window Tw6">
+                    <div class="side1">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div>	 -->
+                    </div>
+                    <div class="side2">
+                      <div></div>
+                      <div></div>
+                      <!-- <div></div>	 -->
+                    </div>				
+                  </div>
+          <!-- all dore & windows end -->
+                </div>
+              </div>				
+            </main>`,
+      css: `*{
+              margin: 0;
+              padding: 0;
+              top: 0;
+              bottom: 0;
+              left: 0;
+            }
+            body{
+              height: 100vh;
+              width: 100%;
+              // display: grid;
+              justify-content: center;
+              align-items: center;
+              background: black;
+            }
+            .cashel{
+              width: 600px;
+              height: 700px;
+              align-items: center;
+              justify-content: center;
+              display: grid;
+              transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+            }
+            .home{
+              width: 400px;
+                height: 50px;
+                perspective: 1000px;
+            }
+            .main-cube{
+              width: 100%;
+              height: 100%;
+              margin-top: 40%;
+                margin-left: 11.5%;
+              position: relative;
+                transform-style: preserve-3d;
+                /*transform: rotateX(0deg) rotateY(136deg) rotateZ(0deg);*/
+                /*transform: rotateX(-23deg) rotateY(100deg) rotateZ(-49deg);*/
+                animation: rotateCube 10s infinite linear;
+            }
+            .face{
+              width: 300px;
+              height: 150px;
+            }
+            
+            .face, .topface, .chimni, .sideface, .sidebar{
+              position: absolute;
+              border-style: outset;
+                background: darkgray;
+                justify-content: center;
+                overflow: hidden;
+            }
+
+            .front{
+              display: flex;
+                transform: rotateY(0deg) translateZ(82px);
+            }
+            .back{
+              display: flex;
+                transform: rotateY(180deg) translateZ(82px);
+            }
+            .right{
+              width: 160px;
+                margin-left: 100px;
+                transform: rotateY(90deg) translateZ(122px);
+            }
+            .left{
+              width: 160px;
+                margin-right: 100px;
+                transform: rotateY(-90deg) translateZ(82px);
+            }
+            .top{
+                transform: rotateX(90deg) translateZ(114px);
+                margin-left: -20px;
+                height: 220px;
+                width: 340px;
+            }
+            .bottom{
+                transform: rotateX(90deg) translateZ(78px);
+                margin-top: 150px;
+                height: 160px;
+            }
+
+            .sidebar{
+              height: 50px;
+              width: 340px;
+                margin-top: -53px;
+                background: transparent;
+                border-color: black;
+                display: flex;
+                  justify-content: space-between;
+
+            }
+            #pattern{
+              display: grid;
+            }
+
+            .sidebar #pattern div{
+                height: 10px;
+                width: 32px;
+                background: linear-gradient(-13deg, white -100%, transparent, white 173%);
+                border: 1px solid white;
+                margin: 1px;
+            }
+
+            .F{
+              display: flex;
+                transform: rotateY(0deg) translateZ(111px) translateX(-18px);
+            }
+            .B{
+              display: flex;
+                transform: rotateY(180deg) translateZ(111px) translateX(17px);
+            }
+            .R{
+              width: 220px;
+                margin-left: 100px;
+                transform: rotateY(90deg) translateZ(113px);
+            }
+            .L{
+              width: 220px;
+                margin-right: 100px;
+                transform: rotateY(-90deg) translateZ(128px);
+            }
+
+            .frnt{
+              display: flex;
+                width: 250px;
+                height: 130px;
+                margin-left: 27px;
+                margin-top: -135px;
+                transform: rotateY(0deg) translateZ(55px);
+            }
+            .bak{
+                display: flex;
+                width: 250px;
+                height: 130px;
+                margin-left: 27px;
+                margin-top: -135px;
+                transform: rotateY(180deg) translateZ(83px);
+            }
+            .rit{
+                width: 135px;
+                height: 130px;
+                margin-left: 7px;
+                margin-top: -135px;
+                transform: rotateY(90deg) translateZ(204px) translateX(14px);
+            }
+            .let{
+                width: 135px;
+                height: 130px;
+                margin-left: 7px;
+                margin-top: -135px;
+                transform: rotateY(-90deg) translateZ(49px) translateX(-14px);
+            }
+
+            .side-left, .side-right{
+                  margin-left: 7px;
+                margin-top: -135px;
+                background: transparent;
+                border-left: 70px solid transparent;
+                border-right: 70px solid transparent;
+                border-bottom: 70px solid gray;
+                border-style: groove;
+                border-top-style: none;
+                overflow: hidden;
+            }
+            .side-left{
+              transform: rotateY(-90deg) translateZ(49px) translateY(-185px) translateX(-14px);
+            }
+            .side-right{
+                transform: rotateY(-90deg) translateZ(-202px) translateY(-185px) translateX(-14px);
+            }
+
+            .top1, .top2{
+                width: 290px;
+                height: 120px;
+                margin-left: 7px;
+                margin-top: -210px;
+                background: linear-gradient(52deg,gray,saddlebrown,lightgray);
+                display: flex;
+                justify-content: space-between;
+                border-bottom: none;
+                border-top-color: transparent;
+                overflow: visible;
+                  border-bottom-left-radius: 10px;
+                border-bottom-right-radius: 10px;
+            }
+            .top1{
+                transform: translateZ(42px) rotateX(45deg) translateY(-20px);
+            }
+            .top2{
+                transform: translateZ(-70px) rotateX(-45deg) translateY(-20px);
+            }
+            @keyframes rotateCube{
+              from{
+                transform: rotateX(0deg) rotateY(0deg);
+              }
+              to{
+                transform: rotateX(0deg) rotateY(360deg);
+              }
+            }
+            .face div div, .topface div div, .chimni div div{
+              height: 13px;
+              width: 26px;
+              border: 1px solid dimgray;
+                border-collapse: separate;
+                background: bisque;
+                background: linear-gradient(403deg,gray -473%,saddlebrown,transparent);
+                filter: drop-shadow(2px 1px 2px black);
+            }
+            .face div div:nth-child(odd), .topface div div:nth-child(odd), .chimni div div:nth-child(odd){
+              width: 41px;
+                filter: drop-shadow(61px -1px 4px black);
+            }
+            .left, .right, .let, .rit, .lf, .rt{
+              display: flex;
+            }
+            #roof-top div, #roof-top div{
+              height: 10px;
+                width: 13px;
+                border: 1px solid dimgray;
+                background: linear-gradient(64deg,gray -29%,saddlebrown,black);
+                  filter: drop-shadow(2px 6px 3px black);
+            }
+            #roof-top div:last-child{
+              border-bottom-left-radius: 25px;
+                border-bottom-right-radius: 25px;
+            }
+            .chimni{
+              height: 80px;
+              width: 40px;
+              border-top: 5px solid black;
+            }
+
+            .ft{
+              display: flex;
+                    margin-left: 27px;
+                margin-top: -240px;
+                transform: rotateY(0deg) translateZ(-34px) translateX(23px);
+            }
+            .bk{
+                display: flex;
+                  margin-left: 27px;
+                margin-top: -240px;
+                transform: rotateY(180deg) translateZ(65px) translateX(-23px);
+            }
+            .rt{
+                width: 29px;
+                margin-left: 7px;
+                margin-top: -240px;
+                transform: rotateY(90deg) translateZ(70px) translateX(50px);
+            }
+            .lf{
+                  width: 29px;
+                margin-left: 7px;
+                margin-top: -240px;
+                transform: rotateY(-90deg) translateZ(-28px) translateX(-50px);
+            }
+
+            .up{
+                width: 30px;
+                height: 30px;
+                margin-left: 7px;
+                margin-top: -240px;
+              
+                border: none;
+                display: flex;
+                background: transparent;
+                overflow: visible;
+            }
+            .ch1{
+              transform: rotateX(0deg) translateZ(-50px) translateX(55px) translateY(-70px);
+            }
+            .ch2{
+              transform: rotateY(140deg) translateZ(70px) translateX(-10px) translateY(-36px);
+            }
+            .ch3{
+              transform: rotateY(45deg) translateZ(7px) translateX(75px) translateY(-70px);
+            }
+            .up .vapper{
+                display: flex;
+                width: 0px;
+                justify-content: space-evenly;
+                position: relative;
+                filter: blur(13px);
+            }
+            .up .vapper div{
+              width: 5px;
+                height: 37px;
+                background: black;
+                border: 1px solid transparent;
+                filter: drop-shadow(0px 22px 10px whitesmoke);
+                animation: up 4s linear infinite;
+            }
+            .up .vapper div:nth-child(odd){
+              margin-top: 45px;
+                filter: drop-shadow(3px -43px 12px white);
+            }
+            .up .vapper div:nth-child(4), .up .vapper div:nth-child(7){
+              margin-top: 45px;
+                filter: drop-shadow(-13px 65px 100px black);
+            }
+            .up .vapper div:nth-child(odd), .up .vapper div:nth-child(4), .up .vapper div:nth-child(7){
+              animation: up 3s linear infinite;
+            }
+            @keyframes up{
+              0% {
+                  transform: translateY(0px);
+              }
+              25% {
+                  transform: translateY(-10px);
+              }
+              50% {
+                  transform: translateY(-20px);
+              }
+              75% {
+                  transform: translateY(-35px);
+              }
+              100% {
+                  transform: translateY(-40px);
+              }
+            }
+            .top-left-side-glass, .top-right-side-glass{
+              height: 20px;
+              width: 20px;
+              border: 3px double white;
+              border-radius: 50%;
+              display: flex;
+                background: #2d195f;			
+              overflow: hidden;
+            }
+            .top-left-side-glass{
+              transform: rotateY(-90deg) translateZ(-14px) translateY(-183px) translateX(-13px);
+            }
+
+            .top-right-side-glass{
+              transform: rotateY(-90deg) translateZ(-267px) translateY(-209px) translateX(-14px);
+            }
+
+            .top-left-side-glass div, .top-right-side-glass div{
+              height: auto;
+              width: 50%;
+              display: grid;
+              border: 1px solid white;
+              margin: -1px;
+
+            }
+            .top-left-side-glass div div, .top-right-side-glass div div{
+              width: 100%;
+                background-color: rgba(255, 255, 255, .15);
+
+            }
+            /*.face, .topface{
+              background: transparent;
+            } */
+
+            .sideface{
+              width: 342px;
+              height: 30px;
+              background: linear-gradient(52deg,gray,saddlebrown,lightgray);
+                display: flex;
+                justify-content: space-between;
+                /*border: none;*/
+                overflow: visible;
+                  border-bottom-left-radius: 10px;
+                border-bottom-right-radius: 10px;
+            }
+            .sideface #roof-top div, .sideface #roof-top div{
+              height: 10px;
+                width: 13px;
+            }
+            .cF{
+              display: flex;
+              transform: rotateY(0deg) rotateX(45deg) translateX(-18px) translateY(83px) translateZ(92px);
+            }
+            .cB{
+              display: flex;
+                transform: rotateY(180deg) rotateX(45deg) translateX(18px) translateY(83px) translateZ(92px);
+            }
+            .cR{
+              width: 225px;
+              margin-left: 100px;
+              transform: rotateY(90deg) rotateX(45deg) translateX(0px) translateY(82px) translateZ(91px);
+            }
+            .cL{
+              width: 225px;
+              transform: rotateY(-90deg) rotateX(45deg) translateX(0px) translateY(96px) translateZ(105px);
+            }
+
+            
+            .sidetop1, .sidetop2{
+                  width: 33px;
+                height: fit-content;
+                margin-left: 7px;
+                background: linear-gradient(52deg,gray,saddlebrown,lightgray);
+                display: flex;
+                justify-content: space-between;
+                border: none;
+                border-top-style: groove;
+                overflow: visible;
+                border-bottom-left-radius: 10px;
+                border-bottom-right-radius: 100%;
+                margin-top: -15px;
+            }
+            .front-left{
+              transform: translateX(-40px) translateY(8px) translateZ(130px) rotateY(60deg) rotateX(40deg);
+            }
+            .left-left{
+              transform: translateX(-60px) translateY(8px) translateZ(120px) rotateY(60deg) rotateX(-40deg);
+            }
+            .front-right{
+              transform: translateX(320px) translateY(8px) translateZ(120px) rotateY(120deg) rotateX(40deg);
+            }
+            .right-left{
+              transform: translateX(300px) translateY(8px) translateZ(130px) rotateY(120deg) rotateX(-40deg);
+            }
+            .back-left{
+              transform: translateX(-60px) translateY(8px) translateZ(-120px) rotateY(-60deg) rotateX(40deg);
+            }
+            .left-right{
+              transform: translateX(-40px) translateY(8px) translateZ(-130px) rotateY(-60deg) rotateX(-40deg);
+            }
+            .back-right{
+              transform: translateX(300px) translateY(8px) translateZ(-130px) rotateY(-120deg) rotateX(40deg);
+            }
+            .right-right{
+              transform: translateX(320px) translateY(8px) translateZ(-120px) rotateY(-120deg) rotateX(-40deg);
+            }
+
+            .dore, .window{
+              height: fit-content;
+              width: fit-content;
+              display: flex;
+
+                /*background: linear-gradient(-13deg, blue -100%, transparent, blue 173%);*/
+                background: linear-gradient(42deg, black -44%, transparent, darkgray 430%);
+            }
+            .dore{
+                border: 4px solid brown;
+                border-top-right-radius: 34px;
+                border-top-left-radius: 34px;
+                border-bottom: none;
+            }
+            .dore div div{
+              height: 30px;
+              width: 30px;
+              background: linear-gradient(-13deg, white -100%, transparent, white 173%);
+              border: 1px double black;
+            }
+            .dore .side1 div:nth-child(1){
+              border-top-left-radius: 30px;
+            }
+            .dore .side2 div:nth-child(1){
+              border-top-right-radius: 30px;
+            }
+
+            .window{
+                border: 2px solid brown;
+                border-top-right-radius: 22px;
+                border-top-left-radius: 22px;
+            }
+            .window div div{
+              height: 30px;
+              width: 20px;
+              background: linear-gradient(-13deg, white -100%, transparent, white 173%);
+              border: 1px double black;
+            }
+            .window .side1 div:nth-child(1){
+              border-top-left-radius: 20px;
+            }
+            .window .side2 div:nth-child(1){
+              border-top-right-radius: 20px;
+            }
+
+            .d1{
+              transform: rotateY(0deg) translateZ(82px) translateX(115px);
+            }
+            .w1{
+              transform: rotateY(0deg) translateZ(82px) translateY(-110px) translateX(35px);
+            }
+            .w2{
+              transform:rotateY(0deg) translateZ(82px) translateY(-180px) translateX(220px);
+            }
+            .w3{
+                margin-left: 200px;
+                transform: rotateY(90deg) translateZ(82px) translateX(0px) translateY(-252px);
+            }
+            .w4{
+              transform: rotateY(180deg) translateZ(82px) translateY(-320px) translateX(-215px);
+            }
+            .w5{
+              transform: rotateY(180deg) translateZ(82px) translateY(-390px) translateX(-50px);
+            }
+            .w6{
+                transform: rotateY(90deg) translateZ(-23px) translateX(0px) translateY(-460px);
+            }
+
+            .Td1{
+              margin-top: -645px;
+              transform: rotateY(0deg) translateZ(55px) translateX(115px);
+            }
+            .Tw1{
+              transform: rotateY(0deg) translateZ(55px) translateY(-115px) translateX(45px);
+            }
+            .Tw2{
+              transform:rotateY(0deg) translateZ(55px) translateY(-180px) translateX(210px);
+            }
+            .Tw3{
+                margin-left: 200px;
+                transform: rotateY(90deg) translateZ(58px) translateX(15px) translateY(-248px);
+            }
+            .Tw4{
+              transform: rotateY(180deg) translateZ(83px) translateY(-316px) translateX(-200px);
+            }
+            .Tw5{
+              transform: rotateY(180deg) translateZ(83px) translateY(-380px) translateX(-65px);
+            }
+            .Tw6{
+                transform: rotateY(90deg) translateZ(4px) translateX(10px) translateY(-446px);
+            }`,
+      js: `// No JS needed for this CSS magic!`
+    },
+    {
+      title: "Rocket",
+      html: `<main>
+              <div class="top"></div>
+
+              <div class="middle">
+                
+              </div>
+
+              <div class="line">
+                
+              </div>
+
+              <div class="bottom">
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+              <div class="borner"></div>
+
+              <div class="flame">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+              <!-- <div class="flame2">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div> -->
+            </main>`,
+      css: `*{
+              margin: 0;
+              padding: 0;
+              top: 0;
+              bottom: 0;
+              left: 0;
+            }
+            body{
+              width: 100%;
+              height: 100vh;
+              /* background: linear-gradient(158deg, #011b11,#221717,black,#063406,#06060d,#1f1414); */
+              background: rgb(7, 2, 22);
+              background-repeat: no-repeat;
+              display: inline-grid;
+              align-items: center;
+              justify-content: center;
+            }
+            /**/
+            body::-webkit-scrollbar {
+                display: none;
+            }
+            @keyframes go{
+              0%{
+                margin-bottom: -60%;
+              }
+              25%{
+                margin-bottom: -40%;
+              }
+              50%{
+                margin-bottom: -25%;
+              }
+              75%{
+                margin-bottom: -10%;
+              }
+              100%{
+                margin-bottom: 0%;
+              }
+            }
+            /**/
+            main{
+                /* align-items: center; */
+                /* justify-content: center; */
+                z-index: 1;
+                margin-left: 50%;
+                margin-top: -10%;
+                height: auto;
+                display: grid;
+                width: 500px;
+                overflow: visible;
+                animation: go 10s linear 1;
+                zoom: 20%;
+            }
+            .top, .middle{
+              height: 100px;
+              width: 100px;
+              display: flex;
+            }
+
+            .top{
+              background: red;
+              border: 1px solid red;
+              height: 500px;
+              border-top-left-radius: 50%;
+              border-top-right-radius: 50%;
+              overflow: hidden;
+            }
+            .line{
+              border-left: 6px solid white;
+                height: 600px;
+                width: 100px;
+                border-top-left-radius: 50%;
+                border-top-right-radius: 50%;
+                overflow: hidden;
+                margin-top: -680px;
+                margin-left: 14px;
+                filter: blur(4px);
+                position: initial;
+            }
+            .middle{
+              height: 500px;
+              border: 1px solid silver;
+              background: silver;
+              margin-top: -300px;
+              border-bottom: none;
+
+            }
+            .bottom{
+              border: 1px solid silver;
+              border-top: none;
+              background: silver;
+              width: 100px;
+              height: 100px;
+            }
+            .bottom div{
+              width: 100px;
+              height: 150px;
+            }
+            .bottom div:nth-child(1){
+              height: 50px;
+                border: 100px solid transparent;
+                border-left: 50px solid gray;
+                transform: rotateZ(180deg);
+                margin-left: -251px;
+                margin-top: -150px;
+            }
+            .bottom div:nth-child(2){
+              height: 50px;
+                border: 100px solid transparent;
+                border-left: 50px solid gray;
+                transform: rotateZ(0deg);
+                margin-left: 101px;
+                margin-top: -250px;
+            }
+            .bottom div:nth-child(3){
+              height: 50px;
+                border: 100px solid transparent;
+                border-left: 50px solid gray;
+                transform: rotateY(-70deg);
+                margin-left: -29px;
+                margin-top: -245px;
+            }
+            .borner{
+              width: 100px;
+                height: 50px;
+                border: 100px solid transparent;
+                border-bottom: 60px solid black;
+                transform: rotateY(-70deg);
+                margin-left: -98px;
+                margin-top: -150px;
+                z-index: 10;
+            }
+            .flame{
+                display: flex;
+                justify-content: space-between;
+                width: 100px;
+                height: 20px;
+                background: yellow;
+                filter: blur(20px);
+            }
+            .flame div{
+              width: 10px;
+              height: 50px;
+              background: yellow;
+              filter: blur(20px);
+            }
+            @keyframes up{
+              0%  { 
+                transform: translateY(0px);
+              }
+              25%  { 
+                transform: translateY(25px);
+              }
+              50%  { 
+                transform: translateY(50px);
+              }
+              75%  { 
+                transform: translateY(75px);
+              }
+              100%  { transform: translateY(100px);
+
+              }
+            }
+            .flame div:nth-child(1){
+              animation: up 1s linear infinite;
+              filter: drop-shadow(6px 47px 6px orange);
+
+            }
+            .flame div:nth-child(2){
+              animation: up 5s linear infinite;
+            }
+            .flame div:nth-child(3){
+              animation: up 8s linear infinite;
+              filter: drop-shadow(6px 47px 6px red);
+
+            }
+            .flame div:nth-child(4){
+              animation: up 8s linear infinite;
+              filter: drop-shadow(6px 47px 6px yellow);
+
+            }
+            .flame div:nth-child(5){
+              animation: up 3s linear infinite;
+              filter: drop-shadow(6px 47px 6px orange);
+
+            }
+            .flame div:nth-child(6){
+              animation: up 1s linear infinite;
+              filter: drop-shadow(6px 47px 6px yellow);
+            }
+            .flame div:nth-child(7){
+              animation: up 2s linear infinite;
+              filter: drop-shadow(6px 47px 6px red);
+            }`,
+      js: `// No JS needed for this CSS magic!`
+    },
+    {
+      title: "Neon Glowing Button",
       html: `<button class="neon-btn">Hover Me</button>`,
       css: `.neon-btn {\n  padding: 15px 30px;\n  font-size: 1.2rem;\n  color: #0ff;\n  background: transparent;\n  border: 2px solid #0ff;\n  border-radius: 8px;\n  cursor: pointer;\n  transition: 0.3s;\n  text-transform: uppercase;\n  font-weight: bold;\n}\n.neon-btn:hover {\n  background: #0ff;\n  color: #000;\n  box-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 40px #0ff;\n}`,
       js: `// No JS needed for this CSS magic!`
     },
     {
-      title: "2. Animated Loader",
+      title: "Animated Loader",
       html: `<div class="loader"></div>`,
       css: `.loader {\n  width: 50px;\n  height: 50px;\n  border: 5px solid #f3f3f3;\n  border-top: 5px solid #3498db;\n  border-radius: 50%;\n  animation: spin 1s linear infinite;\n}\n@keyframes spin {\n  0% { transform: rotate(0deg); }\n  100% { transform: rotate(360deg); }\n}`,
       js: `// Pure CSS Loader`
     },
     {
-      title: "3. Interactive Digital Clock",
+      title: "Interactive Digital Clock",
       html: `<div id="clock" class="clock">00:00:00</div>`,
       css: `.clock {\n  font-size: 3rem;\n  font-family: monospace;\n  font-weight: bold;\n  color: #333;\n  padding: 20px;\n  border-radius: 10px;\n  background: #f0f0f0;\n  box-shadow: inset 5px 5px 10px #d9d9d9, inset -5px -5px 10px #ffffff;\n}`,
       js: `function updateClock() {\n  const now = new Date();\n  const time = now.toLocaleTimeString('en-US', { hour12: false });\n  document.getElementById('clock').textContent = time;\n}\nsetInterval(updateClock, 1000);\nupdateClock();`
     },
     {
-      title: "4. 3D Hover Card",
+      title: "3D Hover Card",
       html: `<div class="card">Hover Me</div>`,
       css: `.card {\n  width: 150px;\n  height: 200px;\n  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: 15px;\n  font-weight: bold;\n  color: white;\n  transition: transform 0.5s;\n  box-shadow: 0 10px 20px rgba(0,0,0,0.1);\n}\n.card:hover {\n  transform: translateY(-10px) rotateX(10deg) rotateY(10deg);\n  box-shadow: 0 20px 30px rgba(0,0,0,0.2);\n}`,
       js: `// Pure CSS 3D Effect`
     },
     {
-      title: "5. Random Color Generator",
+      title: "Random Color Generator",
       html: `<div id="box" class="color-box">#3498db</div>\n<button onclick="changeColor()">Generate</button>`,
       css: `.color-box {\n  width: 150px;\n  height: 100px;\n  background: #3498db;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  color: white;\n  font-family: monospace;\n  font-size: 1.5rem;\n  border-radius: 8px;\n  margin-bottom: 15px;\n  transition: 0.3s;\n}\nbutton {\n  padding: 10px 20px;\n  border: none;\n  background: #333;\n  color: white;\n  border-radius: 5px;\n  cursor: pointer;\n}`,
       js: `function changeColor() {\n  const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);\n  const box = document.getElementById('box');\n  box.style.background = randomColor;\n  box.textContent = randomColor;\n}`
     },
     {
-      title: "6. Glassmorphism Design",
+      title: "Glassmorphism Design",
       html: `<div class="glass">Glass Effect</div>`,
       css: `body {\n  background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);\n}\n.glass {\n  background: rgba(255, 255, 255, 0.2);\n  border-radius: 16px;\n  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);\n  backdrop-filter: blur(5px);\n  -webkit-backdrop-filter: blur(5px);\n  border: 1px solid rgba(255, 255, 255, 0.3);\n  padding: 40px;\n  color: white;\n  font-size: 1.5rem;\n  font-weight: bold;\n}`,
       js: `// Pure CSS Glass Effect`
     },
     {
-      title: "7. CSS Toggle Switch",
+      title: "CSS Toggle Switch",
       html: `<label class="switch">\n  <input type="checkbox">\n  <span class="slider"></span>\n</label>`,
       css: `.switch {\n  position: relative;\n  display: inline-block;\n  width: 60px;\n  height: 34px;\n}\n.switch input { opacity: 0; width: 0; height: 0; }\n.slider {\n  position: absolute;\n  cursor: pointer;\n  top: 0; left: 0; right: 0; bottom: 0;\n  background-color: #ccc;\n  transition: .4s;\n  border-radius: 34px;\n}\n.slider:before {\n  position: absolute;\n  content: "";\n  height: 26px;\n  width: 26px;\n  left: 4px;\n  bottom: 4px;\n  background-color: white;\n  transition: .4s;\n  border-radius: 50%;\n}\ninput:checked + .slider {\n  background-color: #2196F3;\n}\ninput:checked + .slider:before {\n  transform: translateX(26px);\n}`,
       js: `// Checkbox state handled via CSS pseudo-selectors`
     },
     {
-      title: "8. Auto Typing Text",
+      title: "Auto Typing Text",
       html: `<h1 id="text" class="typing"></h1>`,
       css: `.typing {\n  font-family: monospace;\n  font-size: 2rem;\n  white-space: nowrap;\n  overflow: hidden;\n  border-right: 3px solid #333;\n  animation: blink 0.7s step-end infinite;\n}\n@keyframes blink {\n  50% { border-color: transparent; }\n}`,
       js: `const text = "Hello, World!";\nlet i = 0;\n\nfunction typeWriter() {\n  if (i < text.length) {\n    document.getElementById("text").innerHTML += text.charAt(i);\n    i++;\n    setTimeout(typeWriter, 150);\n  }\n}\ntypeWriter();`
     },
     {
-      title: "9. Minimal CSS Tooltip",
+      title: "Minimal CSS Tooltip",
       html: `<div class="tooltip">Hover Me\n  <span class="tooltiptext">Tooltip Info!</span>\n</div>`,
       css: `.tooltip {\n  position: relative;\n  display: inline-block;\n  cursor: pointer;\n  font-size: 1.2rem;\n  font-weight: bold;\n}\n.tooltip .tooltiptext {\n  visibility: hidden;\n  width: 120px;\n  background-color: #333;\n  color: #fff;\n  text-align: center;\n  border-radius: 6px;\n  padding: 5px 0;\n  position: absolute;\n  z-index: 1;\n  bottom: 150%;\n  left: 50%;\n  margin-left: -60px;\n  opacity: 0;\n  transition: opacity 0.3s;\n}\n.tooltip:hover .tooltiptext {\n  visibility: visible;\n  opacity: 1;\n}`,
       js: `// Tooltip purely driven by CSS :hover`
     },
     {
-      title: "10. Range Slider with Value",
+      title: "Range Slider with Value",
       html: `<div class="slider-container">\n  <input type="range" id="myRange" min="1" max="100" value="50">\n  <p>Value: <span id="val">50</span></p>\n</div>`,
       css: `.slider-container {\n  width: 80%;\n  text-align: center;\n  font-family: sans-serif;\n  font-weight: bold;\n  color: #333;\n}\ninput[type=range] {\n  width: 100%;\n}`,
       js: `const slider = document.getElementById("myRange");\nconst output = document.getElementById("val");\n\nslider.oninput = function() {\n  output.innerHTML = this.value;\n}`
     },
     {
-      title: "11. Expanding Search Bar",
+      title: "Expanding Search Bar",
       html: `<div class="search-box">\n  <input type="text" placeholder="Search...">\n</div>`,
       css: `.search-box {\n  display: flex;\n  justify-content: center;\n}\ninput {\n  width: 40px;\n  height: 40px;\n  border-radius: 20px;\n  border: 2px solid #333;\n  padding: 0 15px;\n  font-size: 16px;\n  transition: width 0.4s ease-in-out;\n  outline: none;\n}\ninput:focus {\n  width: 250px;\n}`,
       js: `// Click the search bar to see it expand!`
@@ -924,7 +4777,7 @@ function LiveProjectsSection() {
 }
 
 // --- 8. REUSABLE SUB-COMPONENTS ---
-
+// --- 8.1 LANGUAGE CHANGING SECTION ---
 function Navbar() {
   const { isDark, setIsDark, lang, setLang, t } = useContext(AppContext);
   const [isOpen, setIsOpen] = useState(false);
@@ -972,6 +4825,7 @@ function Navbar() {
   );
 }
 
+// --- 8.2 INTRODUCTION SECTION ---
 function HeroSection() {
   const { isDark, t } = useContext(AppContext);
   return (
@@ -1011,7 +4865,7 @@ function HeroSection() {
     </section>
   );
 }
-
+// --- 8.2 SKILLS SECTION ---
 function SkillsMatrix() {
   const { isDark, t } = useContext(AppContext);
   const categories = [
@@ -1047,7 +4901,7 @@ function SkillsMatrix() {
     </section>
   );
 }
-
+// --- 8.3 PROJECT SECTION ---
 function ProjectsSection() {
   const { isDark, t } = useContext(AppContext);
   const projects = [
@@ -1126,6 +4980,7 @@ function ProjectsSection() {
   );
 }
 
+// --- 8.4 WORK EXPERIENCE SECTION ---
 function ExperienceTimeline() {
   const { isDark, t } = useContext(AppContext);
   const experiences = [
@@ -1168,6 +5023,7 @@ function ExperienceTimeline() {
   );
 }
 
+// --- 8.5 MAILING SECTION ---
 function ContactForm() {
   const { isDark, t } = useContext(AppContext);
   const [status, setStatus] = useState('idle');
@@ -1232,7 +5088,7 @@ function ContactForm() {
     </section>
   );
 }
-
+// --- 9. FOOTER SECTION ---
 function Footer() {
   const { isDark } = useContext(AppContext);
   return (
