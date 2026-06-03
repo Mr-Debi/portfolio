@@ -5916,7 +5916,7 @@ function ProjectsSection() {
       architecture: "Python core logic with Pandas/JSON data handling, coupled with an interactive Streamlit visualization dashboard.",
       feature: "Tunable scoring algorithm proactively resolving station collisions and minimizing wait times across the fleet.",
       tags: ["Python", "Streamlit", "Pandas", "Simulation Engine"],
-      demo: "#",
+      demo: "https://bus-charging-scheduler-by-debi.streamlit.app/",
       repo: "https://github.com/Mr-Debi/Bus-Charging-Scheduler"
     },
     {
@@ -5986,6 +5986,19 @@ function ProjectsSection() {
                   <span key={j} className={`px-3 py-1 text-xs font-mono rounded-full border transition-colors duration-1000 ${isDark ? 'text-blue-300 bg-blue-900/30 border-blue-800/50' : 'text-orange-700 bg-orange-100/50 border-orange-300/50'}`}>{tag}</span>
                 ))}
               </div>
+
+              {/* LIVE DEMO AND GITHUB BUTTONS */}
+              <div className="flex gap-3 mt-auto pt-4 border-t transition-colors duration-1000 border-slate-500/20">
+                <a href={project.demo} target="_blank" rel="noreferrer" className={`flex-1 text-center px-4 py-2 text-sm font-bold rounded-lg transition-all duration-300 shadow-md flex items-center justify-center gap-1 ${isDark ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-500/20' : 'bg-orange-500 hover:bg-orange-400 text-white shadow-orange-500/30'}`}>
+                  Live Demo ↗
+                </a>
+                <a href={project.repo} target="_blank" rel="noreferrer" className={`flex-1 text-center px-4 py-2 text-sm font-bold rounded-lg transition-all duration-300 border flex items-center justify-center gap-1 ${isDark ? 'bg-transparent border-slate-600 hover:bg-slate-700 text-slate-300' : 'bg-transparent border-orange-300 hover:bg-orange-100 text-orange-700'}`}>
+                  GitHub
+                </a>
+              </div>
+
+
+
             </div>
           </TiltCard>
         ))}
