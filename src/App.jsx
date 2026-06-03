@@ -5911,6 +5911,15 @@ function ProjectsSection() {
   const { isDark, t } = useContext(AppContext);
   const projects = [
     {
+      title: "Bus Charging Scheduler",
+      description: "A scalable, data-driven discrete event simulation engine for EV fleet management, solving critical charging infrastructure bottlenecks.",
+      architecture: "Python core logic with Pandas/JSON data handling, coupled with an interactive Streamlit visualization dashboard.",
+      feature: "Tunable scoring algorithm proactively resolving station collisions and minimizing wait times across the fleet.",
+      tags: ["Python", "Streamlit", "Pandas", "Simulation Engine"],
+      demo: "#",
+      repo: "https://github.com/Mr-Debi/Bus-Charging-Scheduler"
+    },
+    {
       title: "Cinema Seat Reservation System",
       description: "A comprehensive booking platform handling concurrent reservations and dynamic seat visualization.",
       architecture: "Django REST Framework backend processing seat-tier logic, paired with a React.js and TypeScript frontend.",
