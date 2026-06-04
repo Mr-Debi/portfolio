@@ -1,6 +1,8 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import profileImg from './assets/profile.png'
 import profileResume from './assets/resume.pdf'
+import Octopus from './Octopus';
+
 
 
 // --- 1. GLOBAL STATE (CONTEXT) ---
@@ -126,6 +128,7 @@ export default function Portfolio() {
 
       {/* THE NEW PIKACHU SCROLLBAR INJECTED HERE */}
       <PikachuScrollbar />
+      <div className="App"><Octopus />
 
       <div className={`min-h-screen font-sans transition-colors duration-1000 ease-in-out ${isDark ? 'bg-slate-900 text-slate-50 selection:bg-blue-500/30' : 'bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 text-stone-800 selection:bg-orange-300/40'}`}>
         <Navbar />
@@ -145,6 +148,7 @@ export default function Portfolio() {
           <ContactForm />
         </main>
         <Footer />
+      </div>
       </div>
     </AppContext.Provider>
   );
@@ -6133,3 +6137,14 @@ function Divider() {
   const { isDark } = useContext(AppContext);
   return <div className={`h-[1px] w-full bg-gradient-to-r from-transparent to-transparent my-8 sm:my-10 transition-colors duration-1000 ${isDark ? 'via-slate-700' : 'via-orange-300'}`}></div>;
 }
+
+
+
+// function App() {
+//   return (
+//     <div className="App">
+//       <Octopus />
+//       {/* Rest of your portfolio content */}
+//     </div>
+//   );
+// }
