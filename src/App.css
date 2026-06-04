@@ -186,3 +186,7 @@
 .profile{
   border-radius: 10rem;
 }
+
+.main{
+  z-index: 99999;
+}

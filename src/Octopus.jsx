@@ -94,7 +94,7 @@ const Octopus = () => {
         left: 0, 
         width: '100vw',    // Force full width
         height: '100vh',   // Force full height
-        zIndex: 9999, 
+        zIndex: 0, 
         pointerEvents: 'none'
       }} 
     />

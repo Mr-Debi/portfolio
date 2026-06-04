@@ -185,7 +185,7 @@ function PikachuScrollbar() {
   return (
     <div className="fixed right-0 top-0 w-16 h-full pointer-events-none z-[100] hidden sm:block">
       {/* Faint scroll track */}
-      <div className="absolute right-4 top-0 w-1 h-full bg-slate-400/20 rounded-full"></div>
+      <div className="absolute right-4 top-0 w-0 h-full bg-slate-400/20 rounded-full"></div>
 
       {/* Wrapper that slides up and down (NOT rotated, so text stays readable) */}
       <div
@@ -207,11 +207,12 @@ function PikachuScrollbar() {
 
         {/* Pikachu Image (Rotates independently of the wrapper) */}
         <img
-          src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/25.gif"
+          // src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/25.gif"
+          src="https://i.pinimg.com/originals/a8/d5/ba/a8d5baeb06fc12c77ccefd0121010d20.gif"
           alt="Climbing Pikachu"
           className="w-10 h-10 object-contain drop-shadow-[0_0_8px_rgba(250,204,21,0.8)] transition-transform duration-100"
           style={{
-            transform: isScrollingDown ? 'rotate(-90deg)' : 'scaleX(-1) rotate(-90deg)'
+            transform: isScrollingDown ? 'rotate(0deg)' : 'scaleX(-1) rotate(0deg)'
           }}
         />
 
@@ -6138,13 +6139,3 @@ function Divider() {
   return <div className={`h-[1px] w-full bg-gradient-to-r from-transparent to-transparent my-8 sm:my-10 transition-colors duration-1000 ${isDark ? 'via-slate-700' : 'via-orange-300'}`}></div>;
 }
 
-
-
-// function App() {
-//   return (
-//     <div className="App">
-//       <Octopus />
-//       {/* Rest of your portfolio content */}
-//     </div>
-//   );
-// }
