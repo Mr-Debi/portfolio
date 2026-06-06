@@ -128,6 +128,7 @@ export default function Portfolio() {
 
       {/* THE NEW PIKACHU SCROLLBAR INJECTED HERE */}
       <PikachuScrollbar />
+      <VisitorStats />
       <div className="App"><Octopus />
 
       <div className={`min-h-screen font-sans transition-colors duration-1000 ease-in-out ${isDark ? 'bg-slate-900 text-slate-50 selection:bg-blue-500/30' : 'bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 text-stone-800 selection:bg-orange-300/40'}`}>
@@ -5875,7 +5876,7 @@ function HeroSection() {
     </section>
   );
 }
-// --- 8.2 SKILLS SECTION ---
+// --- 8.3 SKILLS SECTION ---
 function SkillsMatrix() {
   const { isDark, t } = useContext(AppContext);
   const categories = [
@@ -5911,7 +5912,7 @@ function SkillsMatrix() {
     </section>
   );
 }
-// --- 8.3 PROJECT SECTION ---
+// --- 8.4 PROJECT SECTION ---
 function ProjectsSection() {
   const { isDark, t } = useContext(AppContext);
   const projects = [
@@ -6012,7 +6013,7 @@ function ProjectsSection() {
   );
 }
 
-// --- 8.4 WORK EXPERIENCE SECTION ---
+// --- 8.5 WORK EXPERIENCE SECTION ---
 function ExperienceTimeline() {
   const { isDark, t } = useContext(AppContext);
   const experiences = [
@@ -6055,7 +6056,7 @@ function ExperienceTimeline() {
   );
 }
 
-// --- 8.5 MAILING SECTION ---
+// --- 8.6 MAILING SECTION ---
 function ContactForm() {
   const { isDark, t } = useContext(AppContext);
   const [status, setStatus] = useState('idle');
@@ -6120,7 +6121,102 @@ function ContactForm() {
     </section>
   );
 }
-// --- 9. FOOTER SECTION ---
+
+// --- 9. LIVE VISITOR & LIKE COUNTER ---
+function VisitorStats() {
+  const { isDark } = useContext(AppContext);
+  const [views, setViews] = useState('...');
+  const [likes, setLikes] = useState('...');
+  const [hasLiked, setHasLiked] = useState(false);
+
+  // We use a unique namespace for your project
+  const NAMESPACE = 'debidutta-portfolio-2026';
+
+  useEffect(() => {
+    // 1. Handle Likes State
+    if (localStorage.getItem('debi_liked')) {
+      setHasLiked(true);
+    }
+
+    // 2. Fetch or Increment Views
+    if (!sessionStorage.getItem('debi_viewed')) {
+      // First time this session: Increment View
+      fetch(`https://api.counterapi.dev/v1/${NAMESPACE}/views/up`)
+        .then(res => res.json())
+        .then(data => {
+          setViews(data.count);
+          sessionStorage.setItem('debi_viewed', 'true');
+        })
+        .catch(() => setViews('1k+'));
+    } else {
+      // Already viewed this session: Just fetch current count
+      fetch(`https://api.counterapi.dev/v1/${NAMESPACE}/views`)
+        .then(res => res.json())
+        .then(data => setViews(data.count))
+        .catch(() => setViews('1k+'));
+    }
+
+    // 3. Fetch Initial Likes
+    fetch(`https://api.counterapi.dev/v1/${NAMESPACE}/likes`)
+      .then(res => res.json())
+      .then(data => setLikes(data.count))
+      .catch(() => setLikes('500+'));
+  }, []);
+
+  const handleLike = () => {
+    if (hasLiked) return;
+    
+    // Optimistic UI Update (feels instant)
+    setLikes(prev => (typeof prev === 'number' ? prev + 1 : prev));
+    setHasLiked(true);
+    localStorage.setItem('debi_liked', 'true');
+
+    // API Call to database
+    fetch(`https://api.counterapi.dev/v1/${NAMESPACE}/likes/up`)
+      .then(res => res.json())
+      .then(data => setLikes(data.count))
+      .catch(console.error);
+  };
+
+  return (
+    <div className={`fixed bottom-6 left-6 z-50 flex items-center gap-4 px-5 py-2.5 rounded-full shadow-2xl border backdrop-blur-md transition-all duration-1000 ${
+      isDark 
+        ? 'bg-slate-800/90 border-slate-700 text-slate-300 shadow-black/50' 
+        : 'bg-white/90 border-orange-200 text-stone-700 shadow-orange-900/10'
+    }`}>
+      {/* Views Counter */}
+      <div className="flex items-center gap-2 font-mono text-sm" title="Total Page Views">
+        <span className="text-lg">👁️</span>
+        <strong className={`transition-colors duration-1000 ${isDark ? 'text-white' : 'text-stone-900'}`}>{views}</strong>
+      </div>
+      
+      {/* Divider */}
+      <div className={`w-px h-5 transition-colors duration-1000 ${isDark ? 'bg-slate-600' : 'bg-orange-300'}`}></div>
+      
+      {/* Like Button */}
+      <button 
+        onClick={handleLike}
+        disabled={hasLiked}
+        className={`flex items-center gap-2 font-mono text-sm transition-all duration-300 ${
+          hasLiked 
+            ? 'text-pink-500 cursor-default drop-shadow-[0_0_8px_rgba(236,72,153,0.5)]' 
+            : 'hover:scale-110 active:scale-95 cursor-pointer hover:text-pink-400'
+        }`}
+        title="Like this portfolio!"
+      >
+        <span className={`text-lg transition-transform duration-300 ${hasLiked ? 'scale-110' : ''}`}>
+          {hasLiked ? '❤️' : '🤍'}
+        </span>
+        <strong className={`transition-colors duration-1000 ${hasLiked ? 'text-pink-500' : (isDark ? 'text-white' : 'text-stone-900')}`}>
+          {likes}
+        </strong>
+      </button>
+    </div>
+  );
+}
+
+
+// --- 10. FOOTER SECTION ---
 function Footer() {
   const { isDark } = useContext(AppContext);
   return (
