@@ -6122,60 +6122,71 @@ function ContactForm() {
   );
 }
 
-// --- 9. LIVE VISITOR & LIKE COUNTER ---
+// --- 9. LIVE FIREBASE VISITOR & LIKE COUNTER (NO FALLBACK STRINGS) ---
 function VisitorStats() {
   const { isDark } = useContext(AppContext);
-  const [views, setViews] = useState('...');
-  const [likes, setLikes] = useState('...');
+  
+  // Starting strictly at 0—no fixed/fake text data shown while loading!
+  const [views, setViews] = useState(0); 
+  const [likes, setLikes] = useState(0);
   const [hasLiked, setHasLiked] = useState(false);
 
-  // We use a unique namespace for your project
-  const NAMESPACE = 'debidutta-portfolio-2026';
-
   useEffect(() => {
-    // 1. Handle Likes State
+    // 1. Check if user already liked it in the past
     if (localStorage.getItem('debi_liked')) {
       setHasLiked(true);
     }
 
-    // 2. Fetch or Increment Views
+    // 2. Set up database references
+    const viewsRef = ref(db, 'portfolioStats/views');
+    const likesRef = ref(db, 'portfolioStats/likes');
+
+    // 3. LISTEN TO LIVE UPDATES (WebSockets)
+    // Grabs the real database value immediately on load
+    const unsubscribeViews = onValue(viewsRef, (snapshot) => {
+      if (snapshot.exists()) {
+        setViews(snapshot.val());
+      }
+    }, (error) => {
+      console.error("Firebase views error:", error);
+    });
+
+    const unsubscribeLikes = onValue(likesRef, (snapshot) => {
+      if (snapshot.exists()) {
+        setLikes(snapshot.val());
+      }
+    }, (error) => {
+      console.error("Firebase likes error:", error);
+    });
+
+    // 4. Increment views safely using Transactions
+    // Only increments if they haven't viewed it in this current browser session
     if (!sessionStorage.getItem('debi_viewed')) {
-      // First time this session: Increment View
-      fetch(`https://api.counterapi.dev/v1/${NAMESPACE}/views/up`)
-        .then(res => res.json())
-        .then(data => {
-          setViews(data.count);
-          sessionStorage.setItem('debi_viewed', 'true');
-        })
-        .catch(() => setViews('1k+'));
-    } else {
-      // Already viewed this session: Just fetch current count
-      fetch(`https://api.counterapi.dev/v1/${NAMESPACE}/views`)
-        .then(res => res.json())
-        .then(data => setViews(data.count))
-        .catch(() => setViews('1k+'));
+      runTransaction(viewsRef, (currentViews) => {
+        return (currentViews || 0) + 1;
+      });
+      sessionStorage.setItem('debi_viewed', 'true');
     }
 
-    // 3. Fetch Initial Likes
-    fetch(`https://api.counterapi.dev/v1/${NAMESPACE}/likes`)
-      .then(res => res.json())
-      .then(data => setLikes(data.count))
-      .catch(() => setLikes('500+'));
+    // Cleanup listeners when component unmounts
+    return () => {
+      unsubscribeViews();
+      unsubscribeLikes();
+    };
   }, []);
 
   const handleLike = () => {
     if (hasLiked) return;
     
-    // Optimistic UI Update (feels instant)
-    setLikes(prev => (typeof prev === 'number' ? prev + 1 : prev));
+    // Lock the button instantly for this user locally
     setHasLiked(true);
     localStorage.setItem('debi_liked', 'true');
 
-    // API Call to database
-    fetch(`https://api.counterapi.dev/v1/${NAMESPACE}/likes/up`)
-      .then(res => res.json())
-      .then(data => setLikes(data.count))
-      .catch(console.error);
+    // Safely increment the like count in the live backend database
+    const likesRef = ref(db, 'portfolioStats/likes');
+    runTransaction(likesRef, (currentLikes) => {
+      return (currentLikes || 0) + 1;
+    });
   };
 
   return (
@@ -6184,16 +6195,17 @@ function VisitorStats() {
         ? 'bg-slate-800/90 border-slate-700 text-slate-300 shadow-black/50' 
         : 'bg-white/90 border-orange-200 text-stone-700 shadow-orange-900/10'
     }`}>
-      {/* Views Counter */}
+      {/* Real-time Views Counter */}
       <div className="flex items-center gap-2 font-mono text-sm" title="Total Page Views">
         <span className="text-lg">👁️</span>
-        <strong className={`transition-colors duration-1000 ${isDark ? 'text-white' : 'text-stone-900'}`}>{views}</strong>
+        <strong className={`transition-colors duration-1000 ${isDark ? 'text-white' : 'text-stone-900'}`}>
+          {views}
+        </strong>
       </div>
       
-      {/* Divider */}
       <div className={`w-px h-5 transition-colors duration-1000 ${isDark ? 'bg-slate-600' : 'bg-orange-300'}`}></div>
       
-      {/* Like Button */}
+      {/* Real-time Like Button */}
       <button 
         onClick={handleLike}
         disabled={hasLiked}
@@ -6214,7 +6226,6 @@ function VisitorStats() {
     </div>
   );
 }
-
 
 // --- 10. FOOTER SECTION ---
 function Footer() {
