@@ -10,10 +10,10 @@ import { getDatabase, ref, onValue, runTransaction } from "firebase/database";
 // PASTE YOUR FIREBASE CONFIG HERE
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+  authDomain: "portfolio-delta-three-wtvzpb5j1p.vercel.app",
+  databaseURL: "https://portfolio-delta-three-wtvzpb5j1p.vercel.app/",
   projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.appspot.com",
+  storageBucket: "portfolio-delta-three-wtvzpb5j1p.vercel.app",
   messagingSenderId: "123456789",
   appId: "1:123456789:web:abcdef"
 };
