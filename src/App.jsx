@@ -6147,7 +6147,7 @@ function VisitorStats() {
           setViews(data.count);
           sessionStorage.setItem('debi_viewed', 'true');
         })
-        .catch(() => setViews());
+        .catch(() => setViews('1k+'));
     } else {
       // Already viewed this session: Just fetch current count
       fetch(`https://api.counterapi.dev/v1/${NAMESPACE}/views`)
