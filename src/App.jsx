@@ -6221,10 +6221,10 @@ function Footer() {
   return (
     <footer className={`py-6 sm:py-8 text-center border-t px-4 transition-colors duration-1000 ${isDark ? 'border-slate-800' : 'border-orange-200'}`}>
       <div className={`flex justify-center gap-6 mb-4 text-sm sm:text-base transition-colors duration-1000 ${isDark ? 'text-slate-500' : 'text-stone-500'}`}>
-        <a href="https://github.com/Mr-Debi" className={`font-medium transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'hover:text-orange-600'}`}>GitHub</a>
-        <a href="mailto:debidutta.db@gmail.com" className={`font-medium transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'hover:text-orange-600'}`}>Email</a>
-        <a href="https://www.linkedin.com/in/debidutta-behera-164642275/" className={`font-medium transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'hover:text-orange-600'}`}>LinkedIn</a>
-        <a href="https://www.instagram.com/" className={`font-medium transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'hover:text-orange-600'}`}>Instagram</a>
+        <a href="https://github.com/Mr-Debi" target="_blank" className={`font-medium transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'hover:text-orange-600'}`}>GitHub</a>
+        <a href="mailto:debidutta.db@gmail.com" target="_blank" className={`font-medium transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'hover:text-orange-600'}`}>Email</a>
+        <a href="https://www.linkedin.com/in/debidutta-behera-164642275/" target="_blank" className={`font-medium transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'hover:text-orange-600'}`}>LinkedIn</a>
+        <a href="https://www.instagram.com/" target="_blank" className={`font-medium transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'hover:text-orange-600'}`}>Instagram</a>
       </div>
       <p className={`text-xs sm:text-sm font-mono transition-colors duration-1000 ${isDark ? 'text-slate-500' : 'text-stone-400'}`}>Designed & Built by DEBIDUTTA BEHERA &copy; {new Date().getFullYear()}</p>
     </footer>
