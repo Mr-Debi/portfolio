@@ -6224,7 +6224,7 @@ function Footer() {
         <a href="https://github.com/Mr-Debi" target="_blank" className={`font-medium transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'hover:text-orange-600'}`}>GitHub</a>
         <a href="mailto:debidutta.db@gmail.com" target="_blank" className={`font-medium transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'hover:text-orange-600'}`}>Email</a>
         <a href="https://www.linkedin.com/in/debidutta-behera-164642275/" target="_blank" className={`font-medium transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'hover:text-orange-600'}`}>LinkedIn</a>
-        <a href="https://www.instagram.com/" target="_blank" className={`font-medium transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'hover:text-orange-600'}`}>Instagram</a>
+        <a href="https://www.instagram.com/mr.debi_/" target="_blank" className={`font-medium transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'hover:text-orange-600'}`}>Instagram</a>
       </div>
       <p className={`text-xs sm:text-sm font-mono transition-colors duration-1000 ${isDark ? 'text-slate-500' : 'text-stone-400'}`}>Designed & Built by DEBIDUTTA BEHERA &copy; {new Date().getFullYear()}</p>
     </footer>
