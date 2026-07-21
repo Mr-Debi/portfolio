@@ -6065,7 +6065,11 @@ function ContactForm() {
     e.preventDefault();
     setStatus('submitting');
     const formData = new FormData(e.target);
-    formData.append("access_key", "qcgriudtaokxyjaa");
+    formData.append("access_key", "117d60c4-ee5b-4a91-a298-bfc546d9f225");
+    
+    formData.append("subject", "New Message From Portfolio");
+
+    formData.append("from_name", "Debidutta Portfolio");
     try {
       const response = await fetch("https://api.web3forms.com/submit", { method: "POST", body: formData });
       const data = await response.json();
