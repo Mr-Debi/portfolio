@@ -11,13 +11,20 @@ import Admin from "./Admin";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <BrowserRouter basename="/portfolio">
-    {/* <BrowserRouter basename="/portfolio">    when use for local  */}
-    
-  {/* <BrowserRouter>  */}
-    {/* <BrowserRouter>    when use for vercel  */}
     <Routes>
       <Route path="/" element={<App />} />
       <Route path="/admin" element={<Admin />} />
     </Routes>
   </BrowserRouter>,
 );
+
+
+// 
+// ReactDOM.createRoot(document.getElementById("root")).render(
+//   <BrowserRouter>
+//     <Routes>
+//       <Route path="/" element={<App />} />
+//       <Route path="/admin" element={<Admin />} />
+//     </Routes>
+//   </BrowserRouter>,
+// );
