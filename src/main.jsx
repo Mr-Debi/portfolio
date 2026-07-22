@@ -10,10 +10,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Admin from "./Admin";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <BrowserRouter basename="/portfolio">
-    {/* <BrowserRouter basename="/portfolio">    when use for local  */}
-    
-  {/* <BrowserRouter>  */}
+  // <BrowserRouter basename="/portfolio">
+    // {/* <BrowserRouter basename="/portfolio">    when use for local  */}
+
+   <BrowserRouter>
     {/* <BrowserRouter>    when use for vercel  */}
     <Routes>
       <Route path="/" element={<App />} />
