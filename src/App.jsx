@@ -4,6 +4,10 @@ import profileResume from './assets/resume.pdf'
 import Octopus from './Octopus';
 
 
+import DonatePanel from "./DonationPanel";
+import DonationPanel from './DonationPanel';
+
+
 
 // --- 1. GLOBAL STATE (CONTEXT) ---
 const AppContext = createContext();
@@ -129,6 +133,7 @@ export default function Portfolio() {
       {/* THE NEW PIKACHU SCROLLBAR INJECTED HERE */}
       <PikachuScrollbar />
       <VisitorStats />
+      <DonationPanel/>
       <div className="App"><Octopus />
 
       <div className={`min-h-screen font-sans transition-colors duration-1000 ease-in-out ${isDark ? 'bg-slate-900 text-slate-50 selection:bg-blue-500/30' : 'bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 text-stone-800 selection:bg-orange-300/40'}`}>
@@ -6219,7 +6224,17 @@ function VisitorStats() {
   );
 }
 
-// --- 10. FOOTER SECTION ---
+// --- 10. DONATION PANNEL ---
+function App() {
+  return (
+    <div>
+      <DonatePanel />
+    </div>
+  );
+}
+
+
+// --- 11. FOOTER SECTION ---
 function Footer() {
   const { isDark } = useContext(AppContext);
   return (
@@ -6239,4 +6254,3 @@ function Divider() {
   const { isDark } = useContext(AppContext);
   return <div className={`h-[1px] w-full bg-gradient-to-r from-transparent to-transparent my-8 sm:my-10 transition-colors duration-1000 ${isDark ? 'via-slate-700' : 'via-orange-300'}`}></div>;
 }
-

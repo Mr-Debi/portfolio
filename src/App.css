@@ -190,3 +190,16 @@
 .main{
   z-index: 99999;
 }
+
+
+/* -------------- */
+
+.app{
+
+text-align:center;
+
+padding:50px;
+
+font-family:Arial;
+
+}
