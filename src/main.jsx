@@ -11,11 +11,10 @@ import Admin from "./Admin";
 
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <BrowserRouter>
+  <BrowserRouter basename="/portfolio">
     <Routes>
-      <Route path="/portfolio" element={<App />} />
-
-      <Route path="/portfolio/admin" element={<Admin />} />
+      <Route path="/" element={<App />} />
+      <Route path="/admin" element={<Admin />} />
     </Routes>
   </BrowserRouter>,
 );
