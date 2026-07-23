@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 const Admin = () => {
   useEffect(() => {
-    window.location.href = "http://donation.free.je/donation-api/admin/login.php";
+    window.location.href = "https://donation.free.je/donation-api/admin/login.php";
     // window.location.href = "http://localhost/donation-api/admin/login.php";
   }, []);
 
