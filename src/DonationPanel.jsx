@@ -100,12 +100,14 @@ const DonationPanel = () => {
                 <input
                   placeholder="Your Name"
                   value={name}
+                  className="w-full border rounded-lg px-3 py-2 sm:px-4 sm:py-3 focus:outline-none transition-all duration-1000 text-sm sm:text-base shadow-inner ${isDark ? 'bg-slate-900/50 border-slate-700 text-slate-100 focus:border-blue-500 focus:ring-1 focus:ring-blue-500' : 'bg-white/80 border-orange-200 text-stone-900 focus:border-orange-500 focus:ring-1 focus:ring-orange-500'"
                   onChange={(e) => setName(e.target.value)}
                 />
 
                 <input
                   placeholder="Your Email"
                   value={email}
+                  className="w-full border rounded-lg px-3 py-2 sm:px-4 sm:py-3 focus:outline-none transition-all duration-1000 text-sm sm:text-base shadow-inner ${isDark ? 'bg-slate-900/50 border-slate-700 text-slate-100 focus:border-blue-500 focus:ring-1 focus:ring-blue-500' : 'bg-white/80 border-orange-200 text-stone-900 focus:border-orange-500 focus:ring-1 focus:ring-orange-500'"
                   onChange={(e) => setEmail(e.target.value)}
                 />
 
