@@ -71,21 +71,6 @@
   cursor: pointer;
 }
 
-input {
-  width: 100%;
-  padding: 13px;
-  margin: 10px;
-  border: none;
-  outline: none;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, .25);
-  color: white;
-}
-
-/* input::placeholder {
-  color: white;
-} */
-
 .amount-container {
   display: flex;
   gap: 10px;
@@ -219,4 +204,19 @@ input {
   100% {
     left: 100%;
   }
+}
+
+input {
+  width: 100%;
+  padding: 13px;
+  margin: 10px;
+  border: none;
+  outline: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .25);
+  color: white;
+}
+
+input::placeholder {
+  color: white;
 }
