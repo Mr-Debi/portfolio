@@ -43,41 +43,6 @@ const DonationPanel = () => {
     formData.append("transaction_id", transactionId);
     formData.append("screenshot", screenshot);
 
-    // try {
-    //   const response = await fetch(
-    //     "https://donation.free.je/donation-api/submit_donation.php",
-    //     {
-    //       method: "POST",
-    //       body: formData,
-    //     },
-    //   );
-
-    //   const data = await response.json();
-
-    //   if (data.success) {
-    //     alert(data.message);
-
-    //     setOpen(false);
-    //     setStep(1);
-
-    //     // Reset form
-    //     setName("");
-    //     setEmail("");
-    //     setAmount("");
-    //     setCustom("");
-    //     setTransactionId("");
-    //     setScreenshot(null);
-    //   } else {
-    //     alert(data.message);
-    //   }
-    // } catch (error) {
-    //   console.error(error);
-    //   alert("Something went wrong.");
-    // }
-
-
-
-
     try {
       const response = await fetch(
         "https://donation.free.je/donation-api/submit_donation.php",
@@ -87,29 +52,27 @@ const DonationPanel = () => {
         },
       );
 
-      console.log("Status:", response.status);
-      console.log("Status Text:", response.statusText);
+      const data = await response.json();
 
-      const text = await response.text();
+      if (data.success) {
+        alert(data.message);
 
-      console.log("Server Response:");
-      console.log(text);
+        setOpen(false);
+        setStep(1);
 
-      try {
-        const data = JSON.parse(text);
-
-        if (data.success) {
-          alert(data.message);
-        } else {
-          alert("Server Error:\n" + data.message);
-        }
-      } catch {
-        alert("Invalid JSON Response:\n\n" + text);
+        // Reset form
+        setName("");
+        setEmail("");
+        setAmount("");
+        setCustom("");
+        setTransactionId("");
+        setScreenshot(null);
+      } else {
+        alert(data.message);
       }
     } catch (error) {
-      console.error("Fetch Error:", error);
-
-      alert("Fetch Failed:\n\n" + error.message);
+      console.error(error);
+      alert("Something went wrong.");
     }
   };
 
