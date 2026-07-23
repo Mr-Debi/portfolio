@@ -45,7 +45,7 @@ const DonationPanel = () => {
 
     try {
       const response = await fetch(
-        "http://donation.free.je/donation-api/submit_donation.php",
+        "https://donation.free.je/donation-api/submit_donation.php",
         {
           method: "POST",
           body: formData,
