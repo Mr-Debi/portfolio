@@ -81,7 +81,7 @@ const DonationPanel = () => {
   return (
     <>
       <button className="floating-btn" onClick={() => setOpen(true)}>
-        ❤️ Donate Me
+        🩷 Donate Me
       </button>
 
       {open && (
