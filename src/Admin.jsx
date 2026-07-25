@@ -15,10 +15,6 @@ export default function Admin() {
 
   const [search, setSearch] = useState("");
 
-  const [previewImage, setPreviewImage] = useState("");
-
-  const [showModal, setShowModal] = useState(false);
-
   const [donations, setDonations] = useState([]);
 
   const [showCharts, setShowCharts] = useState(false);
@@ -247,15 +243,17 @@ export default function Admin() {
     navigate("/admin");
   };
 
-  const openPreview = (image) => {
-    setPreviewImage(image);
+  const [previewImage, setPreviewImage] = useState("");
+  
+  const [showModal, setShowModal] = useState(false);
 
+  const openPreview = (imageUrl) => {
+    setPreviewImage(imageUrl);
     setShowModal(true);
   };
 
   const closePreview = () => {
     setShowModal(false);
-
     setPreviewImage("");
   };
 
@@ -463,10 +461,7 @@ export default function Admin() {
               ×
             </button>
 
-            <img
-              src={`http://localhost:8000/uploads/${previewImage}`}
-              alt="Donation Screenshot"
-            />
+            <img src={previewImage} alt="Donation Screenshot" />
           </div>
         </div>
       )}

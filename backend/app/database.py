@@ -2,6 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 from app.config import (
+    DATABASE_URL,
     DB_HOST,
     DB_PORT,
     DB_USER,
@@ -9,15 +10,27 @@ from app.config import (
     DB_NAME,
 )
 
-DATABASE_URL = (
-    f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}"
-    f"@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-)
+# ==========================================
+# Use DATABASE_URL if available (Production)
+# Otherwise use local MySQL (Development)
+# ==========================================
 
-engine = create_engine(
-    DATABASE_URL,
-    echo=True
-)
+if DATABASE_URL:
+    engine = create_engine(
+        DATABASE_URL,
+        pool_pre_ping=True
+    )
+else:
+    LOCAL_DATABASE_URL = (
+        f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}"
+        f"@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    )
+
+    engine = create_engine(
+        LOCAL_DATABASE_URL,
+        pool_pre_ping=True,
+        echo=True
+    )
 
 SessionLocal = sessionmaker(
     autocommit=False,

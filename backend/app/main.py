@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
+# from fastapi.staticfiles import StaticFiles
 
 from app.database import Base, engine
+from app.models import Donation, Admin
 
 from app.routers.donation import router as donation_router
 from app.routers.admin import router as admin_router
@@ -24,11 +25,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount(
-    "/uploads",
-    StaticFiles(directory="uploads"),
-    name="uploads"
-)
+# app.mount(
+#     "/uploads",
+#     StaticFiles(directory="uploads"),
+#     name="uploads"
+# )
 
 app.include_router(
     donation_router,

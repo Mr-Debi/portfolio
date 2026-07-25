@@ -1,35 +1,34 @@
-from sqlalchemy import text
-
 from app.database import SessionLocal
-
+from app.models import Admin
 from app.auth import hash_password
 
 db = SessionLocal()
 
-password = hash_password("debi@xxxxxx")     
-                        # ------------    type your password hear (step 1)
+username = "admin"
+password = "debi@123ABC"
+            # ------------    type your password hear (step 1)
 
-query = text("""
 
-UPDATE admins
+# Check if admin already exists
+existing = db.query(Admin).filter(
+    Admin.username == username
+).first()
 
-SET password=:password
+if existing:
+    print("Admin already exists.")
+else:
+    admin = Admin(
+        username=username,
+        password=hash_password(password),
+        role="Admin"
+    )
 
-WHERE username='admin'
+    db.add(admin)
+    db.commit()
 
-""")
+    print("Admin created successfully!")
 
-db.execute(
-    query,
-    {
-        "password": password
-    }
-)
-
-db.commit()
-
-print("Admin password updated.")
-
+db.close()
 
 # python create_admin.py    #----> for change the admin password (step2)
 # uvicorn app.main:app --reload     #----> for restart the server (step3)

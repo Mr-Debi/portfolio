@@ -1,6 +1,6 @@
-import os
-import shutil
 import uuid
+
+import cloudinary.uploader
 
 from fastapi import (
     APIRouter,
@@ -15,12 +15,10 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models import Donation
+from app.cloudinary_config import *
+
 
 router = APIRouter()
-
-UPLOAD_FOLDER = "uploads"
-
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
 @router.post("/donations")
@@ -42,6 +40,25 @@ async def create_donation(
 
     try:
 
+        # ==========================
+        # Check Duplicate Transaction
+        # ==========================
+
+        existing = db.query(Donation).filter(
+            Donation.transaction_id == transaction_id
+        ).first()
+
+        if existing:
+
+            raise HTTPException(
+                status_code=400,
+                detail="Transaction ID already submitted."
+            )
+
+        # ==========================
+        # Validate Image
+        # ==========================
+
         allowed = [
             "jpg",
             "jpeg",
@@ -55,22 +72,30 @@ async def create_donation(
 
             raise HTTPException(
                 status_code=400,
-                detail="Only JPG, PNG and WEBP images are allowed."
+                detail="Only JPG, JPEG, PNG and WEBP images are allowed."
             )
 
-        filename = f"{uuid.uuid4()}.{extension}"
+        # ==========================
+        # Upload to Cloudinary
+        # ==========================
 
-        filepath = os.path.join(
-            UPLOAD_FOLDER,
-            filename
+        upload_result = cloudinary.uploader.upload(
+
+            screenshot.file,
+
+            folder="portfolio-donation-panel",
+
+            public_id=str(uuid.uuid4()),
+
+            resource_type="image"
+
         )
 
-        with open(filepath, "wb") as buffer:
+        image_url = upload_result["secure_url"]
 
-            shutil.copyfileobj(
-                screenshot.file,
-                buffer
-            )
+        # ==========================
+        # Save Donation
+        # ==========================
 
         donation = Donation(
 
@@ -82,7 +107,7 @@ async def create_donation(
 
             transaction_id=transaction_id,
 
-            screenshot=filename,
+            screenshot=image_url,
 
             status="Pending"
 
@@ -98,17 +123,28 @@ async def create_donation(
 
             "success": True,
 
-            "message": "Donation Submitted Successfully",
+            "message": "Donation submitted successfully.",
 
-            "donation_id": donation.id
+            "donation_id": donation.id,
+
+            "image": image_url
 
         }
+
+    except HTTPException:
+
+        db.rollback()
+
+        raise
 
     except Exception as e:
 
         db.rollback()
 
         raise HTTPException(
+
             status_code=500,
+
             detail=str(e)
+
         )
