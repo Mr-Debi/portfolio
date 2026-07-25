@@ -2,52 +2,131 @@ import React, { useState } from "react";
 import QRCode from "react-qr-code";
 import "./DonationPanel.css";
 
-const DonationPanel = () => {
-
+export default function DonationPanel() {
   const [open, setOpen] = useState(false);
+
   const [step, setStep] = useState(1);
 
+  const [loading, setLoading] = useState(false);
+
+  const [success, setSuccess] = useState(false);
+
   const [name, setName] = useState("");
+
   const [email, setEmail] = useState("");
 
   const [amount, setAmount] = useState("");
-  const [custom, setCustom] = useState("");
+
+  const [customAmount, setCustomAmount] = useState("");
 
   const [transactionId, setTransactionId] = useState("");
+
   const [screenshot, setScreenshot] = useState(null);
 
+  const [preview, setPreview] = useState("");
 
-  const finalAmount =
-    amount === "custom" ? custom : amount;
+  const API = "http://localhost:8000";
 
+  const UPI_ID = "7978213833@upi";
 
-  const upiID = "7978213833@upi";
+  const finalAmount = amount === "custom" ? customAmount : amount;
 
+  const qrData = `upi://pay?pa=${UPI_ID}&pn=Debidutta&am=${finalAmount}&cu=INR`;
 
-  const qrData =
-    `upi://pay?pa=${upiID}&pn=Debidutta&am=${finalAmount}&cu=INR`;
+  const resetForm = () => {
+    setStep(1);
 
+    setName("");
 
+    setEmail("");
+
+    setAmount("");
+
+    setCustomAmount("");
+
+    setTransactionId("");
+
+    setScreenshot(null);
+
+    setPreview("");
+
+    setSuccess(false);
+  };
+
+  const validateStep1 = () => {
+    if (!name.trim()) {
+      alert("Enter your name");
+
+      return false;
+    }
+
+    if (!email.trim()) {
+      alert("Enter your email");
+
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+      alert("Invalid Email");
+
+      return false;
+    }
+
+    if (!finalAmount || Number(finalAmount) <= 0) {
+      alert("Select Donation Amount");
+
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleScreenshot = (e) => {
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    setScreenshot(file);
+
+    setPreview(URL.createObjectURL(file));
+  };
 
   const submitDonation = async () => {
-    if (!transactionId || !screenshot) {
-      alert("Please enter Transaction ID and upload screenshot.");
+    if (!transactionId.trim()) {
+      alert("Enter Transaction ID");
+
+      return;
+    }
+
+    if (!screenshot) {
+      alert("Upload Screenshot");
+
       return;
     }
 
     const formData = new FormData();
 
     formData.append("name", name);
+
     formData.append("email", email);
+
     formData.append("amount", finalAmount);
+
     formData.append("transaction_id", transactionId);
+
     formData.append("screenshot", screenshot);
 
     try {
+      setLoading(true);
+
       const response = await fetch(
-        "https://donation.free.je/donation-api/submit_donation.php",
+        `${API}/api/donations`,
+
         {
           method: "POST",
+
           body: formData,
         },
       );
@@ -55,29 +134,24 @@ const DonationPanel = () => {
       const data = await response.json();
 
       if (data.success) {
-        alert(data.message);
+        setSuccess(true);
 
-        setOpen(false);
-        setStep(1);
+        setTimeout(() => {
+          setOpen(false);
 
-        // Reset form
-        setName("");
-        setEmail("");
-        setAmount("");
-        setCustom("");
-        setTransactionId("");
-        setScreenshot(null);
+          resetForm();
+        }, 2500);
       } else {
         alert(data.message);
       }
-    } catch (error) {
-      console.error(error);
-      alert("Something went wrong.");
+    } catch (err) {
+      console.error(err);
+
+      alert("Unable to submit donation.");
+    } finally {
+      setLoading(false);
     }
   };
-
-
-
   return (
     <>
       <button className="floating-btn" onClick={() => setOpen(true)}>
@@ -87,38 +161,51 @@ const DonationPanel = () => {
       {open && (
         <div className="overlay">
           <div className="donation-card">
-            <button className="close-btn" onClick={() => setOpen(false)}>
-              ×
+            <button
+              className="close-btn"
+              onClick={() => {
+                setOpen(false);
+                resetForm();
+              }}
+            >
+              ✕
             </button>
+
+            {/* STEP 1 */}
 
             {step === 1 && (
               <>
                 <h2>Support My Work ❤️</h2>
 
-                <p>Your small support helps me create more projects.</p>
+                <p>
+                  Your contribution helps me build more open-source projects.
+                </p>
 
                 <input
+                  type="text"
                   placeholder="Your Name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
 
                 <input
+                  type="email"
                   placeholder="Your Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
 
-                <h3>Select Donation</h3>
+                <h3>Select Amount</h3>
 
                 <div className="amount-container">
-                  {[50, 100, 200].map((item) => (
+                  {[50, 100, 200, 500].map((item) => (
                     <button
                       key={item}
                       className={amount === item ? "amount selected" : "amount"}
                       onClick={() => {
                         setAmount(item);
-                        setCustom("");
+
+                        setCustomAmount("");
                       }}
                     >
                       ₹{item}
@@ -131,36 +218,33 @@ const DonationPanel = () => {
                     }
                     onClick={() => setAmount("custom")}
                   >
-                    ✨ Custom
+                    Custom
                   </button>
                 </div>
 
                 {amount === "custom" && (
                   <input
-                    className="custom-input"
                     type="number"
-                    placeholder="Enter Custom Amount"
-                    value={custom}
-                    onChange={(e) => setCustom(e.target.value)}
+                    placeholder="Enter Amount"
+                    value={customAmount}
+                    onChange={(e) => setCustomAmount(e.target.value)}
                   />
                 )}
 
                 <button
                   className="payment-btn"
                   onClick={() => {
-                    if (!name || !email || !finalAmount) {
-                      alert("Fill all details");
-                      return;
+                    if (validateStep1()) {
+                      setStep(2);
                     }
-
-                    setStep(2);
                   }}
                 >
-                  <span className="barcode"></span>
-                  Continue Payment
+                  Continue Payment →
                 </button>
               </>
             )}
+
+            {/* STEP 2 */}
 
             {step === 2 && (
               <>
@@ -172,13 +256,19 @@ const DonationPanel = () => {
 
                 <h3>Pay ₹{finalAmount}</h3>
 
+                <p>UPI ID</p>
+
+                {/* <strong>{UPI_ID}</strong> */}
+
                 <button className="action-btn" onClick={() => setStep(3)}>
                   Payment Completed
                 </button>
               </>
             )}
 
-            {step === 3 && (
+            {/* STEP 3 */}
+
+            {step === 3 && !success && (
               <>
                 <h2>Verify Payment</h2>
 
@@ -188,25 +278,60 @@ const DonationPanel = () => {
                   onChange={(e) => setTransactionId(e.target.value)}
                 />
 
-                <label>Upload Payment Screenshot</label>
+                <label>Upload Screenshot</label>
 
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => setScreenshot(e.target.files[0])}
+                  onChange={handleScreenshot}
                 />
 
-                <button className="action-btn" onClick={submitDonation}>
-                  Submit Donation
+                {preview && (
+                  <img src={preview} alt="preview" className="preview-image" />
+                )}
+
+                <button
+                  className="action-btn"
+                  disabled={loading}
+                  onClick={submitDonation}
+                >
+                  {loading ? "Submitting..." : "Submit Donation"}
                 </button>
               </>
+            )}
+
+            {/* SUCCESS */}
+
+            {success && (
+              <div className="success-box">
+                <div className="success-icon">✅</div>
+
+                <h2>Thank You ❤️</h2>
+
+                <p>Your donation has been submitted successfully.</p>
+
+                <small>
+                  It will appear in the admin panel after verification.
+                </small>
+              </div>
             )}
           </div>
         </div>
       )}
     </>
   );
-};
 
+  const copyUPI = async () => {
+    try {
+      await navigator.clipboard.writeText(UPI_ID);
 
-export default DonationPanel;
+      alert("UPI ID Copied Successfully");
+    } catch {
+      alert("Unable to copy UPI ID");
+    }
+  };
+
+  const openUPI = () => {
+    window.location.href = qrData;
+  };
+}
