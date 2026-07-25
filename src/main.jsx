@@ -55,29 +55,8 @@ function PrivateRoute({ children }) {
 }
 
 // for vercel
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <BrowserRouter>
-    <Routes>
-      <Route path="/" element={<App />} />
-
-      <Route path="/admin" element={<AdminLogin />} />
-
-      <Route
-        path="/admin/dashboard"
-        element={
-          <PrivateRoute>
-            <Admin />
-          </PrivateRoute>
-        }
-      />
-    </Routes>
-  </BrowserRouter>,
-);
-
-
-// for localhost
 // ReactDOM.createRoot(document.getElementById("root")).render(
-//   <BrowserRouter basename="/portfolio">
+//   <BrowserRouter>
 //     <Routes>
 //       <Route path="/" element={<App />} />
 
@@ -94,3 +73,24 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 //     </Routes>
 //   </BrowserRouter>,
 // );
+
+
+// for localhost
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <BrowserRouter basename="/portfolio">
+    <Routes>
+      <Route path="/" element={<App />} />
+
+      <Route path="/admin" element={<AdminLogin />} />
+
+      <Route
+        path="/admin/dashboard"
+        element={
+          <PrivateRoute>
+            <Admin />
+          </PrivateRoute>
+        }
+      />
+    </Routes>
+  </BrowserRouter>,
+);
