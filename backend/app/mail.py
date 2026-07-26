@@ -66,7 +66,7 @@ def send_thank_you_email(
 
             <br>
 
-            <>
+            <b>
                 Regards<br>
                 Debidutta Behera
             </b>
