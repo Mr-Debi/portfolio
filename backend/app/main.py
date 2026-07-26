@@ -62,18 +62,12 @@ def home():
 @app.get("/internet-test")
 def internet_test():
     try:
-        r = requests.get(
-            "https://www.google.com",
-            timeout=10
-        )
-
+        r = requests.get("https://www.google.com", timeout=10)
         return {
             "success": True,
             "status": r.status_code
         }
-
     except Exception as e:
-
         return {
             "success": False,
             "error": str(e)
