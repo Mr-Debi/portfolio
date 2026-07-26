@@ -218,7 +218,7 @@ function PikachuScrollbar() {
           alt="Climbing Pikachu"
           className="w-10 h-10 object-contain drop-shadow-[0_0_8px_rgba(250,204,21,0.8)] transition-transform duration-100"
           style={{
-            transform: isScrollingDown ? 'rotate(0deg)' : 'scaleX(-1) rotate(0deg)'
+            transform: isScrollingDown ? 'rotate(0deg)' : 'scaleX(-1) rotate(-45deg)'
           }}
         />
 
