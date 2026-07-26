@@ -162,9 +162,7 @@ def approve_donation(
             FROM donation
             WHERE id=:id
         """),
-        {
-            "id": donation_id
-        }
+        {"id": donation_id}
     ).mappings().first()
 
     if donor is None:
@@ -179,9 +177,7 @@ def approve_donation(
             SET status='Approved'
             WHERE id=:id
         """),
-        {
-            "id": donation_id
-        }
+        {"id": donation_id}
     )
 
     db.commit()
@@ -195,19 +191,23 @@ def approve_donation(
             transaction_id=donor["transaction_id"]
         )
 
-        print("✅ Thank-you email sent")
+        return {
+            "success": True,
+            "message": "Donation approved and thank-you email sent successfully."
+        }
 
     except Exception as e:
 
-        print("❌ Email sending failed")
+        print("========== EMAIL ERROR ==========")
         print(type(e).__name__)
         print(str(e))
+        print("=================================")
 
-    return {
-        "success": True,
-        "message": "Donation Approved"
-    }
-
+        return {
+            "success": False,
+            "message": "Donation approved, but email could not be sent.",
+            "error": str(e)
+        }
 
 # ===================================================
 # REJECT DONATION

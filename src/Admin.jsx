@@ -86,28 +86,20 @@ export default function Admin() {
   const approveDonation = async (id) => {
     const result = await Swal.fire({
       title: "Approve Donation?",
-
       text: "A thank-you email will be sent to the donor.",
-
       icon: "question",
-
       showCancelButton: true,
-
       confirmButtonColor: "#22c55e",
-
       cancelButtonColor: "#6b7280",
-
       confirmButtonText: "Approve",
     });
 
     if (!result.isConfirmed) return;
 
     try {
-      await api.put(
+      const res = await api.put(
         `/admin/approve/${id}`,
-
         {},
-
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -115,24 +107,37 @@ export default function Admin() {
         },
       );
 
-      Swal.fire({
-        icon: "success",
+      if (res.data.success) {
+        await Swal.fire({
+          icon: "success",
+          title: "Donation Approved",
+          text: res.data.message,
+          timer: 5000,
+          timerProgressBar: true,
+          showConfirmButton: false,
+        });
+      } else {
+        await Swal.fire({
+          icon: "warning",
+          title: "Donation Approved",
+          text: res.data.message,
+        });
 
-        title: "Donation Approved",
-
-        text: "Thank-you email sent successfully.",
-      });
+        console.error(res.data.error);
+      }
 
       loadDashboard();
-
       loadDonations();
-    } catch {
+    } catch (error) {
+      console.error(error);
+
       Swal.fire({
         icon: "error",
-
-        title: "Error",
-
-        text: "Unable to approve donation.",
+        title: "Approval Failed",
+        text:
+          error.response?.data?.detail ||
+          error.response?.data?.message ||
+          "Unable to approve donation.",
       });
     }
   };
