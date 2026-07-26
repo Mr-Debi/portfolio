@@ -102,6 +102,9 @@ import ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
+import socket
+
+
 from app.config import (
     MAIL_USERNAME,
     MAIL_PASSWORD,
@@ -164,6 +167,8 @@ def send_thank_you_email(
         print("================================")
 
         context = ssl.create_default_context()
+
+        print(socket.getaddrinfo("smtp.gmail.com", 465))
 
         server = smtplib.SMTP(
             "smtp.gmail.com",
