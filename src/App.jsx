@@ -6074,7 +6074,7 @@ function ContactForm() {
     
     formData.append("subject", "New Message From Portfolio");
 
-    formData.append("from_name", "Debidutta Portfolio");
+    formData.append("from_name", "Portfolio Mail");
     try {
       const response = await fetch("https://api.web3forms.com/submit", { method: "POST", body: formData });
       const data = await response.json();

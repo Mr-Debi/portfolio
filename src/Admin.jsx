@@ -437,7 +437,7 @@ export default function Admin() {
                         </button>
                       </>
                     ) : (
-                      "-"
+                      ""
                     )}
 
                     <button
