@@ -195,9 +195,13 @@ def approve_donation(
             transaction_id=donor["transaction_id"]
         )
 
+        print("✅ Thank-you email sent")
+
     except Exception as e:
 
-        print("Email Error:", e)
+        print("❌ Email sending failed")
+        print(type(e).__name__)
+        print(str(e))
 
     return {
         "success": True,

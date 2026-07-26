@@ -4,8 +4,8 @@ from app.auth import hash_password
 
 db = SessionLocal()
 
-username = "admin"
-password = "debi@123ABC"
+username = "debi"       # type username/ admin_name hear
+password = "debi"
             # ------------    type your password hear (step 1)
 
 
