@@ -26,7 +26,7 @@ export default function DonationPanel() {
   const [preview, setPreview] = useState("");
 
   // const API = "http://localhost:8000";
-  const API = "https://portfolio-s8zx.onrender.com/";
+  const API = "https://portfolio-s8zx.onrender.com";
 
   const UPI_ID = "7978213833@upi";
 
@@ -96,59 +96,62 @@ export default function DonationPanel() {
 
   const submitDonation = async () => {
     if (!transactionId.trim()) {
-      alert("Enter Transaction ID");
-
+      alert("Please enter the UPI Transaction ID.");
       return;
     }
 
     if (!screenshot) {
-      alert("Upload Screenshot");
-
+      alert("Please upload the payment screenshot.");
       return;
     }
 
     const formData = new FormData();
 
-    formData.append("name", name);
-
-    formData.append("email", email);
-
+    formData.append("name", name.trim());
+    formData.append("email", email.trim());
     formData.append("amount", finalAmount);
-
-    formData.append("transaction_id", transactionId);
-
+    formData.append("transaction_id", transactionId.trim());
     formData.append("screenshot", screenshot);
 
     try {
       setLoading(true);
 
-      const response = await fetch(
-        `${API}/api/donations`,
+      const response = await fetch(`${API}/api/donations`, {
+        method: "POST",
+        body: formData,
+      });
 
-        {
-          method: "POST",
+      // Read response body once
+      const result = await response.json().catch(() => null);
 
-          body: formData,
-        },
-      );
+      if (!response.ok) {
+        console.error("Server Error:", result);
 
-      const data = await response.json();
+        alert(
+          result?.detail ||
+            result?.message ||
+            `Server Error (${response.status})`,
+        );
 
-      if (data.success) {
+        return;
+      }
+
+      if (result.success) {
         setSuccess(true);
 
         setTimeout(() => {
           setOpen(false);
-
           resetForm();
         }, 2500);
       } else {
-        alert(data.message);
+        alert(result.message || "Unable to submit donation.");
       }
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error("Donation Error:", error);
 
-      alert("Unable to submit donation.");
+      alert(
+        "Unable to connect to the server. Please try again in a few moments.",
+      );
     } finally {
       setLoading(false);
     }
