@@ -96,19 +96,11 @@
 
 # --------------
 
-import smtplib
-import ssl
-
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-
-import socket
-
+import requests
 
 from app.config import (
-    MAIL_USERNAME,
-    MAIL_PASSWORD,
-    MAIL_FROM
+    BREVO_API_KEY,
+    MAIL_FROM,
 )
 
 
@@ -116,8 +108,16 @@ def send_thank_you_email(
     donor_name,
     donor_email,
     amount,
-    transaction_id
+    transaction_id,
 ):
+
+    url = "https://api.brevo.com/v3/smtp/email"
+
+    headers = {
+        "accept": "application/json",
+        "api-key": BREVO_API_KEY,
+        "content-type": "application/json",
+    }
 
     subject = "Thank You for Your Donation ❤️"
 
@@ -150,58 +150,34 @@ def send_thank_you_email(
     </html>
     """
 
-    message = MIMEMultipart("alternative")
+    payload = {
+        "sender": {
+            "name": "Debidutta Behera",
+            "email": MAIL_FROM
+        },
+        "to": [
+            {
+                "email": donor_email,
+                "name": donor_name
+            }
+        ],
+        "subject": "Thank You for Your Donation ❤️",
+        "htmlContent": html
+    }
 
-    message["Subject"] = subject
-    message["From"] = MAIL_FROM
-    message["To"] = donor_email
+    response = requests.post(
+        url,
+        headers=headers,
+        json=payload,
+        timeout=30
+    )
 
-    message.attach(MIMEText(body, "html"))
+    print("========== BREVO ==========")
+    print("Status:", response.status_code)
+    print("Response:", response.text)
+    print("===========================")
 
-    try:
+    if response.status_code not in [200, 201]:
+        raise Exception(response.text)
 
-        print("========== MAIL DEBUG ==========")
-        print("MAIL_USERNAME :", MAIL_USERNAME)
-        print("MAIL_FROM     :", MAIL_FROM)
-        print("TO            :", donor_email)
-        print("================================")
-
-        context = ssl.create_default_context()
-
-        print(socket.getaddrinfo("smtp.gmail.com", 465))
-
-        server = smtplib.SMTP(
-            "smtp.gmail.com",
-            465,
-            # 587,
-            timeout=30
-        )
-
-        server.ehlo()
-
-        server.starttls(context=context)
-
-        server.ehlo()
-
-        server.login(
-            MAIL_USERNAME,
-            MAIL_PASSWORD
-        )
-
-        server.sendmail(
-            MAIL_FROM,
-            donor_email,
-            message.as_string()
-        )
-
-        server.quit()
-
-        print("✅ Email Sent Successfully")
-
-    except Exception as e:
-
-        print("❌ EMAIL ERROR")
-        print(type(e).__name__)
-        print(str(e))
-
-        raise e
+    print("✅ Email Sent Successfully")
