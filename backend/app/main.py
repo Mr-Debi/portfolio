@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 # from fastapi.staticfiles import StaticFiles
 
 from app.database import Base, engine
@@ -18,8 +19,8 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        # "http://localhost:5173",
-        "https://portfolio-s8zx.onrender.com/"
+        "http://localhost:5173",
+        "https://portfolio-debidutta.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
