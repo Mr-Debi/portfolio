@@ -1,154 +1,87 @@
-# import smtplib
-# from email.mime.text import MIMEText
-
-# from app.config import (
-#     MAIL_USERNAME,
-#     MAIL_PASSWORD,
-#     MAIL_FROM
-# )
-
-
-# def send_thank_you_email(
-#     donor_name,
-#     donor_email,
-#     amount,
-#     transaction_id
-# ):
-#     subject = "Thank You for Your Donation ❤️"
-
-#     # Email-safe structure using nested tables and inline CSS
-#     body = f"""
-#     <!DOCTYPE html>
-#     <html>
-#     <head>
-#         <meta charset="utf-8">
-#     </head>
-#     <body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
-#         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #0f172a; padding: 40px 0;">
-#             <tr>
-#                 <td align="center">
-#                     <!-- Main Container Table -->
-#                     <table border="0" cellpadding="0" cellspacing="0" width="600" style="background: #1e293b; border-radius: 20px; color: #ffffff; padding: 40px;">
-#                         <tr>
-#                             <td>
-#                                 <h1 style="color: #ffffff; font-size: 24px; margin-top: 0;">Thank You, {donor_name} ❤️</h1>
-                                
-#                                 <p style="font-size: 16px; line-height: 1.5; color: #cbd5e1;">Thank you for supporting my work.</p>
-
-#                                 <!-- Details Box -->
-#                                 <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background: rgba(255, 255, 255, 0.05); border-radius: 15px; margin: 20px 0;">
-#                                     <tr>
-#                                         <td style="padding: 20px;">
-#                                             <h2 style="font-size: 18px; color: #ffffff; margin-top: 0; margin-bottom: 15px;">Donation Details</h2>
-#                                             <p style="margin: 5px 0; color: #cbd5e1;">
-#                                                 Donation Amount : <b style="color: #ffffff;">₹{amount}</b>
-#                                             </p>
-#                                             <p style="margin: 5px 0; color: #cbd5e1;">
-#                                                 Transaction ID : {transaction_id}
-#                                             </p>
-#                                         </td>
-#                                     </tr>
-#                                 </table>
-
-#                                 <p style="font-size: 16px; line-height: 1.5; color: #cbd5e1;">
-#                                     Your contribution helps me build more amazing projects.
-#                                 </p>
-
-#                                 <p style="font-size: 16px; line-height: 1.5; color: #cbd5e1;">
-#                                     Thank you for being part of this journey.
-#                                 </p>
-
-#                                 <br />
-
-#                                 <p style="font-size: 16px; line-height: 1.5; color: #cbd5e1; margin-bottom: 30px;">
-#                                     Regards,<br />
-#                                     <b style="color: #ffffff;">Debidutta Behera</b>
-#                                 </p>
-
-#                                 <hr style="border: none; border-top: 1px solid #334155; margin: 20px 0;" />
-
-#                                 <p style="font-size: 12px; color: #94a3b8; margin-bottom: 0;">This is an automated email.</p>
-#                             </td>
-#                         </tr>
-#                     </table>
-#                 </td>
-#             </tr>
-#         </table>
-#     </body>
-#     </html>
-#     """
-
-#     msg = MIMEText(body, "html")
-#     msg["Subject"] = subject
-#     msg["From"] = MAIL_FROM
-#     msg["To"] = donor_email
-
-#     with smtplib.SMTP("smtp.gmail.com", 587) as server:
-#         server.starttls()
-#         server.login(MAIL_USERNAME, MAIL_PASSWORD)
-#         server.send_message(msg)
-
-
-
-
-
-
-
-# --------------
-
 import requests
 
 from app.config import (
-    BREVO_API_KEY,
     MAIL_FROM,
 )
+
+# Add this to config.py
+# BREVO_API_KEY = os.getenv("BREVO_API_KEY")
+from app.config import BREVO_API_KEY
 
 
 def send_thank_you_email(
     donor_name,
     donor_email,
     amount,
-    transaction_id,
+    transaction_id
 ):
-
-    url = "https://api.brevo.com/v3/smtp/email"
-
-    headers = {
-        "accept": "application/json",
-        "api-key": BREVO_API_KEY,
-        "content-type": "application/json",
-    }
 
     subject = "Thank You for Your Donation ❤️"
 
     body = f"""
     <html>
-    <body style="font-family:Arial,sans-serif;background:#f4f4f4;padding:30px;">
-        <div style="max-width:600px;margin:auto;background:#ffffff;padding:30px;border-radius:12px;">
-            <h2>Thank You, {donor_name} ❤️</h2>
+    <body style="margin:0;padding:30px;background:#f4f4f4;font-family:Arial,sans-serif;">
 
-            <p>Thank you for supporting my work.</p>
+        <div style="
+            max-width:600px;
+            margin:auto;
+            background:#ffffff;
+            border-radius:12px;
+            padding:30px;
+            box-shadow:0 5px 15px rgba(0,0,0,.1);
+        ">
+
+            <h2 style="color:#2563eb;">
+                Thank You, {donor_name} ❤️
+            </h2>
+
+            <p>
+                Thank you for supporting my work.
+            </p>
 
             <hr>
 
-            <p><b>Donation Amount:</b> ₹{amount}</p>
+            <table width="100%" cellpadding="8">
+                <tr>
+                    <td><b>Donation Amount</b></td>
+                    <td>₹{amount}</td>
+                </tr>
 
-            <p><b>Transaction ID:</b> {transaction_id}</p>
+                <tr>
+                    <td><b>Transaction ID</b></td>
+                    <td>{transaction_id}</td>
+                </tr>
+            </table>
 
             <hr>
 
             <p>
-                Your support motivates me to build more projects.
+                Your contribution helps me continue building open-source projects,
+                learning new technologies and creating useful applications.
+            </p>
+
+            <p>
+                Thank you for your support ❤️
             </p>
 
             <br>
 
-            <b>Regards</b><br>
-            Debidutta Behera
+            <>
+                Regards<br>
+                Debidutta Behera
+            </b>
+
         </div>
+
     </body>
     </html>
     """
+
+    headers = {
+        "accept": "application/json",
+        "api-key": BREVO_API_KEY,
+        "content-type": "application/json"
+    }
 
     payload = {
         "sender": {
@@ -161,23 +94,26 @@ def send_thank_you_email(
                 "name": donor_name
             }
         ],
-        "subject": "Thank You for Your Donation ❤️",
-        "htmlContent": html
+        "subject": subject,
+        "htmlContent": body
     }
 
+    print("========== BREVO MAIL ==========")
+    print("TO :", donor_email)
+    print("FROM :", MAIL_FROM)
+    print("================================")
+
     response = requests.post(
-        url,
+        "https://api.brevo.com/v3/smtp/email",
         headers=headers,
         json=payload,
         timeout=30
     )
 
-    print("========== BREVO ==========")
-    print("Status:", response.status_code)
-    print("Response:", response.text)
-    print("===========================")
+    print("Status :", response.status_code)
+    print("Response :", response.text)
 
-    if response.status_code not in [200, 201]:
+    if response.status_code not in (200, 201, 202):
         raise Exception(response.text)
 
     print("✅ Email Sent Successfully")
