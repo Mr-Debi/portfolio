@@ -10,6 +10,8 @@ from app.auth import (
 )
 from app.mail import send_thank_you_email
 
+import traceback
+
 router = APIRouter()
 
 
@@ -201,6 +203,7 @@ def approve_donation(
         print("========== EMAIL ERROR ==========")
         print(type(e).__name__)
         print(str(e))
+        traceback.print_exc()
         print("=================================")
 
         return {
