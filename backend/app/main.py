@@ -59,7 +59,7 @@ def home():
 
 
 
-@app.get("/internet-test")
+@app.get("/test")
 def internet_test():
     try:
         r = requests.get("https://www.google.com", timeout=10)
