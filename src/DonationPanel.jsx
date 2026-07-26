@@ -25,7 +25,8 @@ export default function DonationPanel() {
 
   const [preview, setPreview] = useState("");
 
-  const API = "http://localhost:8000";
+  // const API = "http://localhost:8000";
+  const API = "https://portfolio-s8zx.onrender.com/";
 
   const UPI_ID = "7978213833@upi";
 

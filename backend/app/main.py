@@ -18,7 +18,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5173",
+        # "http://localhost:5173",
         "https://portfolio-s8zx.onrender.com/"
     ],
     allow_credentials=True,
