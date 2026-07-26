@@ -167,8 +167,8 @@ def send_thank_you_email(
 
         server = smtplib.SMTP(
             "smtp.gmail.com",
-            465,
-            
+            # 465,
+            587,
             timeout=30
         )
 

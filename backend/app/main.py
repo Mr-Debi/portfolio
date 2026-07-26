@@ -9,6 +9,8 @@ from app.models import Donation, Admin
 from app.routers.donation import router as donation_router
 from app.routers.admin import router as admin_router
 
+import requests
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
@@ -53,3 +55,26 @@ def home():
         "status": "success",
         "message": "Donation Backend Running"
     }
+
+
+
+
+@app.get("/internet-test")
+def internet_test():
+    try:
+        r = requests.get(
+            "https://www.google.com",
+            timeout=10
+        )
+
+        return {
+            "success": True,
+            "status": r.status_code
+        }
+
+    except Exception as e:
+
+        return {
+            "success": False,
+            "error": str(e)
+        }
