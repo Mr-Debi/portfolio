@@ -1176,7 +1176,7 @@ body{
     // },
     {
       title: "Donation Panel",
-      html: `<button class="neon-btn" onclick="href='https://donation.free.je/donation_panel/'">Donate Me</button>`,
+      html: `<button class="neon-btn" onclick="window.location.href='https://donation.free.je/donation_panel/'">Donate Me</button>`,
       css: `.neon-btn {\n  padding: 15px 30px;\n  font-size: 1.2rem;\n  color: #0ff;\n  background: transparent;\n  border: 2px solid #0ff;\n  border-radius: 8px;\n  cursor: pointer;\n  transition: 0.3s;\n  text-transform: uppercase;\n  font-weight: bold;\n}\n.neon-btn:hover {\n  background: #0ff;\n  color: #000;\n  box-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 40px #0ff;\n}`,
       js: `// No JS needed for this CSS magic!`,
     },
