@@ -1166,7 +1166,7 @@ body{
 }
 
       /* barcode end*/`,
-      js: `// No JS needed for this CSS magic!`,
+      js: `// No JS needed for this CSS magic!`
     },
     // {
     //   title: "",
@@ -1174,12 +1174,6 @@ body{
     //   css: ``,
     //   js: `// No JS needed for this CSS magic!`
     // },
-    {
-      title: "Donation Panel",
-      html: `<a href="https://donation.free.je/donation_panel/"><button class="neon-btn"> Donate Me</button> </a>`,
-      css: `.neon-btn {\n  padding: 15px 30px;\n  font-size: 1.2rem;\n  color: #0ff;\n  background: transparent;\n  border: 2px solid #0ff;\n  border-radius: 8px;\n  cursor: pointer;\n  transition: 0.3s;\n  text-transform: uppercase;\n  font-weight: bold;\n}\n.neon-btn:hover {\n  background: #0ff;\n  color: #000;\n  box-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 40px #0ff;\n}`,
-      js: `// No JS needed for this CSS magic!`,
-    },
     {
       title: "Thor's Hammer Mjolnir",
       html: `<main class="hammer">
@@ -1338,7 +1332,7 @@ body{
               border-right-style: groove;
               animation: rotateCube 10s infinite linear;
 		      }`,
-      js: `// No JS needed for this CSS magic!`,
+      js: `// No JS needed for this CSS magic!`
     },
     {
       title: "Responsive TubeLight Text",
@@ -1391,7 +1385,7 @@ h2{
     }
 
 }`,
-      js: `// No JS needed for this CSS magic!`,
+      js: `// No JS needed for this CSS magic!`
     },
     {
       title: "Cashel House",
@@ -4493,7 +4487,7 @@ h2{
             .Tw6{
                 transform: rotateY(90deg) translateZ(4px) translateX(10px) translateY(-446px);
             }`,
-      js: `// No JS needed for this CSS magic!`,
+      js: `// No JS needed for this CSS magic!`
     },
     {
       title: "Rocket",
@@ -4727,7 +4721,7 @@ h2{
               animation: up 2s linear infinite;
               filter: drop-shadow(6px 47px 6px red);
             }`,
-      js: `// No JS needed for this CSS magic!`,
+      js: `// No JS needed for this CSS magic!`
     },
     {
       title: "Liquid Drop",
@@ -4948,7 +4942,7 @@ h2{
               background: rgba(255, 255, 255, 0.5);
               border-radius: 5px;
           }`,
-      js: `// No JS needed for this CSS magic!`,
+      js: `// No JS needed for this CSS magic!`
     },
     {
       title: "Hot Coffee",
@@ -5142,7 +5136,7 @@ body{
         transform: translateY(-300px) scaleX(10);
     }
 }`,
-      js: `// No JS needed for this CSS magic!`,
+      js: `// No JS needed for this CSS magic!`
     },
     {
       title: "Firefly Background",
@@ -5252,7 +5246,7 @@ body{
         transform: translateY(-100vh) scale(1);
     }
 }`,
-      js: `// No JS needed for this CSS magic!`,
+      js: `// No JS needed for this CSS magic!`
     },
     {
       title: "Day & Night Analog Clock",
@@ -5519,7 +5513,7 @@ body.light .toggleClass::before
       title: "Interactive Digital Clock",
       html: `<div id="clock" class="clock">00:00:00</div>`,
       css: `.clock {\n  font-size: 3rem;\n  font-family: monospace;\n  font-weight: bold;\n  color: #333;\n  padding: 20px;\n  border-radius: 10px;\n  background: #f0f0f0;\n  box-shadow: inset 5px 5px 10px #d9d9d9, inset -5px -5px 10px #ffffff;\n}`,
-      js: `function updateClock() {\n  const now = new Date();\n  const time = now.toLocaleTimeString('en-US', { hour12: true });\n  document.getElementById('clock').textContent = time;\n}\nsetInterval(updateClock, 1000);\nupdateClock();`,
+      js: `function updateClock() {\n  const now = new Date();\n  const time = now.toLocaleTimeString('en-US', { hour12: true });\n  document.getElementById('clock').textContent = time;\n}\nsetInterval(updateClock, 1000);\nupdateClock();`
     },
     {
       title: "Minion",
@@ -5601,7 +5595,7 @@ box-shadow: 0 5px 45px rgba(0,0,0,0.2),
                 let rotation = (radian * (180 / Math.PI) * -1) + 270;
                 eye.style.transform = "rotate("+rotation+"deg)"
             })
-        }`,
+        }`
     },
     {
       title: "Rainbow Ring",
@@ -5685,62 +5679,68 @@ box-shadow: 0 5px 45px rgba(0,0,0,0.2),
     background: #240229;
     border-radius: 50%;
 }`,
-      js: `// No JS needed for this CSS magic!`,
+      js: `// No JS needed for this CSS magic!`
+    },
+    {
+      title: "Neon Glowing Button",
+      html: `<button class="neon-btn">Hover Me</button>`,
+      css: `.neon-btn {\n  padding: 15px 30px;\n  font-size: 1.2rem;\n  color: #0ff;\n  background: transparent;\n  border: 2px solid #0ff;\n  border-radius: 8px;\n  cursor: pointer;\n  transition: 0.3s;\n  text-transform: uppercase;\n  font-weight: bold;\n}\n.neon-btn:hover {\n  background: #0ff;\n  color: #000;\n  box-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 40px #0ff;\n}`,
+      js: `// No JS needed for this CSS magic!`
     },
     {
       title: "Animated Loader",
       html: `<div class="loader"></div>`,
       css: `.loader {\n  width: 50px;\n  height: 50px;\n  border: 5px solid #f3f3f3;\n  border-top: 5px solid #3498db;\n  border-radius: 50%;\n  animation: spin 1s linear infinite;\n}\n@keyframes spin {\n  0% { transform: rotate(0deg); }\n  100% { transform: rotate(360deg); }\n}`,
-      js: `// Pure CSS Loader`,
+      js: `// Pure CSS Loader`
     },
     {
       title: "3D Hover Card",
       html: `<div class="card">Hover Me</div>`,
       css: `.card {\n  width: 150px;\n  height: 200px;\n  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: 15px;\n  font-weight: bold;\n  color: white;\n  transition: transform 0.5s;\n  box-shadow: 0 10px 20px rgba(0,0,0,0.1);\n}\n.card:hover {\n  transform: translateY(-10px) rotateX(10deg) rotateY(10deg);\n  box-shadow: 0 20px 30px rgba(0,0,0,0.2);\n}`,
-      js: `// Pure CSS 3D Effect`,
+      js: `// Pure CSS 3D Effect`
     },
     {
       title: "Random Color Generator",
       html: `<div id="box" class="color-box">#3498db</div>\n<button onclick="changeColor()">Generate</button>`,
       css: `.color-box {\n  width: 150px;\n  height: 100px;\n  background: #3498db;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  color: white;\n  font-family: monospace;\n  font-size: 1.5rem;\n  border-radius: 8px;\n  margin-bottom: 15px;\n  transition: 0.3s;\n}\nbutton {\n  padding: 10px 20px;\n  border: none;\n  background: #333;\n  color: white;\n  border-radius: 5px;\n  cursor: pointer;\n}`,
-      js: `function changeColor() {\n  const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);\n  const box = document.getElementById('box');\n  box.style.background = randomColor;\n  box.textContent = randomColor;\n}`,
+      js: `function changeColor() {\n  const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);\n  const box = document.getElementById('box');\n  box.style.background = randomColor;\n  box.textContent = randomColor;\n}`
     },
     {
       title: "Glassmorphism Design",
       html: `<div class="glass">Glass Effect</div>`,
       css: `body {\n  background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);\n}\n.glass {\n  background: rgba(255, 255, 255, 0.2);\n  border-radius: 16px;\n  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);\n  backdrop-filter: blur(5px);\n  -webkit-backdrop-filter: blur(5px);\n  border: 1px solid rgba(255, 255, 255, 0.3);\n  padding: 40px;\n  color: white;\n  font-size: 1.5rem;\n  font-weight: bold;\n}`,
-      js: `// Pure CSS Glass Effect`,
+      js: `// Pure CSS Glass Effect`
     },
     {
       title: "CSS Toggle Switch",
       html: `<label class="switch">\n  <input type="checkbox">\n  <span class="slider"></span>\n</label>`,
       css: `.switch {\n  position: relative;\n  display: inline-block;\n  width: 60px;\n  height: 34px;\n}\n.switch input { opacity: 0; width: 0; height: 0; }\n.slider {\n  position: absolute;\n  cursor: pointer;\n  top: 0; left: 0; right: 0; bottom: 0;\n  background-color: #ccc;\n  transition: .4s;\n  border-radius: 34px;\n}\n.slider:before {\n  position: absolute;\n  content: "";\n  height: 26px;\n  width: 26px;\n  left: 4px;\n  bottom: 4px;\n  background-color: white;\n  transition: .4s;\n  border-radius: 50%;\n}\ninput:checked + .slider {\n  background-color: #2196F3;\n}\ninput:checked + .slider:before {\n  transform: translateX(26px);\n}`,
-      js: `// Checkbox state handled via CSS pseudo-selectors`,
+      js: `// Checkbox state handled via CSS pseudo-selectors`
     },
     {
       title: "Auto Typing Text",
       html: `<h1 id="text" class="typing"></h1>`,
       css: `.typing {\n  font-family: monospace;\n  font-size: 2rem;\n  white-space: nowrap;\n  overflow: hidden;\n  border-right: 3px solid #333;\n  animation: blink 0.7s step-end infinite;\n}\n@keyframes blink {\n  50% { border-color: transparent; }\n}`,
-      js: `const text = "Hello, World!";\nlet i = 0;\n\nfunction typeWriter() {\n  if (i < text.length) {\n    document.getElementById("text").innerHTML += text.charAt(i);\n    i++;\n    setTimeout(typeWriter, 150);\n  }\n}\ntypeWriter();`,
+      js: `const text = "Hello, World!";\nlet i = 0;\n\nfunction typeWriter() {\n  if (i < text.length) {\n    document.getElementById("text").innerHTML += text.charAt(i);\n    i++;\n    setTimeout(typeWriter, 150);\n  }\n}\ntypeWriter();`
     },
     {
       title: "Minimal CSS Tooltip",
       html: `<div class="tooltip">Hover Me\n  <span class="tooltiptext">Tooltip Info!</span>\n</div>`,
       css: `.tooltip {\n  position: relative;\n  display: inline-block;\n  cursor: pointer;\n  font-size: 1.2rem;\n  font-weight: bold;\n}\n.tooltip .tooltiptext {\n  visibility: hidden;\n  width: 120px;\n  background-color: #333;\n  color: #fff;\n  text-align: center;\n  border-radius: 6px;\n  padding: 5px 0;\n  position: absolute;\n  z-index: 1;\n  bottom: 150%;\n  left: 50%;\n  margin-left: -60px;\n  opacity: 0;\n  transition: opacity 0.3s;\n}\n.tooltip:hover .tooltiptext {\n  visibility: visible;\n  opacity: 1;\n}`,
-      js: `// Tooltip purely driven by CSS :hover`,
+      js: `// Tooltip purely driven by CSS :hover`
     },
     {
       title: "Range Slider with Value",
       html: `<div class="slider-container">\n  <input type="range" id="myRange" min="1" max="100" value="50">\n  <p>Value: <span id="val">50</span></p>\n</div>`,
       css: `.slider-container {\n  width: 80%;\n  text-align: center;\n  font-family: sans-serif;\n  font-weight: bold;\n  color: #333;\n}\ninput[type=range] {\n  width: 100%;\n}`,
-      js: `const slider = document.getElementById("myRange");\nconst output = document.getElementById("val");\n\nslider.oninput = function() {\n  output.innerHTML = this.value;\n}`,
+      js: `const slider = document.getElementById("myRange");\nconst output = document.getElementById("val");\n\nslider.oninput = function() {\n  output.innerHTML = this.value;\n}`
     },
     {
       title: "Expanding Search Bar",
       html: `<div class="search-box">\n  <input type="text" placeholder="Search...">\n</div>`,
       css: `.search-box {\n  display: flex;\n  justify-content: center;\n}\ninput {\n  width: 40px;\n  height: 40px;\n  border-radius: 20px;\n  border: 2px solid #333;\n  padding: 0 15px;\n  font-size: 16px;\n  transition: width 0.4s ease-in-out;\n  outline: none;\n}\ninput:focus {\n  width: 250px;\n}`,
-      js: `// Click the search bar to see it expand!`,
-    },
+      js: `// Click the search bar to see it expand!`
+    }
   ];
 
   const isExpanded = visibleCount >= miniProjects.length;
@@ -5923,49 +5923,73 @@ function ProjectsSection() {
   const projects = [
     {
       title: "Bus Charging Scheduler",
-      description: "A scalable, data-driven discrete event simulation engine for EV fleet management, solving critical charging infrastructure bottlenecks.",
-      architecture: "Python core logic with Pandas/JSON data handling, coupled with an interactive Streamlit visualization dashboard.",
-      feature: "Tunable scoring algorithm proactively resolving station collisions and minimizing wait times across the fleet.",
+      description:
+        "A scalable, data-driven discrete event simulation engine for EV fleet management, solving critical charging infrastructure bottlenecks.",
+      architecture:
+        "Python core logic with Pandas/JSON data handling, coupled with an interactive Streamlit visualization dashboard.",
+      feature:
+        "Tunable scoring algorithm proactively resolving station collisions and minimizing wait times across the fleet.",
       tags: ["Python", "Streamlit", "Pandas", "Simulation Engine"],
       demo: "https://bus-charging-scheduler-by-debi.streamlit.app/",
-      repo: "https://github.com/Mr-Debi/Bus-Charging-Scheduler"
+      repo: "https://github.com/Mr-Debi/Bus-Charging-Scheduler",
+    },
+    {
+      title: "Donation Management System",
+      description:
+        "A secure, full-stack donation management platform streamlining online donations through automated verification, administrative approval workflows, and real-time transaction tracking.",
+      architecture:
+        "React.js frontend with a FastAPI backend, SQLAlchemy ORM, MySQL database, and RESTful APIs, deployed with Vercel and environment-based configuration.",
+      feature:
+        "Admin-controlled approval workflow, secure payment proof uploads, automated donor email notifications, transaction history management, RESTful API integration, and responsive user interface with optimized CRUD operations.",
+      tags: ["Python","FastAPI","React","PostgreSQL","Supabase","Cloudinary","Brevo Email API","JWT Authentication","SQLAlchemy ORM","RESTful APIs","Vercel","Render"],
+      demo: "https://donation.free.je/donation_panel/",
+      repo: "https://github.com/Mr-Debi/Donation_Management_System",
     },
     {
       title: "Cinema Seat Reservation System",
-      description: "A comprehensive booking platform handling concurrent reservations and dynamic seat visualization.",
-      architecture: "Django REST Framework backend processing seat-tier logic, paired with a React.js and TypeScript frontend.",
-      feature: "Real-time booking transactions and data persistence in a normalized PostgreSQL database, optimizing query performance.",
+      description:
+        "A comprehensive booking platform handling concurrent reservations and dynamic seat visualization.",
+      architecture:
+        "Django REST Framework backend processing seat-tier logic, paired with a React.js and TypeScript frontend.",
+      feature:
+        "Real-time booking transactions and data persistence in a normalized PostgreSQL database, optimizing query performance.",
       tags: ["Python", "Django", "React.js", "TypeScript", "PostgreSQL"],
       demo: "#",
-      repo: "#"
+      repo: "#",
     },
     {
       title: "Digital Attendance Tracker",
-      description: "A full-stack web portal streamlining HR operations and reducing manual attendance errors.",
+      description:
+        "A full-stack web portal streamlining HR operations and reducing manual attendance errors.",
       architecture: "Django backend and React.js frontend with TypeScript.",
-      feature: "Role-based access control for administrators and employees with secure authentication.",
+      feature:
+        "Role-based access control for administrators and employees with secure authentication.",
       tags: ["Python", "Django", "React.js", "MySQL", "PostgreSQL"],
       demo: "#",
-      repo: "#"
+      repo: "#",
     },
     {
       title: "AI-Powered Personal Assistant (JARVIS)",
-      description: "A voice-activated assistant utilizing Natural Language Processing (NLP) to parse and execute system commands.",
+      description:
+        "A voice-activated assistant utilizing Natural Language Processing (NLP) to parse and execute system commands.",
       architecture: "Built using Python NLP and SpeechRecognition libraries.",
-      feature: "Implemented robust error-handling that improved command recognition accuracy by 20%.",
+      feature:
+        "Implemented robust error-handling that improved command recognition accuracy by 20%.",
       tags: ["Python", "NLP", "SpeechRecognition"],
       demo: "#",
-      repo: "#"
+      repo: "#",
     },
     {
       title: "Automated Software Testing Framework",
-      description: "A cross-browser automated UI testing framework validating workflows across Chrome, Firefox, and Edge.",
+      description:
+        "A cross-browser automated UI testing framework validating workflows across Chrome, Firefox, and Edge.",
       architecture: "Engineered using Python, Selenium, and PyTest.",
-      feature: "Generated structured HTML test reports with automated screenshot capture on failure, enabling faster CI/CD feedback loops.",
+      feature:
+        "Generated structured HTML test reports with automated screenshot capture on failure, enabling faster CI/CD feedback loops.",
       tags: ["Python", "Selenium", "PyTest", "CI/CD"],
       demo: "#",
-      repo: "#"
-    }
+      repo: "#",
+    },
   ];
 
   return (
