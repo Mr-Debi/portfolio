@@ -93,6 +93,10 @@ export default function AdminLogin() {
         <button className="login-btn" disabled={loading}>
           {loading ? "Logging in..." : "Login"}
         </button>
+        <br></br>
+        <a href="/">
+          <div className="login-btn">🏠 Go To Home Page</div>
+        </a>
 
         <div className="footer">Powered by FastAPI & React</div>
       </form>
