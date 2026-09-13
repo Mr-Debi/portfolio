@@ -1,13 +1,26 @@
-import React, { useState, useEffect, createContext, useContext } from 'react';
-import profileImg from './assets/profile.png'
-import profileResume from './assets/resume.pdf'
-import Octopus from './Octopus';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  createContext,
+  useContext,
+} from "react";
+import { createPortal } from "react-dom";
+// import profileImg from "./assets/profile.png";
+import profileImg from "./assets/profile2.png";
 
+import profileResume from "./assets/resume.pdf";
+import Octopus from "./Octopus";
 
-import DonatePanel from "./DonationPanel";
-import DonationPanel from './DonationPanel';
+import DonationPanel from "./DonationPanel";
 
+import Earth from "./Earth";
 
+import WhatsAppFloating from "./WhatsAppFloating";
+import SocialLinks from "./SocialLinks";
+import TechStack from "./TechStack";
+
+import "./App.css";
 
 // --- 1. GLOBAL STATE (CONTEXT) ---
 const AppContext = createContext();
@@ -91,47 +104,41 @@ const translations = {
 };
 
 export default function Portfolio() {
-    const [isDark, setIsDark] = useState(true);
-    const [lang, setLang] = useState('en');
-    // for scroll up 
-    useEffect(() => {
-        // 1. Tell the browser NOT to remember the last scroll position
-        if ('scrollRestoration' in window.history) {
-            window.history.scrollRestoration = 'manual';
-        }
-        // 2. Force the window to the absolute top of the page
-        window.scrollTo(0, 0);
-    }, []);
-    // --------------------------
+  const [isDark, setIsDark] = useState(true);
+  const [lang, setLang] = useState("en");
 
-    const t = (key) => translations[lang][key];
+  // Keep the browser from restoring a previous scroll position.
+  useEffect(() => {
+    if ("scrollRestoration" in window.history) {
+      const previous = window.history.scrollRestoration;
+      window.history.scrollRestoration = "manual";
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      return () => {
+        window.history.scrollRestoration = previous;
+      };
+    }
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, []);
 
-    return (
-        <AppContext.Provider value={{ isDark, setIsDark, lang, setLang, t }}>
-            <style>{`
-        /* 1. HIDE THE NATIVE SCROLLBAR COMPLETELY */
-        ::-webkit-scrollbar {
-          width: 0px;
-          background: transparent;
-        }
-        html {
-          scrollbar-width: none;
-          -ms-overflow-style: none;
-        }
+  const t = (key) => translations[lang]?.[key] ?? translations.en[key] ?? key;
 
-        /* 2. CUSTOM ICON ANIMATIONS */
+  return (
+    <AppContext.Provider value={{ isDark, setIsDark, lang, setLang, t }}>
+      <style>{`
+        /* Hide the native scrollbar; the custom Pikachu scrollbar is rendered on desktop. */
+        ::-webkit-scrollbar { width: 0; height: 0; background: transparent; }
+        html { scrollbar-width: none; -ms-overflow-style: none; }
+
         @keyframes laptop-open {
-          0%, 15% { transform: perspective(400px) rotateX(-85deg); opacity: 0.5; }
+          0%, 15% { transform: perspective(400px) rotateX(-85deg); opacity: .5; }
           40%, 80% { transform: perspective(400px) rotateX(0deg); opacity: 1; }
-          100% { transform: perspective(400px) rotateX(-85deg); opacity: 0.5; }
+          100% { transform: perspective(400px) rotateX(-85deg); opacity: .5; }
         }
-        @keyframes spin-gear {
-          100% { transform: rotate(360deg); }
-        }
+        @keyframes spin-gear { to { transform: rotate(360deg); } }
         @keyframes spark-pop {
-          0%, 10% { opacity: 0; transform: scale(0.5); }
+          0%, 10% { opacity: 0; transform: scale(.5); }
           50% { opacity: 1; transform: scale(1.3); }
-          90%, 100% { opacity: 0; transform: scale(0.5); }
+          90%, 100% { opacity: 0; transform: scale(.5); }
         }
         @keyframes hammer-hit {
           0%, 20% { transform: rotate(30deg); }
@@ -140,234 +147,483 @@ export default function Portfolio() {
           40% { transform: rotate(-5deg); }
           50%, 100% { transform: rotate(0deg); }
         }
+
+        /* Performance: isolate offscreen sections from layout/paint work where supported. */
+        .portfolio-section { contain: layout paint; }
+        @media (prefers-reduced-motion: reduce) {
+          *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+        }
       `}</style>
 
-            {/* THE NEW PIKACHU SCROLLBAR INJECTED HERE */}
-            <PikachuScrollbar />
-            <VisitorStats />
-            <DonationPanel />
-            <div className="App"><Octopus />
+      <PikachuScrollbar />
 
-                <div className={`min-h-screen font-sans transition-colors duration-1000 ease-in-out ${isDark ? 'bg-slate-900 text-slate-50 selection:bg-blue-500/30' : 'bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 text-stone-800 selection:bg-orange-300/40'}`}>
-                    <Navbar />
-                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <HeroSection />
-                        <Divider />
-                        <SkillsMatrix />
-                        <Divider />
-                        <ProjectsSection />
-                        <Divider />
-                        <LiveProjectsSection />
-                        <Divider />
-                        <LiveGamesSection />
-                        <Divider />
-                        <ExperienceTimeline />
-                        <Divider />
-                        <ContactForm />
-                    </main>
-                    <Footer />
-                </div>
-            </div>
-        </AppContext.Provider>
+      {/* Visitor stats stay mounted immediately because they are a small fixed UI.
+                Only the network work is deferred/guarded inside VisitorStats. */}
+      {/* <VisitorStats /> */}
+
+      <div className="App">
+        <Octopus isDark={isDark} />
+        <div
+          className={`min-h-screen font-sans transition-colors duration-1000 ease-in-out ${isDark ? "bg-slate-900 text-slate-50 selection:bg-blue-500/30" : "bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 text-stone-800 selection:bg-orange-300/40"}`}
+        >
+          <Navbar />
+
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <HeroSection />
+            <Divider />
+
+            <section className="portfolio-section">
+              <SkillsMatrix />
+              <TechStack isDark={isDark}/>
+            </section>
+            <Divider />
+
+            <section className="portfolio-section">
+              <ExperienceTimeline />
+            </section>
+            <Divider />
+
+            <section className="portfolio-section">
+              <ProjectsSection />
+            </section>
+            <Divider />
+
+            <section className="portfolio-section">
+              <LiveProjectsSection />
+            </section>
+            <Divider />
+
+            <section className="portfolio-section">
+              <LiveGamesSection />
+            </section>
+            <Divider />
+
+            <section className="portfolio-section">
+              <ContactForm />
+              <br></br>
+            </section>
+            <WhatsAppFloating />
+          </main>
+          <Footer />
+        </div>
+      </div>
+
+      {/* Donation button/panel must be mounted immediately because it is a floating
+                global action and should work from every scroll position. */}
+      <DonationPanel />
+    </AppContext.Provider>
+  );
+}
+
+// Mount expensive/interactive sections only when they are close to the viewport.
+// This preserves every feature while avoiding iframe/game/3D work during first paint.
+function DeferredRender({ children, rootMargin = "600px 0px", minHeight = 0 }) {
+  const [active, setActive] = useState(false);
+  const hostRef = useRef(null);
+
+  useEffect(() => {
+    const node = hostRef.current;
+    if (!node || active) return;
+
+    if (!("IntersectionObserver" in window)) {
+      setActive(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setActive(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin, threshold: 0.01 },
     );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [active, rootMargin]);
+
+  return (
+    <div
+      ref={hostRef}
+      style={{ minHeight: active ? undefined : minHeight }}
+      aria-busy={!active}
+    >
+      {active ? children : null}
+    </div>
+  );
 }
 
 // --- 2. PIKACHU SCROLLBAR COMPONENT ---
 function PikachuScrollbar() {
-    const [scrollProgress, setScrollProgress] = useState(0);
-    const [isScrollingDown, setIsScrollingDown] = useState(true);
-    const [lastScrollY, setLastScrollY] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [isScrollingDown, setIsScrollingDown] = useState(true);
+  const lastScrollYRef = useRef(0);
+  const frameRef = useRef(0);
 
-    useEffect(() => {
-        const handleScroll = () => {
-            const currentScrollY = window.scrollY;
-            const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+  useEffect(() => {
+    const update = () => {
+      frameRef.current = 0;
+      const currentScrollY = window.scrollY;
+      const maxScroll = Math.max(
+        1,
+        document.documentElement.scrollHeight - window.innerHeight,
+      );
+      const progress = Math.min(
+        100,
+        Math.max(0, (currentScrollY / maxScroll) * 100),
+      );
+      setScrollProgress(progress);
+      setIsScrollingDown(currentScrollY >= lastScrollYRef.current);
+      lastScrollYRef.current = currentScrollY;
+    };
 
-            const progress = (currentScrollY / scrollHeight) * 100;
+    const handleScroll = () => {
+      if (!frameRef.current) frameRef.current = requestAnimationFrame(update);
+    };
 
-            setScrollProgress(progress);
-            setIsScrollingDown(currentScrollY > lastScrollY);
-            setLastScrollY(currentScrollY);
-        };
+    lastScrollYRef.current = window.scrollY;
+    update();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll, { passive: true });
 
-        window.addEventListener("scroll", handleScroll, { passive: true });
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, [lastScrollY]);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+      if (frameRef.current) cancelAnimationFrame(frameRef.current);
+    };
+  }, []);
 
-    // Calculate if we are near the 25%, 50%, or 70% mark (giving a 6% visibility window so it stays on screen briefly)
-    const showHireMe =
-        (scrollProgress >= 22 && scrollProgress <= 28) ||
-        (scrollProgress >= 47 && scrollProgress <= 53) ||
-        (scrollProgress >= 67 && scrollProgress <= 73);
+  const showHireMe =
+    (scrollProgress >= 22 && scrollProgress <= 28) ||
+    (scrollProgress >= 47 && scrollProgress <= 53) ||
+    (scrollProgress >= 67 && scrollProgress <= 73);
 
-    return (
-        <div className="fixed right-0 top-0 w-16 h-full pointer-events-none z-[100] hidden sm:block">
-            {/* Faint scroll track */}
-            <div className="absolute right-4 top-0 w-0 h-full bg-slate-400/20 rounded-full"></div>
-
-            {/* Wrapper that slides up and down (NOT rotated, so text stays readable) */}
-            <div
-                className="absolute right-0 w-full transition-all duration-100 ease-out flex items-center justify-end pr-2"
-                style={{ top: `${scrollProgress}%`, transform: 'translateY(-50%)' }}
-            >
-
-                {/* The Pop-out Hire Me Button */}
-                <a
-                    href="mailto:debidutta.db@gmail.com?subject=Job%20Opportunity:%20Hiring%20Inquiry"
-                    className={`absolute right-14 whitespace-nowrap bg-emerald-500 text-white text-sm font-bold py-2 px-4 rounded-full shadow-lg shadow-emerald-500/30 hover:bg-emerald-400 hover:scale-105 pointer-events-auto transition-all duration-300 ease-out ${showHireMe
-                        ? 'opacity-100 scale-100 translate-x-0'
-                        : 'opacity-0 scale-50 translate-x-8 pointer-events-none'
-                        }`}
-                >
-                    Hire Me! 🚀
-                </a>
-
-                {/* Pikachu Image (Rotates independently of the wrapper) */}
-                <img
-                    // src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/25.gif"
-                    src="https://i.pinimg.com/originals/a8/d5/ba/a8d5baeb06fc12c77ccefd0121010d20.gif"
-                    alt="Climbing Pikachu"
-                    className="w-10 h-10 object-contain drop-shadow-[0_0_8px_rgba(250,204,21,0.8)] transition-transform duration-100"
-                    style={{
-                        transform: isScrollingDown ? 'rotate(0deg)' : 'scaleX(-1) rotate(-45deg)'
-                    }}
-                />
-
-            </div>
-        </div>
-    );
+  return (
+    <div className="fixed right-0 top-0 w-16 h-full pointer-events-none z-[100] hidden sm:block">
+      <div className="absolute right-4 top-0 w-0 h-full bg-slate-400/20 rounded-full" />
+      <div
+        className="absolute right-0 w-full flex items-center justify-end pr-2"
+        style={{
+          top: `${scrollProgress}%`,
+          transform: "translateY(-50%)",
+          willChange: "top",
+        }}
+      >
+        <a
+          href="mailto:debiduttabehera5@gmail.com?subject=Job%20Opportunity:%20Hiring%20Inquiry"
+          className={`absolute right-14 whitespace-nowrap bg-emerald-500 text-white text-sm font-bold py-2 px-4 rounded-full shadow-lg shadow-emerald-500/30 hover:bg-emerald-400 hover:scale-105 pointer-events-auto transition-all duration-300 ease-out ${showHireMe ? "opacity-100 scale-100 translate-x-0" : "opacity-0 scale-50 translate-x-8 pointer-events-none"}`}
+        >
+          Hire Me! 🚀
+        </a>
+        <img
+          src="https://i.pinimg.com/originals/a8/d5/ba/a8d5baeb06fc12c77ccefd0121010d20.gif"
+          alt="Climbing Pikachu"
+          loading="lazy"
+          decoding="async"
+          className="w-10 h-10 object-contain drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]"
+          style={{
+            transform: isScrollingDown
+              ? "rotate(0deg)"
+              : "scaleX(-1) rotate(-45deg)",
+          }}
+        />
+      </div>
+    </div>
+  );
 }
 
 // --- 3. CUSTOM ANIMATED SVG ICON COMPONENTS ---
 const LaptopIcon = () => (
-    <svg viewBox="0 0 100 100" className="w-full h-full stroke-current fill-none" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M 10 80 L 90 80 L 95 90 L 5 90 Z" fill="currentColor" stroke="none" className="opacity-20" />
-        <path d="M 10 80 L 90 80 L 95 90 L 5 90 Z" />
-        <g style={{ transformOrigin: '50px 80px', animation: 'laptop-open 4s ease-in-out infinite' }}>
-            <rect x="15" y="25" width="70" height="55" rx="4" />
-            <rect x="20" y="30" width="60" height="45" fill="currentColor" stroke="none" className="opacity-30" />
-            <path d="M 30 45 L 70 45 M 30 60 L 50 60" strokeWidth="2" className="opacity-50" />
-        </g>
-    </svg>
+  <svg
+    viewBox="0 0 100 100"
+    className="w-full h-full stroke-current fill-none"
+    strokeWidth="4"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path
+      d="M 10 80 L 90 80 L 95 90 L 5 90 Z"
+      fill="currentColor"
+      stroke="none"
+      className="opacity-20"
+    />
+    <path d="M 10 80 L 90 80 L 95 90 L 5 90 Z" />
+    <g
+      style={{
+        transformOrigin: "50px 80px",
+        animation: "laptop-open 4s ease-in-out infinite",
+      }}
+    >
+      <rect x="15" y="25" width="70" height="55" rx="4" />
+      <rect
+        x="20"
+        y="30"
+        width="60"
+        height="45"
+        fill="currentColor"
+        stroke="none"
+        className="opacity-30"
+      />
+      <path
+        d="M 30 45 L 70 45 M 30 60 L 50 60"
+        strokeWidth="2"
+        className="opacity-50"
+      />
+    </g>
+  </svg>
 );
 
 const GearIcon = () => (
-    <svg viewBox="0 0 100 100" className="w-full h-full stroke-current fill-none" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-        <g style={{ transformOrigin: '50px 50px', animation: 'spin-gear 6s linear infinite' }}>
-            <circle cx="50" cy="50" r="22" className="opacity-20" fill="currentColor" />
-            <circle cx="50" cy="50" r="22" />
-            <circle cx="50" cy="50" r="8" />
-            <path d="M50 15 L50 28 M50 72 L50 85 M15 50 L28 50 M72 50 L85 50 M25 25 L35 35 M65 65 L75 75 M25 75 L35 65 M75 25 L65 35" strokeWidth="6" />
-        </g>
-    </svg>
+  <svg
+    viewBox="0 0 100 100"
+    className="w-full h-full stroke-current fill-none"
+    strokeWidth="4"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <g
+      style={{
+        transformOrigin: "50px 50px",
+        animation: "spin-gear 6s linear infinite",
+      }}
+    >
+      <circle
+        cx="50"
+        cy="50"
+        r="22"
+        className="opacity-20"
+        fill="currentColor"
+      />
+      <circle cx="50" cy="50" r="22" />
+      <circle cx="50" cy="50" r="8" />
+      <path
+        d="M50 15 L50 28 M50 72 L50 85 M15 50 L28 50 M72 50 L85 50 M25 25 L35 35 M65 65 L75 75 M25 75 L35 65 M75 25 L65 35"
+        strokeWidth="6"
+      />
+    </g>
+  </svg>
 );
 
 const DatabaseIcon = () => (
-    <svg viewBox="0 0 100 100" className="w-full h-full stroke-current fill-none overflow-visible" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-        <g className="opacity-90">
-            <path d="M 25 25 C 25 15, 75 15, 75 25 C 75 35, 25 35, 25 25 Z" fill="currentColor" className="opacity-20" />
-            <path d="M 25 25 C 25 15, 75 15, 75 25 C 75 35, 25 35, 25 25 Z" />
-            <path d="M 25 25 L 25 50 C 25 60, 75 60, 75 50 L 75 25" />
-            <path d="M 25 50 L 25 75 C 25 85, 75 85, 75 75 L 75 50" />
-        </g>
-        <g style={{ animation: 'spark-pop 2.5s ease-in-out infinite', transformOrigin: '85px 25px' }} className="text-yellow-400 dark:text-yellow-300">
-            <path d="M 85 10 L 85 20 M 80 15 L 90 15" stroke="currentColor" />
-        </g>
-        <g style={{ animation: 'spark-pop 2.5s ease-in-out infinite 1.2s', transformOrigin: '15px 65px' }} className="text-emerald-500 dark:text-emerald-400">
-            <path d="M 15 55 L 15 65 M 10 60 L 20 60" stroke="currentColor" />
-        </g>
-    </svg>
+  <svg
+    viewBox="0 0 100 100"
+    className="w-full h-full stroke-current fill-none overflow-visible"
+    strokeWidth="4"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <g className="opacity-90">
+      <path
+        d="M 25 25 C 25 15, 75 15, 75 25 C 75 35, 25 35, 25 25 Z"
+        fill="currentColor"
+        className="opacity-20"
+      />
+      <path d="M 25 25 C 25 15, 75 15, 75 25 C 75 35, 25 35, 25 25 Z" />
+      <path d="M 25 25 L 25 50 C 25 60, 75 60, 75 50 L 75 25" />
+      <path d="M 25 50 L 25 75 C 25 85, 75 85, 75 75 L 75 50" />
+    </g>
+    <g
+      style={{
+        animation: "spark-pop 2.5s ease-in-out infinite",
+        transformOrigin: "85px 25px",
+      }}
+      className="text-yellow-400 dark:text-yellow-300"
+    >
+      <path d="M 85 10 L 85 20 M 80 15 L 90 15" stroke="currentColor" />
+    </g>
+    <g
+      style={{
+        animation: "spark-pop 2.5s ease-in-out infinite 1.2s",
+        transformOrigin: "15px 65px",
+      }}
+      className="text-emerald-500 dark:text-emerald-400"
+    >
+      <path d="M 15 55 L 15 65 M 10 60 L 20 60" stroke="currentColor" />
+    </g>
+  </svg>
 );
 
 const HammerIcon = () => (
-    <svg viewBox="0 0 100 100" className="w-full h-full stroke-current fill-none overflow-visible" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="35" cy="75" r="8" fill="currentColor" stroke="none" className="opacity-30" />
-        <circle cx="35" cy="75" r="8" />
-        <path d="M 31 71 L 39 79" strokeWidth="2" />
-        <path d="M 20 90 L 45 65" strokeWidth="6" />
-        <g style={{ transformOrigin: '65px 65px', animation: 'hammer-hit 2s ease-in-out infinite' }}>
-            <path d="M 65 65 L 65 25" strokeWidth="6" />
-            <path d="M 45 25 L 85 25 L 85 15 L 45 15 Z" fill="currentColor" className="opacity-80" stroke="none" />
-            <path d="M 45 25 L 85 25 L 85 15 L 45 15 Z" />
-        </g>
-    </svg>
+  <svg
+    viewBox="0 0 100 100"
+    className="w-full h-full stroke-current fill-none overflow-visible"
+    strokeWidth="4"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle
+      cx="35"
+      cy="75"
+      r="8"
+      fill="currentColor"
+      stroke="none"
+      className="opacity-30"
+    />
+    <circle cx="35" cy="75" r="8" />
+    <path d="M 31 71 L 39 79" strokeWidth="2" />
+    <path d="M 20 90 L 45 65" strokeWidth="6" />
+    <g
+      style={{
+        transformOrigin: "65px 65px",
+        animation: "hammer-hit 2s ease-in-out infinite",
+      }}
+    >
+      <path d="M 65 65 L 65 25" strokeWidth="6" />
+      <path
+        d="M 45 25 L 85 25 L 85 15 L 45 15 Z"
+        fill="currentColor"
+        className="opacity-80"
+        stroke="none"
+      />
+      <path d="M 45 25 L 85 25 L 85 15 L 45 15 Z" />
+    </g>
+  </svg>
 );
 
 // --- 4. ANIMATED TOGGLE & TILT COMPONENTS ---
 function AnimatedThemeToggle({ isDark, toggle }) {
-    return (
-        <button onClick={toggle} className={`relative w-16 h-8 rounded-full p-1 transition-colors duration-1000 ease-in-out focus:outline-none overflow-hidden ${isDark ? 'bg-slate-700' : 'bg-sky-200'}`} title="Toggle Theme">
-            <div className={`absolute inset-0 transition-opacity duration-1000 ${isDark ? 'opacity-100' : 'opacity-0'}`}>
-                <div className="absolute top-2 left-2 w-0.5 h-0.5 bg-white rounded-full animate-pulse" />
-                <div className="absolute top-5 left-4 w-1 h-1 bg-white rounded-full animate-pulse delay-75" />
-                <div className="absolute top-1 left-6 w-0.5 h-0.5 bg-white rounded-full animate-pulse delay-150" />
-            </div>
-            <div className={`w-6 h-6 rounded-full relative transition-all duration-1000 ease-in-out transform ${isDark ? 'translate-x-8 bg-slate-200 rotate-180' : 'translate-x-0 bg-yellow-400 rotate-0 shadow-[0_0_15px_rgba(250,204,21,0.8)]'}`}>
-                <div className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${isDark ? 'opacity-100' : 'opacity-0'}`}>
-                    <div className="absolute top-1 left-3 w-1.5 h-1.5 bg-slate-400/60 rounded-full" />
-                    <div className="absolute top-3 left-1 w-2 h-2 bg-slate-400/40 rounded-full" />
-                    <div className="absolute bottom-1 right-2 w-1 h-1 bg-slate-400/50 rounded-full" />
-                </div>
-            </div>
-        </button>
-    );
+  return (
+    <button
+      onClick={toggle}
+      className={`relative w-16 h-8 rounded-full p-1 transition-colors duration-1000 ease-in-out focus:outline-none overflow-hidden ${isDark ? "bg-slate-700" : "bg-sky-200"}`}
+      title="Toggle Theme"
+    >
+      <div
+        className={`absolute inset-0 transition-opacity duration-1000 ${isDark ? "opacity-100" : "opacity-0"}`}
+      >
+        <div className="absolute top-2 left-2 w-0.5 h-0.5 bg-white rounded-full animate-pulse" />
+        <div className="absolute top-5 left-4 w-1 h-1 bg-white rounded-full animate-pulse delay-75" />
+        <div className="absolute top-1 left-6 w-0.5 h-0.5 bg-white rounded-full animate-pulse delay-150" />
+      </div>
+      <div
+        className={`w-6 h-6 rounded-full relative transition-all duration-1000 ease-in-out transform ${isDark ? "translate-x-8 bg-slate-200 rotate-180" : "translate-x-0 bg-yellow-400 rotate-0 shadow-[0_0_15px_rgba(250,204,21,0.8)]"}`}
+      >
+        <div
+          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${isDark ? "opacity-100" : "opacity-0"}`}
+        >
+          <div className="absolute top-1 left-3 w-1.5 h-1.5 bg-slate-400/60 rounded-full" />
+          <div className="absolute top-3 left-1 w-2 h-2 bg-slate-400/40 rounded-full" />
+          <div className="absolute bottom-1 right-2 w-1 h-1 bg-slate-400/50 rounded-full" />
+        </div>
+      </div>
+    </button>
+  );
 }
 // --- 4.1 ANIMATED TILT CARD COMPONENTS ---
 function TiltCard({ children, className = "" }) {
-    const { isDark } = useContext(AppContext);
-    const [transform, setTransform] = useState("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
-    const [glare, setGlare] = useState({ opacity: 0, x: 50, y: 50 });
+  const { isDark } = useContext(AppContext);
+  const [transform, setTransform] = useState(
+    "perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)",
+  );
+  const [glare, setGlare] = useState({ opacity: 0, x: 50, y: 50 });
 
-    const handleMouseMove = (e) => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const rotateY = (12 * ((x - rect.width / 2) / (rect.width / 2))).toFixed(2);
-        const rotateX = (-12 * ((y - rect.height / 2) / (rect.height / 2))).toFixed(2);
-        setTransform(`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`);
-        setGlare({ opacity: 1, x: (x / rect.width) * 100, y: (y / rect.height) * 100 });
-    };
-
-    const handleMouseLeave = () => {
-        setTransform("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
-        setGlare({ opacity: 0, x: 50, y: 50 });
-    };
-
-    const glareColor = isDark ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.8)';
-
-    return (
-        <div className={`relative transition-all duration-200 ease-out ${className}`} style={{ transform, transformStyle: "preserve-3d" }} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
-            <div className="h-full w-full relative z-10" style={{ transform: "translateZ(30px)" }}>{children}</div>
-            <div className="absolute inset-0 pointer-events-none rounded-xl transition-opacity duration-300 z-20" style={{ opacity: glare.opacity, background: `radial-gradient(circle at ${glare.x}% ${glare.y}%, ${glareColor} 0%, rgba(255,255,255,0) 60%)`, mixBlendMode: isDark ? 'screen' : 'overlay' }} />
-        </div>
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const rotateY = (12 * ((x - rect.width / 2) / (rect.width / 2))).toFixed(2);
+    const rotateX = (-12 * ((y - rect.height / 2) / (rect.height / 2))).toFixed(
+      2,
     );
+    setTransform(
+      `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`,
+    );
+    setGlare({
+      opacity: 1,
+      x: (x / rect.width) * 100,
+      y: (y / rect.height) * 100,
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setTransform(
+      "perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)",
+    );
+    setGlare({ opacity: 0, x: 50, y: 50 });
+  };
+
+  const glareColor = isDark
+    ? "rgba(255,255,255,0.15)"
+    : "rgba(255,255,255,0.8)";
+
+  return (
+    <div
+      className={`relative transition-all duration-200 ease-out ${className}`}
+      style={{ transform, transformStyle: "preserve-3d", overflow: "hidden" }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div
+        className="h-full w-full relative z-10"
+        style={{ transform: "translateZ(30px)", overflow: "hidden"}}
+      >
+        {children}
+      </div>
+      <div
+        className="absolute inset-0 pointer-events-none rounded-xl transition-opacity duration-300 z-20"
+        style={{
+          opacity: glare.opacity,
+          background: `radial-gradient(circle at ${glare.x}% ${glare.y}%, ${glareColor} 0%, rgba(255,255,255,0) 60%)`,
+          mixBlendMode: isDark ? "screen" : "overlay",
+        }}
+      />
+    </div>
+  );
 }
 
 // --- 5. MINI CODEPEN COMPONENT (NOW WITH FULLSCREEN!) ---
-function MiniCodePen({ title, initialHtml, initialCss, initialJs, isGame = false }) {
-    const { isDark } = useContext(AppContext);
-    const [html, setHtml] = useState(initialHtml);
-    const [css, setCss] = useState(initialCss);
-    const [js, setJs] = useState(initialJs);
-    const [activeTab, setActiveTab] = useState('result');
-    const [srcDoc, setSrcDoc] = useState('');
+function MiniCodePen({
+  title,
+  initialHtml,
+  initialCss,
+  initialJs,
+  isGame = false,
+}) {
+  const { isDark } = useContext(AppContext);
+  const [html, setHtml] = useState(initialHtml);
+  const [css, setCss] = useState(initialCss);
+  const [js, setJs] = useState(initialJs);
+  const [activeTab, setActiveTab] = useState("result");
+  const [srcDoc, setSrcDoc] = useState("");
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
-    // NEW: Fullscreen state
-    const [isFullscreen, setIsFullscreen] = useState(false);
+  // Keep the page fixed while the large-screen viewer is open, while preserving
+  // whatever body overflow setting the page had before the viewer opened.
+  useEffect(() => {
+    if (!isFullscreen) return undefined;
 
-    // Prevent background from scrolling when a window is fullscreen
-    useEffect(() => {
-        if (isFullscreen) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'unset';
-        }
-        return () => { document.body.style.overflow = 'unset'; }
-    }, [isFullscreen]);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
 
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            setSrcDoc(`
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        setIsFullscreen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [isFullscreen]);
+
+  // Game HTML contains some inline handlers such as onclick="restart()".
+  // Inline handlers cannot see functions declared inside an ES module, so use
+  // a classic script for games. Non-game playground projects keep module
+  // support for Three.js/import-map based examples.
+  const gameUsesModuleSyntax = /(^|[;\n])\s*(?:import|export)\b/.test(js);
+  const scriptType =
+    isGame && !gameUsesModuleSyntax ? "text/javascript" : "module";
+
+  useEffect(() => {
+    if (activeTab !== "result") return undefined;
+
+    const timeout = setTimeout(() => {
+      setSrcDoc(`
         <!DOCTYPE html>
         <html>
           <head>
@@ -408,9 +664,46 @@ function MiniCodePen({ title, initialHtml, initialCss, initialJs, isGame = false
                 min-height: 100vh;
                 background: transparent;
                 overflow: ${isGame || isFullscreen ? "auto" : "hidden"};
+                box-sizing: border-box;
               }
 
               ${css}
+
+              /*
+               * FINAL PLAYGROUND SCROLL OVERRIDE
+               *
+               * The user's project CSS is intentionally inserted above this
+               * block. Some live projects set html/body to overflow:hidden or
+               * height:100%, which prevents the iframe document from scrolling
+               * when the project is opened in Large Screen.
+               *
+               * Games always remain scrollable. Normal playground projects
+               * become scrollable only in Large Screen, so their original
+               * compact preview behaviour is unchanged.
+               */
+              ${
+                isGame || isFullscreen
+                  ? `
+              html {
+                width: 100% !important;
+                min-height: 100% !important;
+                height: auto !important;
+                overflow-x: hidden !important;
+                overflow-y: scroll !important;
+              }
+
+              body {
+                width: 100% !important;
+                min-height: 100vh !important;
+                height: auto !important;
+                max-height: none !important;
+                overflow-x: hidden !important;
+                overflow-y: auto !important;
+                box-sizing: border-box !important;
+              }
+              `
+                  : ""
+              }
             </style>
           </head>
 
@@ -418,219 +711,259 @@ function MiniCodePen({ title, initialHtml, initialCss, initialJs, isGame = false
 
             ${html}
 
-            <script type="module">
-              try {
-
+            <script type="${scriptType}">
+              ${
+                gameUsesModuleSyntax
+                  ? `
+                /* Module scripts cannot wrap static imports/exports inside try/catch.
+                   Keep module code at top level so projects using ESM/CDN imports work. */
+                window.addEventListener("error", (event) => {
+                  console.error("Playground JavaScript Error:", event.error || event.message);
+                  const errorBox = document.createElement("div");
+                  errorBox.style.position = "fixed";
+                  errorBox.style.bottom = "10px";
+                  errorBox.style.left = "10px";
+                  errorBox.style.right = "10px";
+                  errorBox.style.padding = "12px";
+                  errorBox.style.background = "#fee2e2";
+                  errorBox.style.color = "#991b1b";
+                  errorBox.style.border = "1px solid #ef4444";
+                  errorBox.style.borderRadius = "8px";
+                  errorBox.style.fontFamily = "monospace";
+                  errorBox.style.zIndex = "99999";
+                  errorBox.textContent = "JavaScript Error: " + (event.error?.message || event.message || "Unknown error");
+                  document.body.appendChild(errorBox);
+                });
+                window.addEventListener("unhandledrejection", (event) => {
+                  console.error("Playground Promise Error:", event.reason);
+                });
                 ${js}
-
-              } catch (error) {
-
-                console.error(
-                  "Playground JavaScript Error:",
-                  error
-                );
-
-                const errorBox =
-                  document.createElement("div");
-
-                errorBox.style.position = "fixed";
-                errorBox.style.bottom = "10px";
-                errorBox.style.left = "10px";
-                errorBox.style.right = "10px";
-                errorBox.style.padding = "12px";
-                errorBox.style.background = "#fee2e2";
-                errorBox.style.color = "#991b1b";
-                errorBox.style.border = "1px solid #ef4444";
-                errorBox.style.borderRadius = "8px";
-                errorBox.style.fontFamily = "monospace";
-                errorBox.style.zIndex = "99999";
-
-                errorBox.textContent =
-                  "JavaScript Error: " +
-                  error.message;
-
-                document.body.appendChild(errorBox);
+              `
+                  : `
+                try {
+                  ${js}
+                } catch (error) {
+                  console.error("Playground JavaScript Error:", error);
+                  const errorBox = document.createElement("div");
+                  errorBox.style.position = "fixed";
+                  errorBox.style.bottom = "10px";
+                  errorBox.style.left = "10px";
+                  errorBox.style.right = "10px";
+                  errorBox.style.padding = "12px";
+                  errorBox.style.background = "#fee2e2";
+                  errorBox.style.color = "#991b1b";
+                  errorBox.style.border = "1px solid #ef4444";
+                  errorBox.style.borderRadius = "8px";
+                  errorBox.style.fontFamily = "monospace";
+                  errorBox.style.zIndex = "99999";
+                  errorBox.textContent = "JavaScript Error: " + error.message;
+                  document.body.appendChild(errorBox);
+                }
+              `
               }
             <\/script>
 
           </body>
         </html>
       `);
-        }, 250);
+    }, 250);
 
-        return () => clearTimeout(timeout);
+    return () => clearTimeout(timeout);
+  }, [html, css, js, isGame, activeTab, scriptType, isFullscreen]);
 
-    }, [html, css, js, isGame, isFullscreen]);
+  const tabs = [
+    { id: "result", label: "👁️ Result" },
+    { id: "html", label: "📄 HTML" },
+    { id: "css", label: "🎨 CSS" },
+    { id: "js", label: "⚡ JS" },
+  ];
 
+  const heightClass = isFullscreen
+    ? "flex-1 min-h-0"
+    : isGame
+      ? "h-72 sm:h-80"
+      : "h-48 sm:h-56";
+  const scrollClass =
+    isGame || isFullscreen ? "overflow-auto" : "overflow-hidden";
 
-    const tabs = [
-        { id: 'result', label: '👁️ Result' },
-        { id: 'html', label: '📄 HTML' },
-        { id: 'css', label: '🎨 CSS' },
-        { id: 'js', label: '⚡ JS' }
-    ];
+  const editorContainer = (
+    <div
+      className={`flex flex-col overflow-hidden ${
+        isFullscreen
+          ? "fixed left-4 right-4 top-4 bottom-4 sm:left-10 sm:right-10 sm:top-10 sm:bottom-10 z-[10000] rounded-2xl shadow-2xl border-2"
+          : "relative rounded-xl border shadow-lg h-full"
+      } ${
+        isDark
+          ? isFullscreen
+            ? "bg-slate-900 border-slate-600"
+            : "border-slate-700 bg-slate-800/80"
+          : isFullscreen
+            ? "bg-white border-orange-300"
+            : "border-orange-200/60 bg-white/70 backdrop-blur-sm shadow-orange-900/5"
+      }`}
+      role={isFullscreen ? "dialog" : undefined}
+      aria-modal={isFullscreen ? "true" : undefined}
+      aria-label={isFullscreen ? `${title} large screen` : undefined}
+    >
+      {/* Header Bar */}
+      <div
+        className={`flex flex-wrap items-center justify-between px-4 py-2 border-b flex-shrink-0 ${isDark ? "border-slate-700 bg-slate-900/50" : "border-orange-200 bg-orange-50/50"}`}
+      >
+        <h4
+          className={`font-bold text-sm ${isDark ? "text-slate-200" : "text-stone-800"}`}
+        >
+          {title}
+        </h4>
 
-    // Dynamic sizing based on if it's fullscreen, a game, or a standard project
-    const heightClass = isFullscreen ? "flex-1" : (isGame ? "h-72 sm:h-80" : "h-48 sm:h-56");
-    const scrollClass = isGame || isFullscreen ? "overflow-auto" : "overflow-hidden";
+        <div className="flex gap-2 items-center mt-2 sm:mt-0">
+          <div className="flex gap-1 overflow-x-auto pb-1 sm:pb-0 scrollbar-hide">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors whitespace-nowrap ${
+                  activeTab === tab.id
+                    ? isDark
+                      ? "bg-blue-600 text-white"
+                      : "bg-orange-500 text-white"
+                    : isDark
+                      ? "text-slate-400 hover:bg-slate-700"
+                      : "text-stone-500 hover:bg-orange-200/50"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
 
-    return (
-        <>
-            {/* Dark blurred background overlay for Fullscreen mode */}
-            {isFullscreen && (
-                <div
-                    className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[150] transition-opacity duration-300"
-                    onClick={() => setIsFullscreen(false)}
-                ></div>
+          <button
+            type="button"
+            onClick={() => setIsFullscreen((prev) => !prev)}
+            className={`ml-2 p-1.5 rounded-md transition-all flex-shrink-0 flex items-center justify-center ${
+              isDark
+                ? "bg-slate-800 hover:bg-blue-600 text-slate-300 hover:text-white border border-slate-600 hover:border-blue-500"
+                : "bg-white hover:bg-orange-500 text-stone-600 hover:text-white border border-orange-300 hover:border-orange-500"
+            }`}
+            title={isFullscreen ? "Close Large Screen" : "Open Large Screen"}
+            aria-label={
+              isFullscreen ? "Close Large Screen" : "Open Large Screen"
+            }
+          >
+            {isFullscreen ? (
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M4 14h6v6M20 10h-6V4M10 14l-7 7M14 10l7-7" />
+              </svg>
+            ) : (
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+              </svg>
             )}
+          </button>
+        </div>
+      </div>
 
-            {/* The Main Container */}
-            <div
-                className={`flex flex-col transition-all duration-300 overflow-hidden ${isFullscreen
-                        ? "fixed inset-2 sm:inset-10 z-[200] rounded-2xl shadow-2xl border-2 " +
-                        (isDark
-                            ? "bg-slate-900 border-slate-600"
-                            : "bg-white border-orange-300")
-                        : "relative rounded-xl border shadow-lg h-full " +
-                        (isDark
-                            ? "border-slate-700 bg-slate-800/80"
-                            : "border-orange-200/60 bg-white/70 backdrop-blur-sm shadow-orange-900/5")
-                    }`}
-            >
-                {/* Header Bar */}
-                <div
-                    className={`flex flex-wrap items-center justify-between px-4 py-2 border-b ${isDark ? "border-slate-700 bg-slate-900/50" : "border-orange-200 bg-orange-50/50"}`}
-                >
-                    <h4
-                        className={`font-bold text-sm ${isDark ? "text-slate-200" : "text-stone-800"}`}
-                    >
-                        {title}
-                    </h4>
+      {/* Code / iframe Area */}
+      <div className={`${heightClass} w-full relative min-h-0`}>
+        {activeTab === "result" && (
+          <iframe
+            scrolling={isGame || isFullscreen ? "auto" : "no"}
+            srcDoc={srcDoc}
+            title={`${title} Result`}
+            loading="lazy"
+            referrerPolicy="no-referrer"
+            frameBorder="0"
+            sandbox="
+                            allow-forms
+                            allow-modals
+                            allow-popups
+                            allow-popups-to-escape-sandbox
+                            allow-presentation
+                            allow-same-origin
+                            allow-scripts
+                            allow-downloads
+                            allow-top-navigation-by-user-activation
+                            allow-pointer-lock
+                            allow-orientation-lock
+                            allow-storage-access-by-user-activation
+                        "
+            allow="fullscreen; autoplay; pointer-lock; accelerometer; gyroscope; web-share"
+            className={`w-full h-full bg-slate-50 ${scrollClass}`}
+            style={{
+              border: "none",
+              display: "block",
+              width: "100%",
+              height: "100%",
+              overflow: "auto",
+            }}
+          />
+        )}
+        {activeTab === "html" && (
+          <textarea
+            value={html}
+            onChange={(e) => setHtml(e.target.value)}
+            className={`w-full h-full p-4 font-mono text-sm resize-none focus:outline-none bg-slate-900 text-green-400 ${scrollClass}`}
+            spellCheck="false"
+          />
+        )}
+        {activeTab === "css" && (
+          <textarea
+            value={css}
+            onChange={(e) => setCss(e.target.value)}
+            className={`w-full h-full p-4 font-mono text-sm resize-none focus:outline-none bg-slate-900 text-blue-300 ${scrollClass}`}
+            spellCheck="false"
+          />
+        )}
+        {activeTab === "js" && (
+          <textarea
+            value={js}
+            onChange={(e) => setJs(e.target.value)}
+            className={`w-full h-full p-4 font-mono text-sm resize-none focus:outline-none bg-slate-900 text-yellow-300 ${scrollClass}`}
+            spellCheck="false"
+          />
+        )}
+      </div>
+    </div>
+  );
 
-                    <div className="flex gap-2 items-center mt-2 sm:mt-0">
-                        {/* Tabs */}
-                        <div className="flex gap-1 overflow-x-auto pb-1 sm:pb-0 scrollbar-hide">
-                            {tabs.map((tab) => (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => setActiveTab(tab.id)}
-                                    className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors whitespace-nowrap ${activeTab === tab.id
-                                            ? isDark
-                                                ? "bg-blue-600 text-white"
-                                                : "bg-orange-500 text-white"
-                                            : isDark
-                                                ? "text-slate-400 hover:bg-slate-700"
-                                                : "text-stone-500 hover:bg-orange-200/50"
-                                        }`}
-                                >
-                                    {tab.label}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* FULLSCREEN TOGGLE BUTTON */}
-                        <button
-                            onClick={() => setIsFullscreen(!isFullscreen)}
-                            className={`ml-2 p-1.5 rounded-md transition-all flex-shrink-0 flex items-center justify-center ${isDark
-                                    ? "bg-slate-800 hover:bg-blue-600 text-slate-300 hover:text-white border border-slate-600 hover:border-blue-500"
-                                    : "bg-white hover:bg-orange-500 text-stone-600 hover:text-white border border-orange-300 hover:border-orange-500"
-                                }`}
-                            title={isFullscreen ? "Close Fullscreen" : "Open Large Screen"}
-                        >
-                            {isFullscreen ? (
-                                // Collapse Icon
-                                <svg
-                                    width="14"
-                                    height="14"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2.5"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                >
-                                    <path d="M4 14h6v6M20 10h-6V4M10 14l-7 7M14 10l7-7" />
-                                </svg>
-                            ) : (
-                                // Expand Icon
-                                <svg
-                                    width="14"
-                                    height="14"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2.5"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                >
-                                    <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-                                </svg>
-                            )}
-                        </button>
-                    </div>
-                </div>
-
-                {/* Code / iframe Area */}
-                <div className={`${heightClass} w-full relative`}>
-                    {activeTab === "result" && (
-                        <iframe
-                            scrolling={isGame || isFullscreen ? "auto" : "no"}
-                            srcDoc={srcDoc}
-                            title="Result"
-                            frameBorder="0"
-                            sandbox="
-                                allow-forms
-                                allow-modals
-                                allow-popups
-                                allow-popups-to-escape-sandbox
-                                allow-presentation
-                                allow-same-origin
-                                allow-scripts
-                                allow-downloads
-                                allow-top-navigation-by-user-activation
-                                allow-pointer-lock
-                                allow-orientation-lock
-                                allow-storage-access-by-user-activation
-                            "
-                            allow="fullscreen; autoplay; pointer-lock; accelerometer; gyroscope; web-share"
-                                
-                            className={`w-full h-full bg-slate-50 ${scrollClass}`}
-                            style={{
-                                border: "none",
-                                display: "block",
-                                width: "100%",
-                                height: "100%",
-                            }}
-                        />
-                    )}
-                    {activeTab === "html" && (
-                        <textarea
-                            value={html}
-                            onChange={(e) => setHtml(e.target.value)}
-                            className={`w-full h-full p-4 font-mono text-sm resize-none focus:outline-none bg-slate-900 text-green-400 ${scrollClass}`}
-                            spellCheck="false"
-                        />
-                    )}
-                    {activeTab === "css" && (
-                        <textarea
-                            value={css}
-                            onChange={(e) => setCss(e.target.value)}
-                            className={`w-full h-full p-4 font-mono text-sm resize-none focus:outline-none bg-slate-900 text-blue-300 ${scrollClass}`}
-                            spellCheck="false"
-                        />
-                    )}
-                    {activeTab === "js" && (
-                        <textarea
-                            value={js}
-                            onChange={(e) => setJs(e.target.value)}
-                            className={`w-full h-full p-4 font-mono text-sm resize-none focus:outline-none bg-slate-900 text-yellow-300 ${scrollClass}`}
-                            spellCheck="false"
-                        />
-                    )}
-                </div>
-            </div>
-        </>
+  if (isFullscreen) {
+    return createPortal(
+      <>
+        {/* Portal is attached directly to <body>, so no grid/animation/transform
+                    ancestor can change the fixed modal's position. Every project therefore
+                    opens at exactly the same viewport coordinates. */}
+        <div
+          className="fixed inset-0 z-[9998] bg-slate-900/80 backdrop-blur-sm"
+          onClick={() => setIsFullscreen(false)}
+          aria-hidden="true"
+        />
+        {editorContainer}
+      </>,
+      document.body,
     );
+  }
+
+  return editorContainer;
 }
 
 // --- 6. LIVE GAMES SECTION ---
@@ -712,2652 +1045,4957 @@ function restart() {
       `,
     },
 
+    //     {
+    //       title: "🎲 Classic Ludo Deluxe",
+    //       html: `
+    // <div class="ludo-app">
+
+    //     <header class="game-header">
+    //         <div class="title-row">
+    //             <span class="title-icon">🎲</span>
+    //             <div>
+    //                 <h1>Classic Ludo Deluxe</h1>
+    //                 <p>No Blockades • Pass freely through occupied squares</p>
+    //             </div>
+    //         </div>
+    //     </header>
+
+    //     <div class="mode-selector">
+    //         <button class="mode-btn active" data-mode="1vPC">
+    //             👤 vs 🤖 Computer
+    //         </button>
+
+    //         <button class="mode-btn" data-mode="2P">
+    //             👥 2 Players
+    //         </button>
+
+    //         <button class="mode-btn" data-mode="4P">
+    //             👥 4 Players
+    //         </button>
+    //     </div>
+
+    //     <main class="game-container">
+
+    //         <section class="board-panel">
+
+    //             <div class="board-frame">
+    //                 <div class="ludo-board" id="board">
+
+    //                     <div class="yard yard-red">
+    //                         <div class="yard-inner">
+    //                             <div class="home-spot" data-player="0" data-token="0"></div>
+    //                             <div class="home-spot" data-player="0" data-token="1"></div>
+    //                             <div class="home-spot" data-player="0" data-token="2"></div>
+    //                             <div class="home-spot" data-player="0" data-token="3"></div>
+    //                         </div>
+    //                     </div>
+
+    //                     <div class="yard yard-green">
+    //                         <div class="yard-inner">
+    //                             <div class="home-spot" data-player="1" data-token="0"></div>
+    //                             <div class="home-spot" data-player="1" data-token="1"></div>
+    //                             <div class="home-spot" data-player="1" data-token="2"></div>
+    //                             <div class="home-spot" data-player="1" data-token="3"></div>
+    //                         </div>
+    //                     </div>
+
+    //                     <div class="yard yard-yellow">
+    //                         <div class="yard-inner">
+    //                             <div class="home-spot" data-player="2" data-token="0"></div>
+    //                             <div class="home-spot" data-player="2" data-token="1"></div>
+    //                             <div class="home-spot" data-player="2" data-token="2"></div>
+    //                             <div class="home-spot" data-player="2" data-token="3"></div>
+    //                         </div>
+    //                     </div>
+
+    //                     <div class="yard yard-blue">
+    //                         <div class="yard-inner">
+    //                             <div class="home-spot" data-player="3" data-token="0"></div>
+    //                             <div class="home-spot" data-player="3" data-token="1"></div>
+    //                             <div class="home-spot" data-player="3" data-token="2"></div>
+    //                             <div class="home-spot" data-player="3" data-token="3"></div>
+    //                         </div>
+    //                     </div>
+
+    //                     <div class="center-home">
+    //                         <div class="center-red"></div>
+    //                         <div class="center-green"></div>
+    //                         <div class="center-yellow"></div>
+    //                         <div class="center-blue"></div>
+
+    //                         <div class="center-triangle">
+    //                             <div class="center-slot" id="homeSlotRed"></div>
+    //                             <div class="center-slot" id="homeSlotGreen"></div>
+    //                             <div class="center-slot" id="homeSlotYellow"></div>
+    //                             <div class="center-slot" id="homeSlotBlue"></div>
+    //                         </div>
+    //                     </div>
+
+    //                 </div>
+    //             </div>
+
+    //         </section>
+
+    //         <aside class="control-panel">
+
+    //             <div class="turn-card">
+    //                 <div class="turn-label">CURRENT TURN</div>
+    //                 <div class="status-box" id="statusText">
+    //                     🔴 Red's Turn
+    //                 </div>
+    //             </div>
+
+    //             <div class="dice-card">
+
+    //                 <div class="dice-label">DICE</div>
+
+    //                 <div class="dice-stage" id="diceStage">
+
+    //                     <div class="dice-cube player-red" id="dice">
+
+    //                         <div class="dice-face face-1">
+    //                             <span class="pip p-center"></span>
+    //                         </div>
+
+    //                         <div class="dice-face face-2">
+    //                             <span class="pip p-top-left"></span>
+    //                             <span class="pip p-bot-right"></span>
+    //                         </div>
+
+    //                         <div class="dice-face face-3">
+    //                             <span class="pip p-top-left"></span>
+    //                             <span class="pip p-center"></span>
+    //                             <span class="pip p-bot-right"></span>
+    //                         </div>
+
+    //                         <div class="dice-face face-4">
+    //                             <span class="pip p-top-left"></span>
+    //                             <span class="pip p-top-right"></span>
+    //                             <span class="pip p-bot-left"></span>
+    //                             <span class="pip p-bot-right"></span>
+    //                         </div>
+
+    //                         <div class="dice-face face-5">
+    //                             <span class="pip p-top-left"></span>
+    //                             <span class="pip p-top-right"></span>
+    //                             <span class="pip p-center"></span>
+    //                             <span class="pip p-bot-left"></span>
+    //                             <span class="pip p-bot-right"></span>
+    //                         </div>
+
+    //                         <div class="dice-face face-6">
+    //                             <span class="pip p-top-left"></span>
+    //                             <span class="pip p-top-right"></span>
+    //                             <span class="pip p-mid-left"></span>
+    //                             <span class="pip p-mid-right"></span>
+    //                             <span class="pip p-bot-left"></span>
+    //                             <span class="pip p-bot-right"></span>
+    //                         </div>
+
+    //                     </div>
+    //                 </div>
+
+    //                 <button id="rollBtn" class="roll-btn">
+    //                     🎲 ROLL DICE
+    //                 </button>
+
+    //                 <button id="newGameBtn" class="new-game-btn">
+    //                     ↻ NEW GAME
+    //                 </button>
+
+    //             </div>
+
+    //             <div class="rules-box">
+
+    //                 <div class="rules-title">
+    //                     <span>📜</span>
+    //                     <strong>GAME RULES</strong>
+    //                 </div>
+
+    //                 <ul>
+    //                     <li>Roll <b>6</b> to bring a token out.</li>
+    //                     <li>Rolling a <b>6</b> gives another turn.</li>
+    //                     <li>Capturing gives another turn.</li>
+    //                     <li>Reaching Home gives another turn.</li>
+    //                     <li>No blockades — tokens can pass freely.</li>
+    //                     <li>Three consecutive 6s lose the turn.</li>
+    //                 </ul>
+
+    //             </div>
+
+    //             <div class="legend" id="legendContainer"></div>
+
+    //         </aside>
+
+    //     </main>
+
+    // </div>
+    //         `,
+    //       css: `
+    // html,
+    // body {
+    //     margin: 0;
+    //     padding: 0;
+    //     width: 100%;
+    //     min-height: 100%;
+    // }
+
+    // * {
+    //     box-sizing: border-box;
+    // }
+
+    // body {
+    //     min-height: 100vh;
+    //     font-family:
+    //         Inter,
+    //         Segoe UI,
+    //         Roboto,
+    //         Arial,
+    //         sans-serif;
+
+    //     color: #fff;
+
+    //     background:
+    //         radial-gradient(
+    //             circle at 50% 0%,
+    //             #35425b 0%,
+    //             #18202d 45%,
+    //             #0b1018 100%
+    //         );
+
+    //     overflow-x: hidden;
+    //     zoom: 0.75;
+    // }
+
+    // button {
+    //     font: inherit;
+    // }
+
+    // .ludo-app {
+    //     width: 100%;
+    //     min-height: 100vh;
+
+    //     padding: 24px;
+
+    //     display: flex;
+    //     flex-direction: column;
+    //     align-items: center;
+
+    //     position: relative;
+    // }
+
+    // /* =========================
+    //    HEADER
+    // ========================= */
+
+    // .game-header {
+    //     text-align: center;
+    //     margin-bottom: 18px;
+    // }
+
+    // .title-row {
+    //     display: flex;
+    //     align-items: center;
+    //     justify-content: center;
+    //     gap: 12px;
+    // }
+
+    // .title-icon {
+    //     font-size: 42px;
+    //     filter:
+    //         drop-shadow(0 5px 8px rgba(0,0,0,.5));
+    // }
+
+    // .game-header h1 {
+    //     margin: 0;
+
+    //     font-size:
+    //         clamp(25px, 4vw, 40px);
+
+    //     line-height: 1.1;
+
+    //     font-weight: 900;
+
+    //     background:
+    //         linear-gradient(
+    //             90deg,
+    //             #ffffff,
+    //             #ffd76a,
+    //             #ffffff
+    //         );
+
+    //     -webkit-background-clip: text;
+    //     background-clip: text;
+    //     color: transparent;
+
+    //     letter-spacing: -.8px;
+    // }
+
+    // .game-header p {
+    //     margin: 6px 0 0;
+
+    //     color: #aeb9c9;
+
+    //     font-size: 13px;
+    // }
+
+    // /* =========================
+    //    MODE BUTTONS
+    // ========================= */
+
+    // .mode-selector {
+    //     display: flex;
+    //     flex-wrap: wrap;
+    //     justify-content: center;
+
+    //     gap: 8px;
+
+    //     margin-bottom: 20px;
+
+    //     padding: 7px;
+
+    //     border-radius: 14px;
+
+    //     background: rgba(255,255,255,.07);
+
+    //     border: 1px solid rgba(255,255,255,.1);
+
+    //     box-shadow:
+    //         inset 0 1px rgba(255,255,255,.08),
+    //         0 8px 25px rgba(0,0,0,.25);
+    // }
+
+    // .mode-btn {
+    //     border: 0;
+
+    //     padding: 10px 17px;
+
+    //     border-radius: 10px;
+
+    //     background:
+    //         linear-gradient(
+    //             145deg,
+    //             #343e4d,
+    //             #252c38
+    //         );
+
+    //     color: #d9e0e8;
+
+    //     font-size: 13px;
+
+    //     font-weight: 800;
+
+    //     cursor: pointer;
+
+    //     transition:
+    //         transform .2s ease,
+    //         box-shadow .2s ease,
+    //         background .2s ease;
+    // }
+
+    // .mode-btn:hover {
+    //     transform: translateY(-2px);
+
+    //     color: #fff;
+    // }
+
+    // .mode-btn.active {
+    //     color: #fff;
+
+    //     background:
+    //         linear-gradient(
+    //             145deg,
+    //             #ffb347,
+    //             #e56c18
+    //         );
+
+    //     box-shadow:
+    //         0 5px 16px rgba(229,108,24,.4),
+    //         inset 0 1px rgba(255,255,255,.35);
+    // }
+
+    // /* =========================
+    //    MAIN CONTAINER
+    // ========================= */
+
+    // .game-container {
+    //     width: min(1250px, 100%);
+
+    //     display: flex;
+
+    //     align-items: center;
+    //     justify-content: center;
+
+    //     gap: 26px;
+
+    //     padding: 22px;
+
+    //     border-radius: 26px;
+
+    //     background:
+    //         linear-gradient(
+    //             145deg,
+    //             rgba(255,255,255,.1),
+    //             rgba(255,255,255,.035)
+    //         );
+
+    //     border:
+    //         1px solid rgba(255,255,255,.12);
+
+    //     box-shadow:
+    //         0 30px 70px rgba(0,0,0,.55),
+    //         inset 0 1px rgba(255,255,255,.08);
+
+    //     backdrop-filter: blur(18px);
+    // }
+
+    // /* =========================
+    //    BOARD
+    // ========================= */
+
+    // .board-panel {
+    //     flex: 1;
+
+    //     display: flex;
+
+    //     justify-content: center;
+    //     align-items: center;
+
+    //     min-width: 0;
+    // }
+
+    // .board-frame {
+    //     width: min(68vw, 650px);
+
+    //     padding: 10px;
+
+    //     border-radius: 24px;
+
+    //     background:
+    //         linear-gradient(
+    //             145deg,
+    //             #d8dde5,
+    //             #6e7785 45%,
+    //             #343b47
+    //         );
+
+    //     box-shadow:
+    //         0 18px 35px rgba(0,0,0,.55),
+    //         inset 0 2px 3px rgba(255,255,255,.5);
+    // }
+
+    // .ludo-board {
+    //     width: 100%;
+
+    //     aspect-ratio: 1 / 1;
+
+    //     position: relative;
+
+    //     overflow: hidden;
+
+    //     display: block;
+
+    //     background: #fff;
+
+    //     border: 4px solid #171b21;
+
+    //     border-radius: 15px;
+
+    //     box-shadow:
+    //         0 7px 20px rgba(0,0,0,.45),
+    //         inset 0 0 0 1px rgba(255,255,255,.7);
+    // }
+
+    // /* =========================
+    //    YARDS
+    // ========================= */
+
+    // .yard {
+    //     position: absolute;
+
+    //     width: 40%;
+    //     height: 40%;
+
+    //     padding: 4.5%;
+
+    //     display: flex;
+
+    //     align-items: center;
+    //     justify-content: center;
+
+    //     z-index: 5;
+    // }
+
+    // .yard-red {
+    //     left: 0;
+    //     top: 0;
+
+    //     background:
+    //         linear-gradient(145deg,#ff554f,#b91d1a);
+    // }
+
+    // .yard-green {
+    //     right: 0;
+    //     top: 0;
+
+    //     background:
+    //         linear-gradient(145deg,#4de58b,#12934d);
+    // }
+
+    // .yard-yellow {
+    //     right: 0;
+    //     bottom: 0;
+
+    //     background:
+    //         linear-gradient(145deg,#ffe86d,#d6a900);
+    // }
+
+    // .yard-blue {
+    //     left: 0;
+    //     bottom: 0;
+
+    //     background:
+    //         linear-gradient(145deg,#57b8f7,#176cac);
+    // }
+
+    // .yard-inner {
+    //     width: 100%;
+    //     height: 100%;
+
+    //     padding: 12%;
+
+    //     display: grid;
+
+    //     grid-template-columns: 1fr 1fr;
+    //     grid-template-rows: 1fr 1fr;
+
+    //     gap: 12%;
+
+    //     background:
+    //         linear-gradient(
+    //             145deg,
+    //             #ffffff,
+    //             #eef1f4
+    //         );
+
+    //     border:
+    //         2px solid rgba(0,0,0,.18);
+
+    //     border-radius: 16%;
+
+    //     box-shadow:
+    //         inset 0 5px 12px rgba(0,0,0,.12),
+    //         0 5px 12px rgba(0,0,0,.2);
+    // }
+
+    // .home-spot {
+    //     min-width: 0;
+    //     min-height: 0;
+
+    //     position: relative;
+
+    //     display: grid;
+    //     place-items: center;
+
+    //     border-radius: 50%;
+
+    //     border: 3px solid #d4d8de;
+
+    //     background: #f1f3f5;
+
+    //     box-shadow:
+    //         inset 0 5px 10px rgba(0,0,0,.15),
+    //         0 2px 4px rgba(0,0,0,.15);
+    // }
+
+    // .home-spot[data-player="0"] {
+    //     background: #ffdedd;
+    // }
+
+    // .home-spot[data-player="1"] {
+    //     background: #d8f6e5;
+    // }
+
+    // .home-spot[data-player="2"] {
+    //     background: #fff1b5;
+    // }
+
+    // .home-spot[data-player="3"] {
+    //     background: #d9edff;
+    // }
+
+    // /* =========================
+    //    TRACK
+    // ========================= */
+
+    // .cell {
+    //     position: absolute;
+
+    //     width: 6.6666667%;
+    //     height: 6.6666667%;
+
+    //     display: flex;
+
+    //     align-items: center;
+    //     justify-content: center;
+
+    //     border:
+    //         1px solid rgba(0,0,0,.12);
+
+    //     z-index: 2;
+    // }
+
+    // .cell.track {
+    //     background:
+    //         linear-gradient(
+    //             145deg,
+    //             #ffffff,
+    //             #edf0f3
+    //         );
+    // }
+
+    // .cell.start-red {
+    //     background: #ff7772;
+    // }
+
+    // .cell.start-green {
+    //     background: #64d795;
+    // }
+
+    // .cell.start-yellow {
+    //     background: #ffe16a;
+    // }
+
+    // .cell.start-blue {
+    //     background: #72baf0;
+    // }
+
+    // .cell.home-red {
+    //     background: #ffb0ae;
+    // }
+
+    // .cell.home-green {
+    //     background: #a6e7bd;
+    // }
+
+    // .cell.home-yellow {
+    //     background: #f9e69a;
+    // }
+
+    // .cell.home-blue {
+    //     background: #a9d5f5;
+    // }
+
+    // .safe-cell::after {
+    //     content: "★";
+
+    //     position: absolute;
+
+    //     font-size:
+    //         clamp(20px, 1.4vw, 14px);
+
+    //     color: #555d67;
+
+    //     opacity: 1;
+    // }
+
+    // /* =========================
+    //    TOKENS
+    // ========================= */
+
+    // .token {
+    //     width:
+    //         clamp(16px, 2.6vw, 25px);
+
+    //     height:
+    //         clamp(16px, 2.6vw, 25px);
+
+    //     border-radius: 50%;
+
+    //     border: 2px solid #fff;
+
+    //     position: relative;
+
+    //     z-index: 50;
+
+    //     cursor: pointer;
+
+    //     box-shadow:
+    //         0 4px 7px rgba(0,0,0,.55),
+    //         inset 2px 2px 4px rgba(255,255,255,.7),
+    //         inset -3px -3px 5px rgba(0,0,0,.25);
+
+    //     transition:
+    //         transform .18s ease,
+    //         filter .18s ease;
+    // }
+
+    // .token:hover {
+    //     transform: scale(1.16);
+    //     filter: brightness(1.1);
+    // }
+
+    // .token-red {
+    //     background:
+    //         radial-gradient(
+    //             circle at 30% 25%,
+    //             #ff827e,
+    //             #d62520 60%,
+    //             #7c0b09
+    //         );
+    // }
+
+    // .token-green {
+    //     background:
+    //         radial-gradient(
+    //             circle at 30% 25%,
+    //             #7af2aa,
+    //             #16a457 60%,
+    //             #075f31
+    //         );
+    // }
+
+    // .token-yellow {
+    //     background:
+    //         radial-gradient(
+    //             circle at 30% 25%,
+    //             #fff99b,
+    //             #e0b400 60%,
+    //             #8e6d00
+    //         );
+    // }
+
+    // .token-blue {
+    //     background:
+    //         radial-gradient(
+    //             circle at 30% 25%,
+    //             #78ceff,
+    //             #207dc0 60%,
+    //             #084a79
+    //         );
+    // }
+
+    // .token.highlight {
+    //     animation:
+    //         tokenGlow .75s ease-in-out infinite alternate;
+
+    //     box-shadow:
+    //         0 0 0 3px rgba(255,255,255,.65),
+    //         0 0 18px rgba(255,255,255,.95),
+    //         0 5px 10px rgba(0,0,0,.6);
+    // }
+
+    // @keyframes tokenGlow {
+    //     from {
+    //         transform: scale(1);
+    //     }
+
+    //     to {
+    //         transform: scale(1.25);
+    //     }
+    // }
+
+    // /* STACKS */
+
+    // .cell.stack-1 {
+    //     display: flex;
+    // }
+
+    // .cell.stack-2,
+    // .cell.stack-3,
+    // .cell.stack-4 {
+    //     display: grid;
+
+    //     grid-template-columns: 1fr 1fr;
+    //     grid-template-rows: 1fr 1fr;
+
+    //     place-items: center;
+    // }
+
+    // .cell.stack-2 .token,
+    // .cell.stack-3 .token,
+    // .cell.stack-4 .token {
+    //     width: 72%;
+    //     height: 72%;
+
+    //     min-width: 8px;
+    //     min-height: 8px;
+    // }
+
+    // /* =========================
+    //    CENTER
+    // ========================= */
+
+    // .center-home {
+    //     position: absolute;
+
+    //     left: 40%;
+    //     top: 40%;
+
+    //     width: 20%;
+    //     height: 20%;
+
+    //     overflow: hidden;
+
+    //     background: #fff;
+
+    //     border: 2px solid #20242a;
+
+    //     z-index: 30;
+    // }
+
+    // .center-red,
+    // .center-green,
+    // .center-yellow,
+    // .center-blue {
+    //     position: absolute;
+
+    //     inset: 0;
+    // }
+
+    // .center-red {
+    //     background: #e53935;
+
+    //     clip-path:
+    //         polygon(
+    //             0 0,
+    //             50% 50%,
+    //             0 100%
+    //         );
+    // }
+
+    // .center-green {
+    //     background: #20b864;
+
+    //     clip-path:
+    //         polygon(
+    //             0 0,
+    //             100% 0,
+    //             50% 50%
+    //         );
+    // }
+
+    // .center-yellow {
+    //     background: #f4c20d;
+
+    //     clip-path:
+    //         polygon(
+    //             100% 0,
+    //             100% 100%,
+    //             50% 50%
+    //         );
+    // }
+
+    // .center-blue {
+    //     background: #2583d8;
+
+    //     clip-path:
+    //         polygon(
+    //             0 100%,
+    //             100% 100%,
+    //             50% 50%
+    //         );
+    // }
+
+    // .center-triangle {
+    //     position: absolute;
+
+    //     left: 50%;
+    //     top: 50%;
+
+    //     transform:
+    //         translate(-50%,-50%);
+
+    //     width: 48%;
+
+    //     aspect-ratio: 1;
+
+    //     display: grid;
+
+    //     grid-template-columns: 1fr 1fr;
+    //     grid-template-rows: 1fr 1fr;
+
+    //     padding: 3px;
+
+    //     border-radius: 50%;
+
+    //     background: #fff;
+
+    //     border: 2px solid #333;
+
+    //     box-shadow:
+    //         0 3px 7px rgba(0,0,0,.5);
+
+    //     z-index: 5;
+    //     background-image: url('favicon.svg');
+
+    // }
+
+    // .center-slot {
+    //     display: flex;
+
+    //     align-items: center;
+    //     justify-content: center;
+
+    //     flex-wrap: wrap;
+    // }
+
+    // /* =========================
+    //    CONTROL PANEL
+    // ========================= */
+
+    // .control-panel {
+    //     width: 310px;
+
+    //     flex-shrink: 0;
+
+    //     display: flex;
+
+    //     flex-direction: column;
+
+    //     gap: 14px;
+
+    //     padding: 16px;
+
+    //     border-radius: 20px;
+
+    //     background:
+    //         linear-gradient(
+    //             145deg,
+    //             rgba(255,255,255,.08),
+    //             rgba(0,0,0,.15)
+    //         );
+
+    //     border:
+    //         1px solid rgba(255,255,255,.1);
+    // }
+
+    // /* =========================
+    //    TURN
+    // ========================= */
+
+    // .turn-card {
+    //     padding: 12px;
+
+    //     border-radius: 14px;
+
+    //     background: rgba(0,0,0,.22);
+
+    //     border:
+    //         1px solid rgba(255,255,255,.08);
+    // }
+
+    // .turn-label,
+    // .dice-label {
+    //     text-align: center;
+
+    //     font-size: 10px;
+
+    //     font-weight: 900;
+
+    //     letter-spacing: 1.5px;
+
+    //     color: #9da9b8;
+
+    //     margin-bottom: 7px;
+    // }
+
+    // .status-box {
+    //     text-align: center;
+
+    //     padding: 11px;
+
+    //     border-radius: 10px;
+
+    //     background:
+    //         linear-gradient(
+    //             145deg,
+    //             rgba(255,255,255,.12),
+    //             rgba(255,255,255,.04)
+    //         );
+
+    //     font-weight: 900;
+
+    //     color: #fff;
+
+    //     box-shadow:
+    //         inset 0 1px rgba(255,255,255,.08);
+    // }
+
+    // /* =========================
+    //    DICE
+    // ========================= */
+
+    // .dice-card {
+    //     padding: 14px;
+
+    //     border-radius: 16px;
+
+    //     background: rgba(0,0,0,.2);
+
+    //     text-align: center;
+    // }
+
+    // .dice-stage {
+    //     width: 130px;
+    //     height: 120px;
+
+    //     margin: auto;
+
+    //     display: grid;
+
+    //     place-items: center;
+
+    //     position: relative;
+
+    //     perspective: 800px;
+    // }
+
+    // .dice-stage::after {
+    //     content: "";
+
+    //     position: absolute;
+
+    //     left: 50%;
+    //     bottom: 12px;
+
+    //     width: 58px;
+    //     height: 13px;
+
+    //     transform:
+    //         translateX(-50%);
+
+    //     border-radius: 50%;
+
+    //     background: rgba(0,0,0,.55);
+
+    //     filter: blur(6px);
+    // }
+
+    // .dice-cube {
+    //     --d: 58px;
+
+    //     width: var(--d);
+    //     height: var(--d);
+
+    //     position: relative;
+
+    //     transform-style: preserve-3d;
+
+    //     z-index: 2;
+
+    //     transition:
+    //         transform .8s
+    //         cubic-bezier(.15,.85,.25,1);
+    // }
+
+    // .dice-face {
+    //     position: absolute;
+
+    //     inset: 0;
+
+    //     display: grid;
+
+    //     grid-template-columns: repeat(3,1fr);
+    //     grid-template-rows: repeat(3,1fr);
+
+    //     place-items: center;
+
+    //     padding: 8px;
+
+    //     border-radius: 1px;
+
+    //     border: 1px solid rgba(255,255,255,.5);
+
+    //     background:
+    //         linear-gradient(
+    //             145deg,
+    //             var(--dice-light),
+    //             var(--dice-base) 60%,
+    //             var(--dice-dark)
+    //         );
+
+    //     box-shadow:
+    //         inset 2px 2px 5px rgba(255,255,255,.7),
+    //         inset -3px -3px 6px rgba(0,0,0,.18);
+    // }
+
+    // .dice-cube.player-red {
+    //     --dice-light: #ffe7e5;
+    //     --dice-base: #ffb0ae;
+    //     --dice-dark: #e53935;
+    // }
+
+    // .dice-cube.player-green {
+    //     --dice-light: #e5faed;
+    //     --dice-base: #a6e7bd;
+    //     --dice-dark: #20b864;
+    // }
+
+    // .dice-cube.player-yellow {
+    //     --dice-light: #fffde8;
+    //     --dice-base: #f9e69a;
+    //     --dice-dark: #f4c20d;
+    // }
+
+    // .dice-cube.player-blue {
+    //     --dice-light: #e3f4ff;
+    //     --dice-base: #a9d5f5;
+    //     --dice-dark: #2583d8;
+    // }
+
+    // .dice-cube.player-red .pip {
+    //     background: #7d100c;
+    // }
+
+    // .dice-cube.player-green .pip {
+    //     background: #075e30;
+    // }
+
+    // .dice-cube.player-yellow .pip {
+    //     background: #5a4500;
+    // }
+
+    // .dice-cube.player-blue .pip {
+    //     background: #084c79;
+    // }
+
+    // .face-1 {
+    //     transform:
+    //         rotateY(0deg)
+    //         translateZ(calc(var(--d)/2));
+    // }
+
+    // .face-2 {
+    //     transform:
+    //         rotateY(-90deg)
+    //         translateZ(calc(var(--d)/2));
+    // }
+
+    // .face-3 {
+    //     transform:
+    //         rotateX(90deg)
+    //         translateZ(calc(var(--d)/2));
+    // }
+
+    // .face-4 {
+    //     transform:
+    //         rotateX(-90deg)
+    //         translateZ(calc(var(--d)/2));
+    // }
+
+    // .face-5 {
+    //     transform:
+    //         rotateY(90deg)
+    //         translateZ(calc(var(--d)/2));
+    // }
+
+    // .face-6 {
+    //     transform:
+    //         rotateY(180deg)
+    //         translateZ(calc(var(--d)/2));
+    // }
+
+    // .pip {
+    //     width: 8px;
+    //     height: 8px;
+
+    //     border-radius: 50%;
+
+    //     visibility: hidden;
+
+    //     box-shadow:
+    //         inset 1px 1px 2px rgba(255,255,255,.4),
+    //         0 1px 2px rgba(0,0,0,.6);
+    // }
+
+    // .p-center {
+    //     grid-area: 2 / 2;
+    // }
+
+    // .p-top-left {
+    //     grid-area: 1 / 1;
+    // }
+
+    // .p-top-right {
+    //     grid-area: 1 / 3;
+    // }
+
+    // .p-mid-left {
+    //     grid-area: 2 / 1;
+    // }
+
+    // .p-mid-right {
+    //     grid-area: 2 / 3;
+    // }
+
+    // .p-bot-left {
+    //     grid-area: 3 / 1;
+    // }
+
+    // .p-bot-right {
+    //     grid-area: 3 / 3;
+    // }
+
+    // .face-1 .p-center {
+    //     visibility: visible;
+    // }
+
+    // .face-2 .p-top-left,
+    // .face-2 .p-bot-right {
+    //     visibility: visible;
+    // }
+
+    // .face-3 .p-top-left,
+    // .face-3 .p-center,
+    // .face-3 .p-bot-right {
+    //     visibility: visible;
+    // }
+
+    // .face-4 .p-top-left,
+    // .face-4 .p-top-right,
+    // .face-4 .p-bot-left,
+    // .face-4 .p-bot-right {
+    //     visibility: visible;
+    // }
+
+    // .face-5 .p-top-left,
+    // .face-5 .p-top-right,
+    // .face-5 .p-center,
+    // .face-5 .p-bot-left,
+    // .face-5 .p-bot-right {
+    //     visibility: visible;
+    // }
+
+    // .face-6 .p-top-left,
+    // .face-6 .p-top-right,
+    // .face-6 .p-mid-left,
+    // .face-6 .p-mid-right,
+    // .face-6 .p-bot-left,
+    // .face-6 .p-bot-right {
+    //     visibility: visible;
+    // }
+
+    // .dice-cube.value-1 {
+    //     transform: rotateX(0deg) rotateY(0deg);
+    // }
+
+    // .dice-cube.value-2 {
+    //     transform: rotateX(0deg) rotateY(90deg);
+    // }
+
+    // .dice-cube.value-3 {
+    //     transform: rotateX(-90deg) rotateY(0deg);
+    // }
+
+    // .dice-cube.value-4 {
+    //     transform: rotateX(90deg) rotateY(0deg);
+    // }
+
+    // .dice-cube.value-5 {
+    //     transform: rotateX(0deg) rotateY(-90deg);
+    // }
+
+    // .dice-cube.value-6 {
+    //     transform: rotateX(0deg) rotateY(180deg);
+    // }
+
+    // .dice-cube.rolling {
+    //     animation:
+    //         diceRoll .9s
+    //         cubic-bezier(.25,1,.5,1)
+    //         both;
+    // }
+
+    // @keyframes diceRoll {
+
+    //     0% {
+    //         transform:
+    //             translateY(0)
+    //             rotateX(0)
+    //             rotateY(0)
+    //             rotateZ(0);
+    //     }
+
+    //     30% {
+    //         transform:
+    //             translateY(-24px)
+    //             rotateX(360deg)
+    //             rotateY(360deg)
+    //             rotateZ(45deg)
+    //             scale(1.08);
+    //     }
+
+    //     65% {
+    //         transform:
+    //             translateY(-10px)
+    //             rotateX(720deg)
+    //             rotateY(720deg)
+    //             rotateZ(180deg)
+    //             scale(1.03);
+    //     }
+
+    //     100% {
+    //         transform:
+    //             translateY(0)
+    //             rotateX(var(--target-x))
+    //             rotateY(var(--target-y))
+    //             rotateZ(0);
+    //     }
+    // }
+
+    // /* =========================
+    //    BUTTONS
+    // ========================= */
+
+    // .roll-btn,
+    // .new-game-btn {
+    //     width: 100%;
+
+    //     border: 0;
+
+    //     border-radius: 11px;
+
+    //     padding: 12px;
+
+    //     font-weight: 900;
+
+    //     cursor: pointer;
+
+    //     transition:
+    //         transform .18s ease,
+    //         filter .18s ease;
+    // }
+
+    // .roll-btn {
+    //     color: #fff;
+
+    //     background:
+    //         linear-gradient(
+    //             145deg,
+    //             #ffb347,
+    //             #e76516
+    //         );
+
+    //     box-shadow:
+    //         0 6px 14px rgba(229,101,22,.35);
+    // }
+
+    // .new-game-btn {
+    //     color: #dbe3ec;
+
+    //     background:
+    //         linear-gradient(
+    //             145deg,
+    //             #3a4555,
+    //             #252d39
+    //         );
+    // }
+
+    // .roll-btn:hover:not(:disabled),
+    // .new-game-btn:hover {
+    //     transform: translateY(-2px);
+    //     filter: brightness(1.08);
+    // }
+
+    // .roll-btn:disabled {
+    //     opacity: .45;
+    //     cursor: not-allowed;
+    // }
+
+    // /* =========================
+    //    RULES
+    // ========================= */
+
+    // .rules-box {
+    //     padding: 14px;
+
+    //     border-radius: 14px;
+
+    //     background: rgba(0,0,0,.23);
+
+    //     border:
+    //         1px solid rgba(255,255,255,.07);
+
+    //     color: #bdc7d4;
+
+    //     font-size: 12px;
+
+    //     line-height: 1.6;
+    // }
+
+    // .rules-title {
+    //     display: flex;
+
+    //     align-items: center;
+
+    //     gap: 7px;
+
+    //     color: #ffd45a;
+
+    //     margin-bottom: 7px;
+    // }
+
+    // .rules-box ul {
+    //     margin: 0;
+
+    //     padding-left: 18px;
+    // }
+
+    // .rules-box b {
+    //     color: #fff;
+    // }
+
+    // /* =========================
+    //    LEGEND
+    // ========================= */
+
+    // .legend {
+    //     display: flex;
+
+    //     flex-wrap: wrap;
+
+    //     justify-content: center;
+
+    //     gap: 7px;
+    // }
+
+    // .legend span {
+    //     padding: 6px 9px;
+
+    //     border-radius: 8px;
+
+    //     background: rgba(255,255,255,.07);
+
+    //     color: #cfd7e1;
+
+    //     font-size: 11px;
+
+    //     font-weight: 700;
+    // }
+
+    // /* =========================
+    //    RESPONSIVE
+    // ========================= */
+
+    // @media (max-width: 1000px) {
+
+    //     .game-container {
+    //         flex-direction: column;
+    //     }
+
+    //     .board-frame {
+    //         width: min(90vw, 650px);
+    //     }
+
+    //     .control-panel {
+    //         width: min(90vw, 430px);
+    //     }
+    // }
+
+    // @media (max-width: 560px) {
+
+    //     .ludo-app {
+    //         padding: 12px;
+    //     }
+
+    //     .game-container {
+    //         padding: 10px;
+    //         border-radius: 18px;
+    //     }
+
+    //     .board-frame {
+    //         width: 96vw;
+    //         padding: 6px;
+    //     }
+
+    //     .control-panel {
+    //         width: 96vw;
+    //         padding: 12px;
+    //     }
+
+    //     .mode-selector {
+    //         width: 96vw;
+    //     }
+
+    //     .mode-btn {
+    //         flex: 1;
+    //         padding: 9px 6px;
+    //         font-size: 11px;
+    //     }
+
+    //     .title-icon {
+    //         font-size: 30px;
+    //     }
+
+    //     .game-header h1 {
+    //         font-size: 25px;
+    //     }
+    // }
+
+    // @media (prefers-reduced-motion: reduce) {
+
+    //     .dice-cube.rolling,
+    //     .token.highlight {
+    //         animation: none;
+    //     }
+    // }
+    //         `,
+    //       js: `
+    // (() => {
+
+    // "use strict";
+
+    // const allPlayers = [
+    //     {
+    //         name: "Red",
+    //         color: "red",
+    //         start: 0,
+    //         isAI: false
+    //     },
+    //     {
+    //         name: "Green",
+    //         color: "green",
+    //         start: 13,
+    //         isAI: false
+    //     },
+    //     {
+    //         name: "Yellow",
+    //         color: "yellow",
+    //         start: 26,
+    //         isAI: false
+    //     },
+    //     {
+    //         name: "Blue",
+    //         color: "blue",
+    //         start: 39,
+    //         isAI: false
+    //     }
+    // ];
+
+    // let players = [];
+    // let gameMode = "1vPC";
+
+    // const TRACK = [
+    //     [6,1],[6,2],[6,3],[6,4],[6,5],
+    //     [5,6],[4,6],[3,6],[2,6],[1,6],[0,6],[0,7],
+    //     [0,8],[1,8],[2,8],[3,8],[4,8],[5,8],
+    //     [6,9],[6,10],[6,11],[6,12],[6,13],[6,14],
+    //     [7,14],[8,14],[8,13],[8,12],[8,11],[8,10],[8,9],
+    //     [9,8],[10,8],[11,8],[12,8],[13,8],[14,8],
+    //     [14,7],[14,6],[13,6],[12,6],[11,6],[10,6],[9,6],
+    //     [8,5],[8,4],[8,3],[8,2],[8,1],[8,0],
+    //     [7,0],[6,0]
+    // ];
+
+    // const HOME = [
+    //     [
+    //         [7,1],[7,2],[7,3],
+    //         [7,4],[7,5],[7,6]
+    //     ],
+    //     [
+    //         [1,7],[2,7],[3,7],
+    //         [4,7],[5,7],[6,7]
+    //     ],
+    //     [
+    //         [7,13],[7,12],[7,11],
+    //         [7,10],[7,9],[7,8]
+    //     ],
+    //     [
+    //         [13,7],[12,7],[11,7],
+    //         [10,7],[9,7],[8,7]
+    //     ]
+    // ];
+
+    // const SAFE = [
+    //     0,8,13,21,26,34,39,47
+    // ];
+
+    // let current = 0;
+    // let dice = null;
+    // let rolled = false;
+    // let rolling = false;
+    // let extraTurn = false;
+    // let sixes = 0;
+    // let gameOver = false;
+
+    // let positions = [];
+
+    // let rankings = [];
+
+    // let timers = [];
+
+    // const $ = id => document.getElementById(id);
+
+    // const board = $("board");
+    // const status = $("statusText");
+    // const rollBtn = $("rollBtn");
+    // const newGameBtn = $("newGameBtn");
+    // const diceEl = $("dice");
+    // const stage = $("diceStage");
+
+    // function timer(fn, ms) {
+
+    //     const id = setTimeout(() => {
+
+    //         timers =
+    //             timers.filter(x => x !== id);
+
+    //         fn();
+
+    //     }, ms);
+
+    //     timers.push(id);
+    // }
+
+    // function clearTimers() {
+
+    //     timers.forEach(clearTimeout);
+
+    //     timers = [];
+    // }
+
+    // /* =========================
+    //    GAME MODES
+    // ========================= */
+
+    // function configurePlayers() {
+
+    //     if (gameMode === "1vPC") {
+
+    //         players = [
+    //             {
+    //                 ...allPlayers[0],
+    //                 isAI: false,
+    //                 active: true
+    //             },
+
+    //             {
+    //                 ...allPlayers[1],
+    //                 isAI: true,
+    //                 active: true
+    //             },
+
+    //             {
+    //                 ...allPlayers[2],
+    //                 isAI: false,
+    //                 active: false
+    //             },
+
+    //             {
+    //                 ...allPlayers[3],
+    //                 isAI: false,
+    //                 active: false
+    //             }
+    //         ];
+
+    //     } else if (gameMode === "2P") {
+
+    //         players = [
+    //             {
+    //                 ...allPlayers[0],
+    //                 isAI: false,
+    //                 active: true
+    //             },
+
+    //             {
+    //                 ...allPlayers[1],
+    //                 isAI: false,
+    //                 active: true
+    //             },
+
+    //             {
+    //                 ...allPlayers[2],
+    //                 isAI: false,
+    //                 active: false
+    //             },
+
+    //             {
+    //                 ...allPlayers[3],
+    //                 isAI: false,
+    //                 active: false
+    //             }
+    //         ];
+
+    //     } else {
+
+    //         players =
+    //             allPlayers.map(p => ({
+    //                 ...p,
+    //                 isAI: false,
+    //                 active: true
+    //             }));
+    //     }
+
+    //     updateLegend();
+    // }
+
+    // function updateLegend() {
+
+    //     const legend =
+    //         $("legendContainer");
+
+    //     if (!legend) return;
+
+    //     legend.innerHTML =
+    //         players
+    //             .filter(p => p.active)
+    //             .map(p => {
+
+    //                 const icon = {
+    //                     red: "🔴",
+    //                     green: "🟢",
+    //                     yellow: "🟡",
+    //                     blue: "🔵"
+    //                 }[p.color];
+
+    //                 return \`
+    //                     <span>
+    //                         \${icon}
+    //                         \${p.name}
+    //                         \${p.isAI ? " • AI" : ""}
+    //                     </span>
+    //                 \`;
+
+    //             })
+    //             .join("");
+    // }
+
+    // /* =========================
+    //    BOARD
+    // ========================= */
+
+    // function buildBoard() {
+
+    //     board
+    //         .querySelectorAll(".cell")
+    //         .forEach(cell => cell.remove());
+
+    //     for (let r = 0; r < 15; r++) {
+
+    //         for (let c = 0; c < 15; c++) {
+
+    //             const inYard =
+    //                 (r < 6 && c < 6) ||
+    //                 (r < 6 && c > 8) ||
+    //                 (r > 8 && c < 6) ||
+    //                 (r > 8 && c > 8);
+
+    //             const inCenter =
+    //                 r >= 6 &&
+    //                 r <= 8 &&
+    //                 c >= 6 &&
+    //                 c <= 8;
+
+    //             if (inYard || inCenter)
+    //                 continue;
+
+    //             const cell =
+    //                 document.createElement("div");
+
+    //             cell.className =
+    //                 "cell track";
+
+    //             cell.dataset.row = r;
+    //             cell.dataset.col = c;
+
+    //             cell.style.left =
+    //                 (c * 100 / 15) + "%";
+
+    //             cell.style.top =
+    //                 (r * 100 / 15) + "%";
+
+    //             const idx =
+    //                 TRACK.findIndex(
+    //                     ([rr,cc]) =>
+    //                         rr === r &&
+    //                         cc === c
+    //                 );
+
+    //             if (idx >= 0) {
+
+    //                 if (idx === 0)
+    //                     cell.classList.add("start-red");
+
+    //                 if (idx === 13)
+    //                     cell.classList.add("start-green");
+
+    //                 if (idx === 26)
+    //                     cell.classList.add("start-yellow");
+
+    //                 if (idx === 39)
+    //                     cell.classList.add("start-blue");
+
+    //                 if (SAFE.includes(idx))
+    //                     cell.classList.add("safe-cell");
+    //             }
+
+    //             board.appendChild(cell);
+    //         }
+    //     }
+
+    //     allPlayers.forEach((pl,p) => {
+
+    //         HOME[p].forEach(([r,c],i) => {
+
+    //             if (i === 5)
+    //                 return;
+
+    //             const cell =
+    //                 document.createElement("div");
+
+    //             cell.className =
+    //                 "cell home-" + pl.color;
+
+    //             cell.dataset.row = r;
+    //             cell.dataset.col = c;
+
+    //             cell.style.left =
+    //                 (c * 100 / 15) + "%";
+
+    //             cell.style.top =
+    //                 (r * 100 / 15) + "%";
+
+    //             board.appendChild(cell);
+    //         });
+    //     });
+    // }
+
+    // /* =========================
+    //    MODE BUTTON EVENTS
+    // ========================= */
+
+    // document
+    //     .querySelectorAll(".mode-btn")
+    //     .forEach(button => {
+
+    //         button.addEventListener(
+    //             "click",
+    //             () => {
+
+    //                 gameMode =
+    //                     button.dataset.mode;
+
+    //                 document
+    //                     .querySelectorAll(".mode-btn")
+    //                     .forEach(b =>
+    //                         b.classList.remove("active")
+    //                     );
+
+    //                 button.classList.add("active");
+
+    //                 configurePlayers();
+
+    //                 newGame();
+    //             }
+    //         );
+    //     });
+
+    // /* =========================
+    //    POSITION
+    // ========================= */
+
+    // function absolute(pIndex, rel) {
+
+    //     const player =
+    //         players[pIndex];
+
+    //     const originalIndex =
+    //         allPlayers.findIndex(
+    //             p => p.name === player.name
+    //         );
+
+    //     return (
+    //         allPlayers[originalIndex].start +
+    //         rel
+    //     ) % 52;
+    // }
+
+    // /* =========================
+    //    MOVE VALIDATION
+    // ========================= */
+
+    // function calcMove(pIndex,pos,d) {
+
+    //     if (
+    //         !players[pIndex].active ||
+    //         rankings.includes(pIndex)
+    //     )
+    //         return -1;
+
+    //     if (pos === -1)
+    //         return d === 6 ? 0 : -1;
+
+    //     const target =
+    //         pos + d;
+
+    //     if (target > 56)
+    //         return -1;
+
+    //     return target;
+    // }
+
+    // /* =========================
+    //    ACTIVE PLAYERS
+    // ========================= */
+
+    // function getActivePlayers() {
+
+    //     return players
+    //         .map((p,i) =>
+    //             p.active &&
+    //             !rankings.includes(i)
+    //                 ? i
+    //                 : -1
+    //         )
+    //         .filter(i => i !== -1);
+    // }
+
+    // /* =========================
+    //    VALID TOKENS
+    // ========================= */
+
+    // function validTokens() {
+
+    //     if (dice === null)
+    //         return [];
+
+    //     return positions[current]
+    //         .map((pos,t) =>
+    //             calcMove(
+    //                 current,
+    //                 pos,
+    //                 dice
+    //             ) >= 0
+    //                 ? t
+    //                 : -1
+    //         )
+    //         .filter(t => t >= 0);
+    // }
+
+    // /* =========================
+    //    RENDER
+    // ========================= */
+
+    // function render() {
+
+    //     board
+    //         .querySelectorAll(".token")
+    //         .forEach(e => e.remove());
+
+    //     players.forEach(pl => {
+
+    //         const slot =
+    //             $("homeSlot" + pl.name);
+
+    //         if (slot)
+    //             slot.innerHTML = "";
+    //     });
+
+    //     players.forEach((pl,p) => {
+
+    //         if (!pl.active)
+    //             return;
+
+    //         for (let t = 0; t < 4; t++) {
+
+    //             const pos =
+    //                 positions[p][t];
+
+    //             const token =
+    //                 document.createElement("div");
+
+    //             token.className =
+    //                 "token token-" +
+    //                 pl.color;
+
+    //             token.dataset.player = p;
+    //             token.dataset.token = t;
+
+    //             token.addEventListener(
+    //                 "click",
+    //                 () => moveToken(p,t)
+    //             );
+
+    //             let target;
+
+    //             const originalIndex =
+    //                 allPlayers.findIndex(
+    //                     ap => ap.name === pl.name
+    //                 );
+
+    //             if (pos === -1) {
+
+    //                 target =
+    //                     document.querySelector(
+    //                         \`.yard-\${pl.color} .home-spot[data-token="\${t}"]\`
+    //                     );
+
+    //             } else if (pos <= 50) {
+
+    //                 const idx =
+    //                     absolute(p,pos);
+
+    //                 const [r,c] =
+    //                     TRACK[idx];
+
+    //                 target =
+    //                     document.querySelector(
+    //                         \`.cell[data-row="\${r}"][data-col="\${c}"]\`
+    //                     );
+
+    //             } else if (pos < 56) {
+
+    //                 const [r,c] =
+    //                     HOME[originalIndex][pos - 51];
+
+    //                 target =
+    //                     document.querySelector(
+    //                         \`.cell[data-row="\${r}"][data-col="\${c}"]\`
+    //                     );
+
+    //             } else if (pos === 56) {
+
+    //                 target =
+    //                     $("homeSlot" + pl.name);
+    //             }
+
+    //             if (target)
+    //                 target.appendChild(token);
+    //         }
+    //     });
+
+    //     document
+    //         .querySelectorAll(".cell")
+    //         .forEach(cell => {
+
+    //             const count =
+    //                 cell.querySelectorAll(".token").length;
+
+    //             cell.classList.remove(
+    //                 "stack-1",
+    //                 "stack-2",
+    //                 "stack-3",
+    //                 "stack-4"
+    //             );
+
+    //             if (count)
+    //                 cell.classList.add(
+    //                     "stack-" +
+    //                     Math.min(count,4)
+    //                 );
+    //         });
+    // }
+
+    // /* =========================
+    //    HIGHLIGHT
+    // ========================= */
+
+    // function highlight() {
+
+    //     document
+    //         .querySelectorAll(".token")
+    //         .forEach(e =>
+    //             e.classList.remove("highlight")
+    //         );
+
+    //     if (players[current].isAI)
+    //         return;
+
+    //     validTokens().forEach(t => {
+
+    //         const token =
+    //             document.querySelector(
+    //                 \`.token.token-\${players[current].color}[data-token="\${t}"]\`
+    //             );
+
+    //         if (token)
+    //             token.classList.add("highlight");
+    //     });
+    // }
+
+    // /* =========================
+    //    DICE
+    // ========================= */
+
+    // function setFace(value) {
+
+    //     for (let i=1;i<=6;i++)
+    //         diceEl.classList.remove(
+    //             "value-" + i
+    //         );
+
+    //     diceEl.classList.add(
+    //         "value-" + value
+    //     );
+    // }
+
+    // function updateDiceColor() {
+
+    //     diceEl.classList.remove(
+    //         "player-red",
+    //         "player-green",
+    //         "player-yellow",
+    //         "player-blue"
+    //     );
+
+    //     diceEl.classList.add(
+    //         "player-" +
+    //         players[current].color
+    //     );
+    // }
+
+    // /* =========================
+    //    ROLL
+    // ========================= */
+
+    // function rollDice() {
+
+    //     if (
+    //         rolled ||
+    //         rolling ||
+    //         gameOver
+    //     )
+    //         return;
+
+    //     rolling = true;
+    //     rolled = true;
+
+    //     rollBtn.disabled = true;
+
+    //     updateDiceColor();
+
+    //     dice =
+    //         Math.floor(
+    //             Math.random() * 6
+    //         ) + 1;
+
+    //     const targets = {
+    //         1: [0,0],
+    //         2: [0,90],
+    //         3: [-90,0],
+    //         4: [90,0],
+    //         5: [0,-90],
+    //         6: [0,180]
+    //     };
+
+    //     const [x,y] =
+    //         targets[dice];
+
+    //     diceEl.style.setProperty(
+    //         "--target-x",
+    //         (720 + x) + "deg"
+    //     );
+
+    //     diceEl.style.setProperty(
+    //         "--target-y",
+    //         (720 + y) + "deg"
+    //     );
+
+    //     diceEl.classList.remove("rolling");
+
+    //     void diceEl.offsetWidth;
+
+    //     diceEl.classList.add("rolling");
+
+    //     stage.classList.add("is-rolling");
+
+    //     if (dice === 6)
+    //         sixes++;
+    //     else
+    //         sixes = 0;
+
+    //     timer(() => {
+
+    //         diceEl.classList.remove("rolling");
+
+    //         stage.classList.remove("is-rolling");
+
+    //         setFace(dice);
+
+    //         rolling = false;
+
+    //         if (sixes >= 3) {
+
+    //             status.textContent =
+    //                 "⚠️ Three 6s! Turn lost.";
+
+    //             timer(() => {
+
+    //                 sixes = 0;
+    //                 extraTurn = false;
+
+    //                 nextTurn();
+
+    //             },700);
+
+    //             return;
+    //         }
+
+    //         const moves =
+    //             validTokens();
+
+    //         if (!moves.length) {
+
+    //             status.textContent =
+    //                 players[current].name +
+    //                 " has no valid move.";
+
+    //             timer(nextTurn,800);
+
+    //             return;
+    //         }
+
+    //         if (players[current].isAI) {
+
+    //             status.textContent =
+    //                 "🤖 " +
+    //                 players[current].name +
+    //                 " is thinking...";
+
+    //             timer(() => {
+
+    //                 const chosen =
+    //                     chooseAIMove(moves);
+
+    //                 moveToken(
+    //                     current,
+    //                     chosen
+    //                 );
+
+    //             },650);
+
+    //         } else if (moves.length === 1) {
+
+    //             status.textContent =
+    //                 "Automatic move...";
+
+    //             timer(() => {
+
+    //                 if (
+    //                     !rolled ||
+    //                     rolling ||
+    //                     gameOver
+    //                 )
+    //                     return;
+
+    //                 moveToken(
+    //                     current,
+    //                     moves[0]
+    //                 );
+
+    //             },350);
+
+    //         } else {
+
+    //             status.textContent =
+    //                 players[current].name +
+    //                 ": choose a token";
+
+    //             highlight();
+    //         }
+
+    //     },900);
+    // }
+
+    // /* =========================
+    //    AI
+    // ========================= */
+
+    // function chooseAIMove(moves) {
+
+    //     let best =
+    //         moves[0];
+
+    //     let bestScore = -Infinity;
+
+    //     moves.forEach(t => {
+
+    //         const target =
+    //             calcMove(
+    //                 current,
+    //                 positions[current][t],
+    //                 dice
+    //             );
+
+    //         let score = 0;
+
+    //         if (target === 0)
+    //             score += 80;
+
+    //         if (target === 56)
+    //             score += 100;
+
+    //         if (
+    //             target >= 0 &&
+    //             target <= 50
+    //         ) {
+
+    //             const landed =
+    //                 absolute(
+    //                     current,
+    //                     target
+    //                 );
+
+    //             if (!SAFE.includes(landed)) {
+
+    //                 players.forEach((op,oi) => {
+
+    //                     if (
+    //                         oi === current ||
+    //                         !op.active
+    //                     )
+    //                         return;
+
+    //                     positions[oi].forEach(pos => {
+
+    //                         if (
+    //                             pos >= 0 &&
+    //                             pos <= 50 &&
+    //                             absolute(oi,pos) === landed
+    //                         ) {
+    //                             score += 70;
+    //                         }
+    //                     });
+    //                 });
+    //             }
+    //         }
+
+    //         score += target;
+
+    //         if (score > bestScore) {
+
+    //             bestScore = score;
+    //             best = t;
+    //         }
+    //     });
+
+    //     return best;
+    // }
+
+    // /* =========================
+    //    MOVE TOKEN
+    // ========================= */
+
+    // function moveToken(p,t) {
+
+    //     if (
+    //         gameOver ||
+    //         rolling ||
+    //         !rolled ||
+    //         p !== current
+    //     )
+    //         return;
+
+    //     const old =
+    //         positions[p][t];
+
+    //     const next =
+    //         calcMove(
+    //             p,
+    //             old,
+    //             dice
+    //         );
+
+    //     if (next < 0)
+    //         return;
+
+    //     positions[p][t] = next;
+
+    //     document
+    //         .querySelectorAll(".token")
+    //         .forEach(e =>
+    //             e.classList.remove("highlight")
+    //         );
+
+    //     let captured = false;
+
+    //     if (
+    //         next >= 0 &&
+    //         next <= 50
+    //     ) {
+
+    //         const landed =
+    //             absolute(p,next);
+
+    //         if (!SAFE.includes(landed)) {
+
+    //             for (
+    //                 let op=0;
+    //                 op<players.length;
+    //                 op++
+    //             ) {
+
+    //                 if (
+    //                     op === p ||
+    //                     !players[op].active
+    //                 )
+    //                     continue;
+
+    //                 for (
+    //                     let ot=0;
+    //                     ot<4;
+    //                     ot++
+    //                 ) {
+
+    //                     const enemyPos =
+    //                         positions[op][ot];
+
+    //                     if (
+    //                         enemyPos >= 0 &&
+    //                         enemyPos <= 50 &&
+    //                         absolute(op,enemyPos) === landed
+    //                     ) {
+
+    //                         positions[op][ot] = -1;
+
+    //                         captured = true;
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     render();
+
+    //     const reachedHome =
+    //         next === 56;
+
+    //     if (
+    //         positions[p].every(
+    //             x => x === 56
+    //         ) &&
+    //         !rankings.includes(p)
+    //     ) {
+
+    //         rankings.push(p);
+
+    //         const place =
+    //             ["1st","2nd","3rd","4th"]
+    //             [rankings.length - 1];
+
+    //         status.textContent =
+    //             "🏆 " +
+    //             players[p].name +
+    //             " finished " +
+    //             place;
+
+    //         const activeCount =
+    //             players.filter(
+    //                 pl => pl.active
+    //             ).length;
+
+    //         const threshold =
+    //             activeCount === 2
+    //                 ? 1
+    //                 : activeCount - 1;
+
+    //         if (
+    //             rankings.length >= threshold
+    //         ) {
+
+    //             players.forEach(
+    //                 (pl,i) => {
+
+    //                     if (
+    //                         pl.active &&
+    //                         !rankings.includes(i)
+    //                     ) {
+    //                         rankings.push(i);
+    //                     }
+    //                 }
+    //             );
+
+    //             gameOver = true;
+
+    //             const result =
+    //                 rankings.map(
+    //                     (idx,i) =>
+    //                         ["1st","2nd","3rd","4th"][i] +
+    //                         ": " +
+    //                         players[idx].name
+    //                 ).join("  •  ");
+
+    //             status.textContent =
+    //                 "🎉 Game Over! " +
+    //                 result;
+
+    //             rollBtn.disabled = true;
+
+    //             return;
+    //         }
+    //     }
+
+    //     extraTurn =
+    //         dice === 6 ||
+    //         captured ||
+    //         reachedHome;
+
+    //     timer(nextTurn,350);
+    // }
+
+    // /* =========================
+    //    NEXT TURN
+    // ========================= */
+
+    // function nextTurn() {
+
+    //     if (gameOver)
+    //         return;
+
+    //     if (extraTurn) {
+
+    //         extraTurn = false;
+
+    //     } else {
+
+    //         const active =
+    //             getActivePlayers();
+
+    //         const index =
+    //             active.indexOf(current);
+
+    //         current =
+    //             index === -1
+    //                 ? active[0]
+    //                 : active[
+    //                     (index + 1) %
+    //                     active.length
+    //                 ];
+
+    //         sixes = 0;
+    //     }
+
+    //     rolled = false;
+    //     dice = null;
+
+    //     setFace(1);
+
+    //     rollBtn.disabled = false;
+
+    //     updateDiceColor();
+
+    //     status.textContent =
+    //         players[current].isAI
+    //             ? "🤖 " +
+    //               players[current].name +
+    //               "'s Turn"
+    //             : players[current].name +
+    //               "'s Turn";
+
+    //     render();
+
+    //     if (
+    //         players[current].isAI &&
+    //         !gameOver
+    //     ) {
+
+    //         timer(
+    //             rollDice,
+    //             600
+    //         );
+    //     }
+    // }
+
+    // /* =========================
+    //    NEW GAME
+    // ========================= */
+
+    // function newGame() {
+
+    //     clearTimers();
+
+    //     gameOver = false;
+
+    //     dice = null;
+
+    //     rolled = false;
+
+    //     rolling = false;
+
+    //     extraTurn = false;
+
+    //     sixes = 0;
+
+    //     rankings = [];
+
+    //     positions =
+    //         Array.from(
+    //             {length: players.length},
+    //             () => [-1,-1,-1,-1]
+    //         );
+
+    //     const active =
+    //         getActivePlayers();
+
+    //     current =
+    //         active.length
+    //             ? active[0]
+    //             : 0;
+
+    //     diceEl.classList.remove(
+    //         "rolling"
+    //     );
+
+    //     stage.classList.remove(
+    //         "is-rolling"
+    //     );
+
+    //     setFace(1);
+
+    //     updateDiceColor();
+
+    //     rollBtn.disabled = false;
+
+    //     status.textContent =
+    //         players[current].name +
+    //         "'s Turn";
+
+    //     render();
+
+    //     if (
+    //         players[current].isAI
+    //     ) {
+
+    //         timer(
+    //             rollDice,
+    //             600
+    //         );
+    //     }
+    // }
+
+    // /* =========================
+    //    BUTTON EVENTS
+    // ========================= */
+
+    // rollBtn.addEventListener(
+    //     "click",
+    //     rollDice
+    // );
+
+    // newGameBtn.addEventListener(
+    //     "click",
+    //     newGame
+    // );
+
+    // /* =========================
+    //    START
+    // ========================= */
+
+    // buildBoard();
+
+    // configurePlayers();
+
+    // newGame();
+
+    // })();
+    //         `,
+    //     },
+     // ludo2
     {
-      title: "🎲 Classic Ludo Deluxe",
+      title: "Classic Ludo Deluxe",
+
       html: `
-<div class="ludo-app">
+            <header class="game-header">
+                <div class="title-row">
+                    <span class="title-icon">🎲</span>
+                    <div>
+                        <h1>Classic Ludo Deluxe</h1>
+                        <p>No Blockades • Pass freely through occupied squares</p>
+                    </div>
+                </div>
+            </header>
 
-    <header class="game-header">
-        <div class="title-row">
-            <span class="title-icon">🎲</span>
-            <div>
-                <h1>Classic Ludo Deluxe</h1>
-                <p>No Blockades • Pass freely through occupied squares</p>
+            <div class="mode-selector">
+            <button class="mode-btn active" id="mode1vPC">
+                Player 👤 vs 🤖Computer
+            </button>
+            <button class="mode-btn" id="mode2P">
+                👥 2 Players
+            </button>
+            <button class="mode-btn" id="mode4P">
+                👥 4 Players
+            </button>
             </div>
-        </div>
-    </header>
 
-    <div class="mode-selector">
-        <button class="mode-btn active" data-mode="1vPC">
-            👤 vs 🤖 Computer
-        </button>
-
-        <button class="mode-btn" data-mode="2P">
-            👥 2 Players
-        </button>
-
-        <button class="mode-btn" data-mode="4P">
-            👥 4 Players
-        </button>
-    </div>
-
-    <main class="game-container">
-
-        <section class="board-panel">
-
-            <div class="board-frame">
+            <div class="game-container">
+            <div class="board-wrap">
                 <div class="ludo-board" id="board">
 
-                    <div class="yard yard-red">
-                        <div class="yard-inner">
-                            <div class="home-spot" data-player="0" data-token="0"></div>
-                            <div class="home-spot" data-player="0" data-token="1"></div>
-                            <div class="home-spot" data-player="0" data-token="2"></div>
-                            <div class="home-spot" data-player="0" data-token="3"></div>
-                        </div>
+                <div class="yard yard-red">
+                    <div class="yard-inner">
+                    <div class="home-spot" data-player="0" data-token="0"></div>
+                    <div class="home-spot" data-player="0" data-token="1"></div>
+                    <div class="home-spot" data-player="0" data-token="2"></div>
+                    <div class="home-spot" data-player="0" data-token="3"></div>
                     </div>
+                </div>
 
-                    <div class="yard yard-green">
-                        <div class="yard-inner">
-                            <div class="home-spot" data-player="1" data-token="0"></div>
-                            <div class="home-spot" data-player="1" data-token="1"></div>
-                            <div class="home-spot" data-player="1" data-token="2"></div>
-                            <div class="home-spot" data-player="1" data-token="3"></div>
-                        </div>
+                <div class="yard yard-green">
+                    <div class="yard-inner">
+                    <div class="home-spot" data-player="1" data-token="0"></div>
+                    <div class="home-spot" data-player="1" data-token="1"></div>
+                    <div class="home-spot" data-player="1" data-token="2"></div>
+                    <div class="home-spot" data-player="1" data-token="3"></div>
                     </div>
+                </div>
 
-                    <div class="yard yard-yellow">
-                        <div class="yard-inner">
-                            <div class="home-spot" data-player="2" data-token="0"></div>
-                            <div class="home-spot" data-player="2" data-token="1"></div>
-                            <div class="home-spot" data-player="2" data-token="2"></div>
-                            <div class="home-spot" data-player="2" data-token="3"></div>
-                        </div>
+                <div class="yard yard-yellow">
+                    <div class="yard-inner">
+                    <div class="home-spot" data-player="2" data-token="0"></div>
+                    <div class="home-spot" data-player="2" data-token="1"></div>
+                    <div class="home-spot" data-player="2" data-token="2"></div>
+                    <div class="home-spot" data-player="2" data-token="3"></div>
                     </div>
+                </div>
 
-                    <div class="yard yard-blue">
-                        <div class="yard-inner">
-                            <div class="home-spot" data-player="3" data-token="0"></div>
-                            <div class="home-spot" data-player="3" data-token="1"></div>
-                            <div class="home-spot" data-player="3" data-token="2"></div>
-                            <div class="home-spot" data-player="3" data-token="3"></div>
-                        </div>
+                <div class="yard yard-blue">
+                    <div class="yard-inner">
+                    <div class="home-spot" data-player="3" data-token="0"></div>
+                    <div class="home-spot" data-player="3" data-token="1"></div>
+                    <div class="home-spot" data-player="3" data-token="2"></div>
+                    <div class="home-spot" data-player="3" data-token="3"></div>
                     </div>
+                </div>
 
-                    <div class="center-home">
-                        <div class="center-red"></div>
-                        <div class="center-green"></div>
-                        <div class="center-yellow"></div>
-                        <div class="center-blue"></div>
+                <div class="center-home">
+                    <div class="center-red"></div>
+                    <div class="center-green"></div>
+                    <div class="center-yellow"></div>
+                    <div class="center-blue"></div>
 
-                        <div class="center-triangle">
-                            <div class="center-slot" id="homeSlotRed"></div>
-                            <div class="center-slot" id="homeSlotGreen"></div>
-                            <div class="center-slot" id="homeSlotYellow"></div>
-                            <div class="center-slot" id="homeSlotBlue"></div>
-                        </div>
+                    <div class="center-triangle">
+                    <div class="center-slot" id="homeSlotRed"></div>
+                    <div class="center-slot" id="homeSlotGreen"></div>
+                    <div class="center-slot" id="homeSlotYellow"></div>
+                    <div class="center-slot" id="homeSlotBlue"></div>
                     </div>
+                </div>
 
                 </div>
             </div>
 
-        </section>
+            <aside class="control-panel">
 
-        <aside class="control-panel">
-
-            <div class="turn-card">
-                <div class="turn-label">CURRENT TURN</div>
                 <div class="status-box" id="statusText">
-                    🔴 Red's Turn
+                🔴 Red's Turn
                 </div>
-            </div>
 
-            <div class="dice-card">
+                <div class="dice-section">
 
-                <div class="dice-label">DICE</div>
-
-                <div class="dice-stage" id="diceStage">
-
+                <div class="dice-stage" id="diceStage" aria-label="3D dice">
                     <div class="dice-cube player-red" id="dice">
 
-                        <div class="dice-face face-1">
-                            <span class="pip p-center"></span>
-                        </div>
+                    <div class="dice-face face-1">
+                        <div class="pip p-center"></div>
+                    </div>
 
-                        <div class="dice-face face-2">
-                            <span class="pip p-top-left"></span>
-                            <span class="pip p-bot-right"></span>
-                        </div>
+                    <div class="dice-face face-2">
+                        <div class="pip p-top-left"></div>
+                        <div class="pip p-bot-right"></div>
+                    </div>
 
-                        <div class="dice-face face-3">
-                            <span class="pip p-top-left"></span>
-                            <span class="pip p-center"></span>
-                            <span class="pip p-bot-right"></span>
-                        </div>
+                    <div class="dice-face face-3">
+                        <div class="pip p-top-left"></div>
+                        <div class="pip p-center"></div>
+                        <div class="pip p-bot-right"></div>
+                    </div>
 
-                        <div class="dice-face face-4">
-                            <span class="pip p-top-left"></span>
-                            <span class="pip p-top-right"></span>
-                            <span class="pip p-bot-left"></span>
-                            <span class="pip p-bot-right"></span>
-                        </div>
+                    <div class="dice-face face-4">
+                        <div class="pip p-top-left"></div>
+                        <div class="pip p-top-right"></div>
+                        <div class="pip p-bot-left"></div>
+                        <div class="pip p-bot-right"></div>
+                    </div>
 
-                        <div class="dice-face face-5">
-                            <span class="pip p-top-left"></span>
-                            <span class="pip p-top-right"></span>
-                            <span class="pip p-center"></span>
-                            <span class="pip p-bot-left"></span>
-                            <span class="pip p-bot-right"></span>
-                        </div>
+                    <div class="dice-face face-5">
+                        <div class="pip p-top-left"></div>
+                        <div class="pip p-top-right"></div>
+                        <div class="pip p-center"></div>
+                        <div class="pip p-bot-left"></div>
+                        <div class="pip p-bot-right"></div>
+                    </div>
 
-                        <div class="dice-face face-6">
-                            <span class="pip p-top-left"></span>
-                            <span class="pip p-top-right"></span>
-                            <span class="pip p-mid-left"></span>
-                            <span class="pip p-mid-right"></span>
-                            <span class="pip p-bot-left"></span>
-                            <span class="pip p-bot-right"></span>
-                        </div>
+                    <div class="dice-face face-6">
+                        <div class="pip p-top-left"></div>
+                        <div class="pip p-top-right"></div>
+                        <div class="pip p-mid-left"></div>
+                        <div class="pip p-mid-right"></div>
+                        <div class="pip p-bot-left"></div>
+                        <div class="pip p-bot-right"></div>
+                    </div>
 
                     </div>
                 </div>
 
-                <button id="rollBtn" class="roll-btn">
-                    🎲 ROLL DICE
+                <button id="rollBtn" type="button">
+                    ROLL DICE
                 </button>
 
-                <button id="newGameBtn" class="new-game-btn">
-                    ↻ NEW GAME
+                <button class="reset" id="newGameBtn" type="button">
+                    NEW GAME
                 </button>
 
-            </div>
-
-            <div class="rules-box">
-
-                <div class="rules-title">
-                    <span>📜</span>
-                    <strong>GAME RULES</strong>
                 </div>
 
+                <div class="rules-box">
+                <h3>Rules</h3>
                 <ul>
-                    <li>Roll <b>6</b> to bring a token out.</li>
-                    <li>Rolling a <b>6</b> gives another turn.</li>
-                    <li>Capturing gives another turn.</li>
-                    <li>Reaching Home gives another turn.</li>
-                    <li>No blockades — tokens can pass freely.</li>
-                    <li>Three consecutive 6s lose the turn.</li>
+                    <li>Roll <b>6</b> to enter base or move.</li>
+                    <li>Rolling 6, capturing, or landing Home gives an extra turn.</li>
+                    <li>
+                    <b>No Blockades:</b>
+                    Tokens may freely pass through any occupied squares.
+                    </li>
+                    <li>Game continues until rankings are filled!</li>
                 </ul>
+                </div>
 
+                <div class="legend" id="legendContainer">
+                <span>🔴 Red</span>
+                <span>🟢 Green</span>
+                <span>🟡 Yellow</span>
+                <span>🔵 Blue</span>
+                </div>
+
+            </aside>
             </div>
-
-            <div class="legend" id="legendContainer"></div>
-
-        </aside>
-
-    </main>
-
-</div>
         `,
+
       css: `
-html,
-body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    min-height: 100%;
-}
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    min-height: 100vh;
-    font-family:
-        Inter,
-        Segoe UI,
-        Roboto,
-        Arial,
-        sans-serif;
-
-    color: #fff;
-
-    background:
-        radial-gradient(
-            circle at 50% 0%,
-            #35425b 0%,
-            #18202d 45%,
-            #0b1018 100%
-        );
+            * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            }
+
+            :root {
+            --red: #e53935;
+            --green: #20b864;
+            --yellow: #f4c20d;
+            --blue: #2583d8;
+
+            --red-soft: #ffb0ae;
+            --green-soft: #a6e7bd;
+            --yellow-soft: #f9e69a;
+            --blue-soft: #a9d5f5;
 
-    overflow-x: hidden;
-    zoom: 0.75;
-}
+            --ink: #20242a;
+            --line: #34383d;
+            }
+
+            body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 22px;
 
-button {
-    font: inherit;
-}
+            background:
+                radial-gradient(
+                circle at 50% 15%,
+                #394252,
+                #171b22 70%
+                );
 
-.ludo-app {
-    width: 100%;
-    min-height: 100vh;
+            color: #fff;
+            font-family: Segoe UI, Tahoma, sans-serif;
+            }
 
-    padding: 24px;
+            /* =========================
+                HEADER
+            ========================= */
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+            .game-header {
+                text-align: center;
+                margin-bottom: 18px;
+            }
 
-    position: relative;
-}
+            .title-row {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 12px;
+            }
 
-/* =========================
-   HEADER
-========================= */
+            .title-icon {
+                font-size: 42px;
+                filter:
+                    drop-shadow(0 5px 8px rgba(0,0,0,.5));
+            }
 
-.game-header {
-    text-align: center;
-    margin-bottom: 18px;
-}
+            .game-header h1 {
+                margin: 0;
 
-.title-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-}
+                font-size:
+                    clamp(25px, 4vw, 40px);
 
-.title-icon {
-    font-size: 42px;
-    filter:
-        drop-shadow(0 5px 8px rgba(0,0,0,.5));
-}
+                line-height: 1.1;
 
-.game-header h1 {
-    margin: 0;
+                font-weight: 900;
 
-    font-size:
-        clamp(25px, 4vw, 40px);
+                background:
+                    linear-gradient(
+                        90deg,
+                        #ffffff,
+                        #ffd76a,
+                        #ffffff
+                    );
 
-    line-height: 1.1;
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
 
-    font-weight: 900;
+                letter-spacing: -.8px;
+            }
 
-    background:
-        linear-gradient(
-            90deg,
-            #ffffff,
-            #ffd76a,
-            #ffffff
-        );
+            .game-header p {
+                margin: 6px 0 0;
 
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+                color: #aeb9c9;
 
-    letter-spacing: -.8px;
-}
+                font-size: 13px;
+            }
 
-.game-header p {
-    margin: 6px 0 0;
+            /* =========================
+                MODE BUTTONS
+            ========================= */
 
-    color: #aeb9c9;
+            .mode-selector {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
 
-    font-size: 13px;
-}
+                gap: 8px;
 
-/* =========================
-   MODE BUTTONS
-========================= */
+                margin-bottom: 20px;
 
-.mode-selector {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+                padding: 7px;
 
-    gap: 8px;
+                border-radius: 14px;
 
-    margin-bottom: 20px;
+                background: rgba(255,255,255,.07);
 
-    padding: 7px;
+                border: 1px solid rgba(255,255,255,.1);
 
-    border-radius: 14px;
+                box-shadow:
+                    inset 0 1px rgba(255,255,255,.08),
+                    0 8px 25px rgba(0,0,0,.25);
+            }
 
-    background: rgba(255,255,255,.07);
+            .mode-btn {
+                border: 0;
 
-    border: 1px solid rgba(255,255,255,.1);
+                padding: 10px 17px;
 
-    box-shadow:
-        inset 0 1px rgba(255,255,255,.08),
-        0 8px 25px rgba(0,0,0,.25);
-}
+                border-radius: 10px;
 
-.mode-btn {
-    border: 0;
+                background:
+                    linear-gradient(
+                        145deg,
+                        #343e4d,
+                        #252c38
+                    );
 
-    padding: 10px 17px;
+                color: #d9e0e8;
 
-    border-radius: 10px;
+                font-size: 13px;
 
-    background:
-        linear-gradient(
-            145deg,
-            #343e4d,
-            #252c38
-        );
+                font-weight: 800;
 
-    color: #d9e0e8;
+                cursor: pointer;
 
-    font-size: 13px;
+                transition:
+                    transform .2s ease,
+                    box-shadow .2s ease,
+                    background .2s ease;
+            }
 
-    font-weight: 800;
+            .mode-btn:hover {
+                transform: translateY(-2px);
 
-    cursor: pointer;
+                color: #fff;
+            }
 
-    transition:
-        transform .2s ease,
-        box-shadow .2s ease,
-        background .2s ease;
-}
+            .mode-btn.active {
+                color: #fff;
 
-.mode-btn:hover {
-    transform: translateY(-2px);
+                background:
+                    linear-gradient(
+                        145deg,
+                        #ffb347,
+                        #e56c18
+                    );
 
-    color: #fff;
-}
+                box-shadow:
+                    0 5px 16px rgba(229,108,24,.4),
+                    inset 0 1px rgba(255,255,255,.35);
+            }
 
-.mode-btn.active {
-    color: #fff;
+            .game-container {
+            display: flex;
+            gap: 26px;
+            align-items: center;
 
-    background:
-        linear-gradient(
-            145deg,
-            #ffb347,
-            #e56c18
-        );
+            padding: 24px;
+            border-radius: 22px;
 
-    box-shadow:
-        0 5px 16px rgba(229,108,24,.4),
-        inset 0 1px rgba(255,255,255,.35);
-}
+            background: #ffffff0d;
+            border: 1px solid #ffffff18;
 
-/* =========================
-   MAIN CONTAINER
-========================= */
+            box-shadow: 0 20px 55px #0008;
+            backdrop-filter: blur(12px);
+            }
 
-.game-container {
-    width: min(1250px, 100%);
+            .board-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            }
 
-    display: flex;
+            .ludo-board {
+            width: min(72vw, 620px);
+            aspect-ratio: 1;
 
-    align-items: center;
-    justify-content: center;
+            display: grid;
+            grid-template-columns: repeat(15, 1fr);
+            grid-template-rows: repeat(15, 1fr);
 
-    gap: 26px;
+            position: relative;
+            overflow: hidden;
 
-    padding: 22px;
+            background: #fff;
+            border: 5px solid #20242a;
+            border-radius: 16px;
 
-    border-radius: 26px;
+            box-shadow: 0 16px 35px #0009;
+            }
 
-    background:
-        linear-gradient(
-            145deg,
-            rgba(255,255,255,.1),
-            rgba(255,255,255,.035)
-        );
+            .yard {
+            position: absolute;
+            width: 40%;
+            height: 40%;
 
-    border:
-        1px solid rgba(255,255,255,.12);
+            padding: 4.5%;
 
-    box-shadow:
-        0 30px 70px rgba(0,0,0,.55),
-        inset 0 1px rgba(255,255,255,.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            }
 
-    backdrop-filter: blur(18px);
-}
+            .yard-red {
+            left: 0;
+            top: 0;
+            background: var(--red);
+            }
 
-/* =========================
-   BOARD
-========================= */
+            .yard-green {
+            right: 0;
+            top: 0;
+            background: var(--green);
+            }
 
-.board-panel {
-    flex: 1;
+            .yard-yellow {
+            right: 0;
+            bottom: 0;
+            background: var(--yellow);
+            }
 
-    display: flex;
+            .yard-blue {
+            left: 0;
+            bottom: 0;
+            background: var(--blue);
+            }
 
-    justify-content: center;
-    align-items: center;
+            .yard-inner {
+            width: 100%;
+            height: 100%;
 
-    min-width: 0;
-}
+            background: #fff;
+            border: 2px solid #0002;
+            border-radius: 13%;
 
-.board-frame {
-    width: min(68vw, 650px);
+            padding: 12%;
 
-    padding: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 12%;
 
-    border-radius: 24px;
+            box-shadow: inset 0 2px 8px #0002;
+            }
 
-    background:
-        linear-gradient(
-            145deg,
-            #d8dde5,
-            #6e7785 45%,
-            #343b47
-        );
+            .home-spot {
+            min-width: 0;
+            min-height: 0;
 
-    box-shadow:
-        0 18px 35px rgba(0,0,0,.55),
-        inset 0 2px 3px rgba(255,255,255,.5);
-}
+            border-radius: 50%;
+            background: #f0f1f3;
 
-.ludo-board {
-    width: 100%;
+            border: 3px solid #d4d7db;
 
-    aspect-ratio: 1 / 1;
+            box-shadow:
+                inset 0 4px 8px #0002,
+                0 2px 4px #0002;
 
-    position: relative;
+            position: relative;
 
-    overflow: hidden;
+            display: grid;
+            place-items: center;
+            }
 
-    display: block;
+            .home-spot[data-player="0"] {
+            background: #ffe1e0;
+            }
 
-    background: #fff;
+            .home-spot[data-player="1"] {
+            background: #dcf7e7;
+            }
 
-    border: 4px solid #171b21;
+            .home-spot[data-player="2"] {
+            background: #fff5c9;
+            }
 
-    border-radius: 15px;
+            .home-spot[data-player="3"] {
+            background: #dff0ff;
+            }
 
-    box-shadow:
-        0 7px 20px rgba(0,0,0,.45),
-        inset 0 0 0 1px rgba(255,255,255,.7);
-}
+            .cell {
+            position: absolute;
 
-/* =========================
-   YARDS
-========================= */
+            width: 6.6667%;
+            height: 6.6667%;
 
-.yard {
-    position: absolute;
+            border: 1px solid #0002;
 
-    width: 40%;
-    height: 40%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            }
 
-    padding: 4.5%;
+            .cell.track {
+            background: #fff;
+            }
 
-    display: flex;
+            .cell.start-red {
+            background: #ff817d;
+            }
 
-    align-items: center;
-    justify-content: center;
+            .cell.start-green {
+            background: #65d895;
+            }
 
-    z-index: 5;
-}
+            .cell.start-yellow {
+            background: #ffe06b;
+            }
 
-.yard-red {
-    left: 0;
-    top: 0;
+            .cell.start-blue {
+            background: #70b8ef;
+            }
 
-    background:
-        linear-gradient(145deg,#ff554f,#b91d1a);
-}
+            .cell.home-red {
+            background: var(--red-soft);
+            }
+
+            .cell.home-green {
+            background: var(--green-soft);
+            }
+
+            .cell.home-yellow {
+            background: var(--yellow-soft);
+            }
+
+            .cell.home-blue {
+            background: var(--blue-soft);
+            }
+
+            .safe-cell::after {
+            content: "★";
+
+            font-size: 12px;
+            color: #4a4f55;
+
+            position: absolute;
+            opacity: 0.75;
+            }
+
+            .token {
+            width: clamp(15px, 2.4vw, 20px);
+            height: clamp(15px, 2.4vw, 20px);
+
+            border-radius: 50%;
+            border: 2px solid #fff;
+
+            box-shadow:
+                0 3px 6px #0008,
+                inset 2px 2px 3px #fff6;
+
+            position: relative;
+            z-index: 10;
+
+            cursor: pointer;
+
+            transition: transform 0.15s ease;
+            }
+
+            .token:hover {
+            transform: scale(1.12);
+            }
+
+            .token-red {
+            background:
+                radial-gradient(
+                circle at 30% 25%,
+                #ff6b66,
+                #b91411 75%,
+                #780b09
+                );
+            }
+
+            .token-green {
+            background:
+                radial-gradient(
+                circle at 30% 25%,
+                #61e89a,
+                #15944f 75%,
+                #086735
+                );
+            }
+
+            .token-yellow {
+            background:
+                radial-gradient(
+                circle at 30% 25%,
+                #fff27b,
+                #d7a900 75%,
+                #967500
+                );
+            }
+
+            .token-blue {
+            background:
+                radial-gradient(
+                circle at 30% 25%,
+                #67c3ff,
+                #176bab 75%,
+                #0b4774
+                );
+            }
+
+            .token.highlight {
+            animation: tokenPulse 0.75s infinite alternate;
+
+            box-shadow:
+                0 0 12px #fff,
+                0 3px 7px #0008;
+            }
+
+            @keyframes tokenPulse {
+            to {
+                transform: scale(1.22);
+                filter: brightness(1.15);
+            }
+            }
+
+            .cell.stack-1 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            }
+
+            .cell.stack-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            place-items: center;
+            }
+
+            .cell.stack-3,
+            .cell.stack-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            place-items: center;
+            }
+
+            .cell.stack-2 .token,
+            .cell.stack-3 .token,
+            .cell.stack-4 .token {
+            width: 72%;
+            height: 72%;
+
+            min-width: 10px;
+            min-height: 10px;
+            }
+
+            .center-home {
+            position: absolute;
+
+            left: 40%;
+            top: 40%;
+
+            width: 20%;
+            height: 20%;
+
+            background: #fff;
+            border: 2px solid #2a2e33;
+
+            z-index: 20;
+            overflow: hidden;
+            }
+
+            .center-red,
+            .center-green,
+            .center-yellow,
+            .center-blue {
+            position: absolute;
+            inset: 0;
+            }
+
+            .center-red {
+            background: var(--red);
+            clip-path: polygon(
+                0 0,
+                50% 50%,
+                0 100%
+            );
+            }
+
+            .center-green {
+            background: var(--green);
+            clip-path: polygon(
+                0 0,
+                100% 0,
+                50% 50%
+            );
+            }
+
+            .center-yellow {
+            background: var(--yellow);
+            clip-path: polygon(
+                100% 0,
+                100% 100%,
+                50% 50%
+            );
+            }
+
+            .center-blue {
+            background: var(--blue);
+            clip-path: polygon(
+                0 100%,
+                100% 100%,
+                50% 50%
+            );
+            }
 
-.yard-green {
-    right: 0;
-    top: 0;
+            .center-triangle {
+            position: absolute;
 
-    background:
-        linear-gradient(145deg,#4de58b,#12934d);
-}
+            left: 50%;
+            top: 50%;
+
+            transform: translate(-50%, -50%);
 
-.yard-yellow {
-    right: 0;
-    bottom: 0;
+            z-index: 3;
+
+            width: 52px;
+            height: 52px;
+
+            display: grid;
 
-    background:
-        linear-gradient(145deg,#ffe86d,#d6a900);
-}
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
 
-.yard-blue {
-    left: 0;
-    bottom: 0;
+            place-items: center;
 
-    background:
-        linear-gradient(145deg,#57b8f7,#176cac);
-}
+            border-radius: 50%;
+
+            background: #fff;
+            border: 2px solid #333;
+
+            box-shadow: 0 2px 5px #0005;
 
-.yard-inner {
-    width: 100%;
-    height: 100%;
+            padding: 4px;
+            }
+
+            .center-slot {
+            width: 100%;
+            height: 100%;
 
-    padding: 12%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
-    display: grid;
+            flex-wrap: wrap;
+            gap: 2px;
 
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
+            margin-top: -40px;
+            margin-left: -30px;
+            }
 
-    gap: 12%;
+            .control-panel {
+            width: 310px;
 
-    background:
-        linear-gradient(
-            145deg,
-            #ffffff,
-            #eef1f4
-        );
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
 
-    border:
-        2px solid rgba(0,0,0,.18);
+            padding: 20px;
 
-    border-radius: 16%;
+            background: #0003;
+            border-radius: 18px;
+            }
 
-    box-shadow:
-        inset 0 5px 12px rgba(0,0,0,.12),
-        0 5px 12px rgba(0,0,0,.2);
-}
+            .status-box {
+            padding: 11px;
 
-.home-spot {
-    min-width: 0;
-    min-height: 0;
+            border-radius: 10px;
 
-    position: relative;
+            background: #ffffff12;
 
-    display: grid;
-    place-items: center;
+            text-align: center;
+            font-weight: 700;
+            }
 
-    border-radius: 50%;
+            .dice-section {
+            display: flex;
+            flex-direction: column;
 
-    border: 3px solid #d4d8de;
+            align-items: center;
+            gap: 12px;
+            }
 
-    background: #f1f3f5;
+            button {
+            border: 0;
+            border-radius: 10px;
 
-    box-shadow:
-        inset 0 5px 10px rgba(0,0,0,.15),
-        0 2px 4px rgba(0,0,0,.15);
-}
+            padding: 12px 22px;
 
-.home-spot[data-player="0"] {
-    background: #ffdedd;
-}
+            background:
+                linear-gradient(
+                #ff9d43,
+                #df6717
+                );
 
-.home-spot[data-player="1"] {
-    background: #d8f6e5;
-}
+            color: #fff;
 
-.home-spot[data-player="2"] {
-    background: #fff1b5;
-}
+            font-weight: 800;
+            cursor: pointer;
 
-.home-spot[data-player="3"] {
-    background: #d9edff;
-}
+            box-shadow: 0 5px 10px #0005;
+            }
 
-/* =========================
-   TRACK
-========================= */
+            button:hover:not(:disabled) {
+            filter: brightness(1.08);
+            transform: translateY(-1px);
+            }
 
-.cell {
-    position: absolute;
+            button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            }
 
-    width: 6.6666667%;
-    height: 6.6666667%;
+            .rules-box {
+            font-size: 0.78rem;
+            line-height: 1.45;
 
-    display: flex;
+            background: #0004;
+            padding: 12px;
 
-    align-items: center;
-    justify-content: center;
+            border-radius: 10px;
+            }
 
-    border:
-        1px solid rgba(0,0,0,.12);
+            .rules-box h3 {
+            color: #ffd84b;
+            margin-bottom: 6px;
+            }
 
-    z-index: 2;
-}
+            .rules-box ul {
+            padding-left: 17px;
+            }
 
-.cell.track {
-    background:
-        linear-gradient(
-            145deg,
-            #ffffff,
-            #edf0f3
-        );
-}
+            .dice-stage {
+            width: 130px;
+            height: 120px;
 
-.cell.start-red {
-    background: #ff7772;
-}
+            display: grid;
+            place-items: center;
 
-.cell.start-green {
-    background: #64d795;
-}
+            position: relative;
+            perspective: 1000px;
+            }
 
-.cell.start-yellow {
-    background: #ffe16a;
-}
+            .dice-stage::after {
+            content: "";
 
-.cell.start-blue {
-    background: #72baf0;
-}
+            position: absolute;
 
-.cell.home-red {
-    background: #ffb0ae;
-}
+            bottom: 8px;
+            left: 50%;
 
-.cell.home-green {
-    background: #a6e7bd;
-}
+            width: 55px;
+            height: 12px;
 
-.cell.home-yellow {
-    background: #f9e69a;
-}
+            transform: translateX(-50%);
 
-.cell.home-blue {
-    background: #a9d5f5;
-}
+            border-radius: 50%;
 
-.safe-cell::after {
-    content: "★";
+            background: #0006;
 
-    position: absolute;
+            filter: blur(5px);
 
-    font-size:
-        clamp(20px, 1.4vw, 14px);
+            z-index: 0;
+            }
 
-    color: #555d67;
+            .dice-cube {
+            --d: 58px;
 
-    opacity: 1;
-}
+            width: var(--d);
+            height: var(--d);
 
-/* =========================
-   TOKENS
-========================= */
+            position: relative;
 
-.token {
-    width:
-        clamp(16px, 2.6vw, 25px);
+            transform-style: preserve-3d;
 
-    height:
-        clamp(16px, 2.6vw, 25px);
+            transform: translate3d(0, 0, 0);
 
-    border-radius: 50%;
+            z-index: 2;
 
-    border: 2px solid #fff;
+            will-change: transform;
 
-    position: relative;
+            transition:
+                transform
+                0.8s
+                cubic-bezier(
+                0.15,
+                0.85,
+                0.25,
+                1
+                );
+            }
 
-    z-index: 50;
+            .dice-face {
+            position: absolute;
+            inset: 0;
 
-    cursor: pointer;
+            border-radius: 10px;
 
-    box-shadow:
-        0 4px 7px rgba(0,0,0,.55),
-        inset 2px 2px 4px rgba(255,255,255,.7),
-        inset -3px -3px 5px rgba(0,0,0,.25);
+            border: 1px solid
+                rgba(255, 255, 255, 0.4);
 
-    transition:
-        transform .18s ease,
-        filter .18s ease;
-}
+            background:
+                linear-gradient(
+                145deg,
+                var(--face-tint-light, #fff),
+                var(--face-tint-base, #f1f2f4) 60%,
+                var(--face-tint-dark, #c8cdd3)
+                );
 
-.token:hover {
-    transform: scale(1.16);
-    filter: brightness(1.1);
-}
+            box-shadow:
+                inset 2px 2px 5px
+                rgba(255, 255, 255, 0.7),
+                inset -3px -3px 6px
+                rgba(0, 0, 0, 0.15),
+                0 0 2px
+                rgba(0, 0, 0, 0.1);
 
-.token-red {
-    background:
-        radial-gradient(
-            circle at 30% 25%,
-            #ff827e,
-            #d62520 60%,
-            #7c0b09
-        );
-}
+            display: grid;
 
-.token-green {
-    background:
-        radial-gradient(
-            circle at 30% 25%,
-            #7af2aa,
-            #16a457 60%,
-            #075f31
-        );
-}
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
 
-.token-yellow {
-    background:
-        radial-gradient(
-            circle at 30% 25%,
-            #fff99b,
-            #e0b400 60%,
-            #8e6d00
-        );
-}
+            place-items: center;
 
-.token-blue {
-    background:
-        radial-gradient(
-            circle at 30% 25%,
-            #78ceff,
-            #207dc0 60%,
-            #084a79
-        );
-}
+            padding: 8px;
 
-.token.highlight {
-    animation:
-        tokenGlow .75s ease-in-out infinite alternate;
+            backface-visibility: visible;
+            }
 
-    box-shadow:
-        0 0 0 3px rgba(255,255,255,.65),
-        0 0 18px rgba(255,255,255,.95),
-        0 5px 10px rgba(0,0,0,.6);
-}
+            .dice-cube.player-red {
+            --face-tint-light: #ffdad6;
+            --face-tint-base: #ffb0ae;
+            --face-tint-dark: #e53935;
+            }
 
-@keyframes tokenGlow {
-    from {
-        transform: scale(1);
-    }
+            .dice-cube.player-green {
+            --face-tint-light: #dbf7e5;
+            --face-tint-base: #a6e7bd;
+            --face-tint-dark: #20b864;
+            }
 
-    to {
-        transform: scale(1.25);
-    }
-}
+            .dice-cube.player-yellow {
+            --face-tint-light: #fffbe0;
+            --face-tint-base: #f9e69a;
+            --face-tint-dark: #f4c20d;
+            }
 
-/* STACKS */
+            .dice-cube.player-blue {
+            --face-tint-light: #daf0ff;
+            --face-tint-base: #a9d5f5;
+            --face-tint-dark: #2583d8;
+            }
 
-.cell.stack-1 {
-    display: flex;
-}
+            .dice-cube.player-red .pip {
+            background: #780b09;
+            }
 
-.cell.stack-2,
-.cell.stack-3,
-.cell.stack-4 {
-    display: grid;
+            .dice-cube.player-green .pip {
+            background: #086735;
+            }
 
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
+            .dice-cube.player-yellow .pip {
+            background: #5c4800;
+            }
 
-    place-items: center;
-}
+            .dice-cube.player-blue .pip {
+            background: #0b4774;
+            }
 
-.cell.stack-2 .token,
-.cell.stack-3 .token,
-.cell.stack-4 .token {
-    width: 72%;
-    height: 72%;
-
-    min-width: 8px;
-    min-height: 8px;
-}
-
-/* =========================
-   CENTER
-========================= */
-
-.center-home {
-    position: absolute;
-
-    left: 40%;
-    top: 40%;
-
-    width: 20%;
-    height: 20%;
-
-    overflow: hidden;
-
-    background: #fff;
-
-    border: 2px solid #20242a;
-
-    z-index: 30;
-}
-
-.center-red,
-.center-green,
-.center-yellow,
-.center-blue {
-    position: absolute;
-
-    inset: 0;
-}
-
-.center-red {
-    background: #e53935;
-
-    clip-path:
-        polygon(
-            0 0,
-            50% 50%,
-            0 100%
-        );
-}
-
-.center-green {
-    background: #20b864;
-
-    clip-path:
-        polygon(
-            0 0,
-            100% 0,
-            50% 50%
-        );
-}
-
-.center-yellow {
-    background: #f4c20d;
-
-    clip-path:
-        polygon(
-            100% 0,
-            100% 100%,
-            50% 50%
-        );
-}
-
-.center-blue {
-    background: #2583d8;
-
-    clip-path:
-        polygon(
-            0 100%,
-            100% 100%,
-            50% 50%
-        );
-}
-
-.center-triangle {
-    position: absolute;
-
-    left: 50%;
-    top: 50%;
-
-    transform:
-        translate(-50%,-50%);
-
-    width: 48%;
-
-    aspect-ratio: 1;
-
-    display: grid;
-
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-
-    padding: 3px;
-
-    border-radius: 50%;
-
-    background: #fff;
-
-    border: 2px solid #333;
-
-    box-shadow:
-        0 3px 7px rgba(0,0,0,.5);
-
-    z-index: 5;
-    background-image: url('favicon.svg');
-
-}
-
-.center-slot {
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    flex-wrap: wrap;
-}
-
-/* =========================
-   CONTROL PANEL
-========================= */
-
-.control-panel {
-    width: 310px;
-
-    flex-shrink: 0;
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 14px;
-
-    padding: 16px;
-
-    border-radius: 20px;
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(255,255,255,.08),
-            rgba(0,0,0,.15)
-        );
-
-    border:
-        1px solid rgba(255,255,255,.1);
-}
-
-/* =========================
-   TURN
-========================= */
-
-.turn-card {
-    padding: 12px;
-
-    border-radius: 14px;
-
-    background: rgba(0,0,0,.22);
-
-    border:
-        1px solid rgba(255,255,255,.08);
-}
-
-.turn-label,
-.dice-label {
-    text-align: center;
-
-    font-size: 10px;
-
-    font-weight: 900;
-
-    letter-spacing: 1.5px;
-
-    color: #9da9b8;
-
-    margin-bottom: 7px;
-}
-
-.status-box {
-    text-align: center;
-
-    padding: 11px;
-
-    border-radius: 10px;
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(255,255,255,.12),
-            rgba(255,255,255,.04)
-        );
-
-    font-weight: 900;
-
-    color: #fff;
-
-    box-shadow:
-        inset 0 1px rgba(255,255,255,.08);
-}
-
-/* =========================
-   DICE
-========================= */
-
-.dice-card {
-    padding: 14px;
-
-    border-radius: 16px;
-
-    background: rgba(0,0,0,.2);
-
-    text-align: center;
-}
-
-.dice-stage {
-    width: 130px;
-    height: 120px;
-
-    margin: auto;
-
-    display: grid;
-
-    place-items: center;
-
-    position: relative;
-
-    perspective: 800px;
-}
-
-.dice-stage::after {
-    content: "";
-
-    position: absolute;
-
-    left: 50%;
-    bottom: 12px;
-
-    width: 58px;
-    height: 13px;
-
-    transform:
-        translateX(-50%);
-
-    border-radius: 50%;
-
-    background: rgba(0,0,0,.55);
-
-    filter: blur(6px);
-}
-
-.dice-cube {
-    --d: 58px;
-
-    width: var(--d);
-    height: var(--d);
-
-    position: relative;
-
-    transform-style: preserve-3d;
-
-    z-index: 2;
-
-    transition:
-        transform .8s
-        cubic-bezier(.15,.85,.25,1);
-}
-
-.dice-face {
-    position: absolute;
-
-    inset: 0;
-
-    display: grid;
-
-    grid-template-columns: repeat(3,1fr);
-    grid-template-rows: repeat(3,1fr);
-
-    place-items: center;
-
-    padding: 8px;
-
-    border-radius: 1px;
-
-    border: 1px solid rgba(255,255,255,.5);
-
-    background:
-        linear-gradient(
-            145deg,
-            var(--dice-light),
-            var(--dice-base) 60%,
-            var(--dice-dark)
-        );
-
-    box-shadow:
-        inset 2px 2px 5px rgba(255,255,255,.7),
-        inset -3px -3px 6px rgba(0,0,0,.18);
-}
-
-.dice-cube.player-red {
-    --dice-light: #ffe7e5;
-    --dice-base: #ffb0ae;
-    --dice-dark: #e53935;
-}
-
-.dice-cube.player-green {
-    --dice-light: #e5faed;
-    --dice-base: #a6e7bd;
-    --dice-dark: #20b864;
-}
-
-.dice-cube.player-yellow {
-    --dice-light: #fffde8;
-    --dice-base: #f9e69a;
-    --dice-dark: #f4c20d;
-}
-
-.dice-cube.player-blue {
-    --dice-light: #e3f4ff;
-    --dice-base: #a9d5f5;
-    --dice-dark: #2583d8;
-}
-
-.dice-cube.player-red .pip {
-    background: #7d100c;
-}
-
-.dice-cube.player-green .pip {
-    background: #075e30;
-}
-
-.dice-cube.player-yellow .pip {
-    background: #5a4500;
-}
-
-.dice-cube.player-blue .pip {
-    background: #084c79;
-}
-
-.face-1 {
-    transform:
-        rotateY(0deg)
-        translateZ(calc(var(--d)/2));
-}
-
-.face-2 {
-    transform:
-        rotateY(-90deg)
-        translateZ(calc(var(--d)/2));
-}
-
-.face-3 {
-    transform:
-        rotateX(90deg)
-        translateZ(calc(var(--d)/2));
-}
-
-.face-4 {
-    transform:
-        rotateX(-90deg)
-        translateZ(calc(var(--d)/2));
-}
-
-.face-5 {
-    transform:
-        rotateY(90deg)
-        translateZ(calc(var(--d)/2));
-}
-
-.face-6 {
-    transform:
-        rotateY(180deg)
-        translateZ(calc(var(--d)/2));
-}
-
-.pip {
-    width: 8px;
-    height: 8px;
-
-    border-radius: 50%;
-
-    visibility: hidden;
-
-    box-shadow:
-        inset 1px 1px 2px rgba(255,255,255,.4),
-        0 1px 2px rgba(0,0,0,.6);
-}
-
-.p-center {
-    grid-area: 2 / 2;
-}
-
-.p-top-left {
-    grid-area: 1 / 1;
-}
-
-.p-top-right {
-    grid-area: 1 / 3;
-}
-
-.p-mid-left {
-    grid-area: 2 / 1;
-}
-
-.p-mid-right {
-    grid-area: 2 / 3;
-}
-
-.p-bot-left {
-    grid-area: 3 / 1;
-}
-
-.p-bot-right {
-    grid-area: 3 / 3;
-}
-
-.face-1 .p-center {
-    visibility: visible;
-}
-
-.face-2 .p-top-left,
-.face-2 .p-bot-right {
-    visibility: visible;
-}
-
-.face-3 .p-top-left,
-.face-3 .p-center,
-.face-3 .p-bot-right {
-    visibility: visible;
-}
-
-.face-4 .p-top-left,
-.face-4 .p-top-right,
-.face-4 .p-bot-left,
-.face-4 .p-bot-right {
-    visibility: visible;
-}
-
-.face-5 .p-top-left,
-.face-5 .p-top-right,
-.face-5 .p-center,
-.face-5 .p-bot-left,
-.face-5 .p-bot-right {
-    visibility: visible;
-}
-
-.face-6 .p-top-left,
-.face-6 .p-top-right,
-.face-6 .p-mid-left,
-.face-6 .p-mid-right,
-.face-6 .p-bot-left,
-.face-6 .p-bot-right {
-    visibility: visible;
-}
-
-.dice-cube.value-1 {
-    transform: rotateX(0deg) rotateY(0deg);
-}
-
-.dice-cube.value-2 {
-    transform: rotateX(0deg) rotateY(90deg);
-}
-
-.dice-cube.value-3 {
-    transform: rotateX(-90deg) rotateY(0deg);
-}
-
-.dice-cube.value-4 {
-    transform: rotateX(90deg) rotateY(0deg);
-}
-
-.dice-cube.value-5 {
-    transform: rotateX(0deg) rotateY(-90deg);
-}
-
-.dice-cube.value-6 {
-    transform: rotateX(0deg) rotateY(180deg);
-}
-
-.dice-cube.rolling {
-    animation:
-        diceRoll .9s
-        cubic-bezier(.25,1,.5,1)
-        both;
-}
-
-@keyframes diceRoll {
-
-    0% {
-        transform:
-            translateY(0)
-            rotateX(0)
-            rotateY(0)
-            rotateZ(0);
-    }
-
-    30% {
-        transform:
-            translateY(-24px)
-            rotateX(360deg)
-            rotateY(360deg)
-            rotateZ(45deg)
-            scale(1.08);
-    }
-
-    65% {
-        transform:
-            translateY(-10px)
-            rotateX(720deg)
-            rotateY(720deg)
-            rotateZ(180deg)
-            scale(1.03);
-    }
-
-    100% {
-        transform:
-            translateY(0)
-            rotateX(var(--target-x))
-            rotateY(var(--target-y))
-            rotateZ(0);
-    }
-}
-
-/* =========================
-   BUTTONS
-========================= */
-
-.roll-btn,
-.new-game-btn {
-    width: 100%;
-
-    border: 0;
-
-    border-radius: 11px;
-
-    padding: 12px;
-
-    font-weight: 900;
-
-    cursor: pointer;
-
-    transition:
-        transform .18s ease,
-        filter .18s ease;
-}
-
-.roll-btn {
-    color: #fff;
-
-    background:
-        linear-gradient(
-            145deg,
-            #ffb347,
-            #e76516
-        );
-
-    box-shadow:
-        0 6px 14px rgba(229,101,22,.35);
-}
-
-.new-game-btn {
-    color: #dbe3ec;
-
-    background:
-        linear-gradient(
-            145deg,
-            #3a4555,
-            #252d39
-        );
-}
-
-.roll-btn:hover:not(:disabled),
-.new-game-btn:hover {
-    transform: translateY(-2px);
-    filter: brightness(1.08);
-}
-
-.roll-btn:disabled {
-    opacity: .45;
-    cursor: not-allowed;
-}
-
-/* =========================
-   RULES
-========================= */
-
-.rules-box {
-    padding: 14px;
-
-    border-radius: 14px;
-
-    background: rgba(0,0,0,.23);
-
-    border:
-        1px solid rgba(255,255,255,.07);
-
-    color: #bdc7d4;
-
-    font-size: 12px;
-
-    line-height: 1.6;
-}
-
-.rules-title {
-    display: flex;
-
-    align-items: center;
-
-    gap: 7px;
-
-    color: #ffd45a;
-
-    margin-bottom: 7px;
-}
-
-.rules-box ul {
-    margin: 0;
-
-    padding-left: 18px;
-}
-
-.rules-box b {
-    color: #fff;
-}
-
-/* =========================
-   LEGEND
-========================= */
-
-.legend {
-    display: flex;
-
-    flex-wrap: wrap;
-
-    justify-content: center;
-
-    gap: 7px;
-}
-
-.legend span {
-    padding: 6px 9px;
-
-    border-radius: 8px;
-
-    background: rgba(255,255,255,.07);
-
-    color: #cfd7e1;
-
-    font-size: 11px;
-
-    font-weight: 700;
-}
-
-/* =========================
-   RESPONSIVE
-========================= */
-
-@media (max-width: 1000px) {
-
-    .game-container {
-        flex-direction: column;
-    }
-
-    .board-frame {
-        width: min(90vw, 650px);
-    }
-
-    .control-panel {
-        width: min(90vw, 430px);
-    }
-}
-
-@media (max-width: 560px) {
-
-    .ludo-app {
-        padding: 12px;
-    }
-
-    .game-container {
-        padding: 10px;
-        border-radius: 18px;
-    }
-
-    .board-frame {
-        width: 96vw;
-        padding: 6px;
-    }
-
-    .control-panel {
-        width: 96vw;
-        padding: 12px;
-    }
-
-    .mode-selector {
-        width: 96vw;
-    }
-
-    .mode-btn {
-        flex: 1;
-        padding: 9px 6px;
-        font-size: 11px;
-    }
-
-    .title-icon {
-        font-size: 30px;
-    }
-
-    .game-header h1 {
-        font-size: 25px;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-
-    .dice-cube.rolling,
-    .token.highlight {
-        animation: none;
-    }
-}
+            .face-1 {
+            transform:
+                rotateY(0deg)
+                translateZ(calc(var(--d) / 2));
+            }
+
+            .face-2 {
+            transform:
+                rotateY(-90deg)
+                translateZ(calc(var(--d) / 2));
+            }
+
+            .face-3 {
+            transform:
+                rotateX(90deg)
+                translateZ(calc(var(--d) / 2));
+            }
+
+            .face-4 {
+            transform:
+                rotateX(-90deg)
+                translateZ(calc(var(--d) / 2));
+            }
+
+            .face-5 {
+            transform:
+                rotateY(90deg)
+                translateZ(calc(var(--d) / 2));
+            }
+
+            .face-6 {
+            transform:
+                rotateY(180deg)
+                translateZ(calc(var(--d) / 2));
+            }
+
+            .pip {
+            width: 8px;
+            height: 8px;
+
+            border-radius: 50%;
+
+            background: #161a1e;
+
+            box-shadow:
+                inset 1px 1px 2px #fff3,
+                0 1px 2px #0006;
+
+            visibility: hidden;
+            }
+
+            .p-center {
+            grid-area: 2 / 2;
+            }
+
+            .p-top-left {
+            grid-area: 1 / 1;
+            }
+
+            .p-top-right {
+            grid-area: 1 / 3;
+            }
+
+            .p-mid-left {
+            grid-area: 2 / 1;
+            }
+
+            .p-mid-right {
+            grid-area: 2 / 3;
+            }
+
+            .p-bot-left {
+            grid-area: 3 / 1;
+            }
+
+            .p-bot-right {
+            grid-area: 3 / 3;
+            }
+
+            .face-1 .p-center {
+            visibility: visible;
+            }
+
+            .face-2 .p-top-left,
+            .face-2 .p-bot-right {
+            visibility: visible;
+            }
+
+            .face-3 .p-top-left,
+            .face-3 .p-center,
+            .face-3 .p-bot-right {
+            visibility: visible;
+            }
+
+            .face-4 .p-top-left,
+            .face-4 .p-top-right,
+            .face-4 .p-bot-left,
+            .face-4 .p-bot-right {
+            visibility: visible;
+            }
+
+            .face-5 .p-top-left,
+            .face-5 .p-top-right,
+            .face-5 .p-center,
+            .face-5 .p-bot-left,
+            .face-5 .p-bot-right {
+            visibility: visible;
+            }
+
+            .face-6 .p-top-left,
+            .face-6 .p-top-right,
+            .face-6 .p-mid-left,
+            .face-6 .p-mid-right,
+            .face-6 .p-bot-left,
+            .face-6 .p-bot-right {
+            visibility: visible;
+            }
+
+            .dice-cube.value-1 {
+            transform:
+                rotateX(0deg)
+                rotateY(0deg);
+            }
+
+            .dice-cube.value-2 {
+            transform:
+                rotateX(0deg)
+                rotateY(90deg);
+            }
+
+            .dice-cube.value-3 {
+            transform:
+                rotateX(-90deg)
+                rotateY(0deg);
+            }
+
+            .dice-cube.value-4 {
+            transform:
+                rotateX(90deg)
+                rotateY(0deg);
+            }
+
+            .dice-cube.value-5 {
+            transform:
+                rotateX(0deg)
+                rotateY(-90deg);
+            }
+
+            .dice-cube.value-6 {
+            transform:
+                rotateX(0deg)
+                rotateY(180deg);
+            }
+
+            .dice-cube.rolling {
+            animation:
+                diceThrow
+                0.9s
+                cubic-bezier(
+                0.25,
+                1,
+                0.5,
+                1
+                )
+                both;
+            }
+
+            .dice-stage.is-rolling::after {
+            animation:
+                shadowThrow
+                0.9s
+                ease-out
+                both;
+            }
+
+            @keyframes diceThrow {
+            0% {
+                transform:
+                translate(0, 0)
+                rotateX(0)
+                rotateY(0)
+                rotateZ(0)
+                scale(1);
+            }
+
+            30% {
+                transform:
+                translate(2px, -22px)
+                rotateX(360deg)
+                rotateY(360deg)
+                rotateZ(45deg)
+                scale(1.05);
+            }
+
+            70% {
+                transform:
+                translate(-2px, -10px)
+                rotateX(720deg)
+                rotateY(720deg)
+                rotateZ(180deg)
+                scale(1.02);
+            }
+
+            100% {
+                transform:
+                translate(0, 0)
+                rotateX(var(--target-x, 720deg))
+                rotateY(var(--target-y, 720deg))
+                rotateZ(0deg)
+                scale(1);
+            }
+            }
+
+            @keyframes shadowThrow {
+            0%,
+            100% {
+                transform:
+                translateX(-50%)
+                scale(1);
+                opacity: 0.5;
+            }
+
+            30% {
+                transform:
+                translateX(-50%)
+                scale(0.5);
+                opacity: 0.2;
+            }
+
+            70% {
+                transform:
+                translateX(-50%)
+                scale(0.9);
+                opacity: 0.4;
+            }
+            }
+
+            .legend {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+
+            flex-wrap: wrap;
+
+            font-size: 0.8rem;
+            color: #dfe4ea;
+            }
+
+            @media (max-width: 900px) {
+            body {
+                justify-content: flex-start;
+            }
+
+            .game-container {
+                flex-direction: column;
+                width: min(96vw, 700px);
+            }
+
+            .control-panel {
+                width: min(100%, 420px);
+            }
+
+            .ludo-board {
+                width: min(92vw, 620px);
+            }
+            }
+
+            @media (max-width: 560px) {
+            .dice-cube {
+                --d: 52px;
+            }
+
+            .dice-stage {
+                width: 110px;
+                height: 105px;
+            }
+
+            .pip {
+                width: 7px;
+                height: 7px;
+            }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+            .dice-cube.rolling,
+            .dice-stage.is-rolling::after,
+            .token.highlight {
+                animation: none;
+            }
+            }
         `,
+
       js: `
-(() => {
-
-"use strict";
-
-const allPlayers = [
-    {
-        name: "Red",
-        color: "red",
-        start: 0,
-        isAI: false
-    },
-    {
-        name: "Green",
-        color: "green",
-        start: 13,
-        isAI: false
-    },
-    {
-        name: "Yellow",
-        color: "yellow",
-        start: 26,
-        isAI: false
-    },
-    {
-        name: "Blue",
-        color: "blue",
-        start: 39,
-        isAI: false
-    }
-];
-
-let players = [];
-let gameMode = "1vPC";
-
-const TRACK = [
-    [6,1],[6,2],[6,3],[6,4],[6,5],
-    [5,6],[4,6],[3,6],[2,6],[1,6],[0,6],[0,7],
-    [0,8],[1,8],[2,8],[3,8],[4,8],[5,8],
-    [6,9],[6,10],[6,11],[6,12],[6,13],[6,14],
-    [7,14],[8,14],[8,13],[8,12],[8,11],[8,10],[8,9],
-    [9,8],[10,8],[11,8],[12,8],[13,8],[14,8],
-    [14,7],[14,6],[13,6],[12,6],[11,6],[10,6],[9,6],
-    [8,5],[8,4],[8,3],[8,2],[8,1],[8,0],
-    [7,0],[6,0]
-];
-
-const HOME = [
-    [
-        [7,1],[7,2],[7,3],
-        [7,4],[7,5],[7,6]
-    ],
-    [
-        [1,7],[2,7],[3,7],
-        [4,7],[5,7],[6,7]
-    ],
-    [
-        [7,13],[7,12],[7,11],
-        [7,10],[7,9],[7,8]
-    ],
-    [
-        [13,7],[12,7],[11,7],
-        [10,7],[9,7],[8,7]
-    ]
-];
-
-const SAFE = [
-    0,8,13,21,26,34,39,47
-];
-
-let current = 0;
-let dice = null;
-let rolled = false;
-let rolling = false;
-let extraTurn = false;
-let sixes = 0;
-let gameOver = false;
-
-let positions = [];
-
-let rankings = [];
-
-let timers = [];
-
-const $ = id => document.getElementById(id);
-
-const board = $("board");
-const status = $("statusText");
-const rollBtn = $("rollBtn");
-const newGameBtn = $("newGameBtn");
-const diceEl = $("dice");
-const stage = $("diceStage");
-
-function timer(fn, ms) {
-
-    const id = setTimeout(() => {
-
-        timers =
-            timers.filter(x => x !== id);
-
-        fn();
-
-    }, ms);
-
-    timers.push(id);
-}
-
-function clearTimers() {
-
-    timers.forEach(clearTimeout);
-
-    timers = [];
-}
-
-/* =========================
-   GAME MODES
-========================= */
-
-function configurePlayers() {
-
-    if (gameMode === "1vPC") {
-
-        players = [
+            const allPlayers = [
             {
-                ...allPlayers[0],
-                isAI: false,
-                active: true
+                name: 'Red',
+                color: 'red',
+                start: 0,
+                homeStart: 51,
+                isAI: false
             },
-
             {
-                ...allPlayers[1],
-                isAI: true,
-                active: true
+                name: 'Green',
+                color: 'green',
+                start: 13,
+                homeStart: 51,
+                isAI: false
             },
-
             {
-                ...allPlayers[2],
-                isAI: false,
-                active: false
+                name: 'Yellow',
+                color: 'yellow',
+                start: 26,
+                homeStart: 51,
+                isAI: false
             },
-
             {
-                ...allPlayers[3],
-                isAI: false,
-                active: false
+                name: 'Blue',
+                color: 'blue',
+                start: 39,
+                homeStart: 51,
+                isAI: false
             }
-        ];
+            ];
 
-    } else if (gameMode === "2P") {
+            let players = [];
+            let gameMode = '1vPC';
 
-        players = [
-            {
-                ...allPlayers[0],
-                isAI: false,
-                active: true
-            },
+            const TRACK = [
+            [6,1], [6,2], [6,3], [6,4], [6,5],
+            [5,6], [4,6], [3,6], [2,6], [1,6],
+            [0,6], [0,7], [0,8],
+            [1,8], [2,8], [3,8], [4,8], [5,8],
+            [6,9], [6,10], [6,11], [6,12], [6,13], [6,14],
+            [7,14], [8,14],
+            [8,13], [8,12], [8,11], [8,10], [8,9],
+            [9,8], [10,8], [11,8], [12,8], [13,8], [14,8],
+            [14,7], [14,6],
+            [13,6], [12,6], [11,6], [10,6], [9,6],
+            [8,5], [8,4], [8,3], [8,2], [8,1], [8,0],
+            [7,0], [6,0]
+            ];
 
-            {
-                ...allPlayers[1],
-                isAI: false,
-                active: true
-            },
+            const HOME = [
+            [
+                [7,1], [7,2], [7,3],
+                [7,4], [7,5], [7,6]
+            ],
+            [
+                [1,7], [2,7], [3,7],
+                [4,7], [5,7], [6,7]
+            ],
+            [
+                [7,13], [7,12], [7,11],
+                [7,10], [7,9], [7,8]
+            ],
+            [
+                [13,7], [12,7], [11,7],
+                [10,7], [9,7], [8,7]
+            ]
+            ];
 
-            {
-                ...allPlayers[2],
-                isAI: false,
-                active: false
-            },
+            const SAFE = [
+            0, 8, 13, 21,
+            26, 34, 39, 47
+            ];
 
-            {
-                ...allPlayers[3],
-                isAI: false,
-                active: false
+            let current = 0;
+            let dice = null;
+            let rolled = false;
+            let rolling = false;
+            let extraTurn = false;
+            let sixes = 0;
+            let gameOver = false;
+
+            let positions = Array.from(
+            { length: 4 },
+            () => [-1, -1, -1, -1]
+            );
+
+            let rankings = [];
+            let timers = [];
+
+            const $ = id =>
+            document.getElementById(id);
+
+            const board = $('board');
+            const status = $('statusText');
+            const rollBtn = $('rollBtn');
+            const diceEl = $('dice');
+            const stage = $('diceStage');
+
+            function timer(fn, ms) {
+            const id = setTimeout(() => {
+                timers = timers.filter(x => x !== id);
+                fn();
+            }, ms);
+
+            timers.push(id);
             }
-        ];
 
-    } else {
+            function clearTimers() {
+            timers.forEach(clearTimeout);
+            timers = [];
+            }
 
-        players =
-            allPlayers.map(p => ({
+            function setGameMode(mode) {
+            gameMode = mode;
+
+            document
+                .querySelectorAll('.mode-btn')
+                .forEach(btn =>
+                btn.classList.remove('active')
+                );
+
+            if (mode === '1vPC') {
+                $('mode1vPC').classList.add('active');
+            }
+
+            if (mode === '2P') {
+                $('mode2P').classList.add('active');
+            }
+
+            if (mode === '4P') {
+                $('mode4P').classList.add('active');
+            }
+
+            configurePlayers();
+            newGame();
+            }
+
+            function configurePlayers() {
+            if (gameMode === '1vPC') {
+                players = [
+                {
+                    ...allPlayers[0],
+                    isAI: false,
+                    active: true
+                },
+                {
+                    ...allPlayers[1],
+                    isAI: true,
+                    active: true
+                },
+                {
+                    ...allPlayers[2],
+                    isAI: false,
+                    active: false
+                },
+                {
+                    ...allPlayers[3],
+                    isAI: false,
+                    active: false
+                }
+                ];
+            }
+
+            else if (gameMode === '2P') {
+                players = [
+                {
+                    ...allPlayers[0],
+                    isAI: false,
+                    active: true
+                },
+                {
+                    ...allPlayers[1],
+                    isAI: false,
+                    active: false
+                },
+                {
+                    ...allPlayers[2],
+                    isAI: false,
+                    active: true
+                },
+                {
+                    ...allPlayers[3],
+                    isAI: false,
+                    active: false
+                }
+                ];
+            }
+
+            else {
+                players = allPlayers.map(p => ({
                 ...p,
                 isAI: false,
                 active: true
-            }));
-    }
-
-    updateLegend();
-}
-
-function updateLegend() {
-
-    const legend =
-        $("legendContainer");
-
-    if (!legend) return;
-
-    legend.innerHTML =
-        players
-            .filter(p => p.active)
-            .map(p => {
-
-                const icon = {
-                    red: "🔴",
-                    green: "🟢",
-                    yellow: "🟡",
-                    blue: "🔵"
-                }[p.color];
-
-                return \`
-                    <span>
-                        \${icon}
-                        \${p.name}
-                        \${p.isAI ? " • AI" : ""}
-                    </span>
-                \`;
-
-            })
-            .join("");
-}
-
-/* =========================
-   BOARD
-========================= */
-
-function buildBoard() {
-
-    board
-        .querySelectorAll(".cell")
-        .forEach(cell => cell.remove());
-
-    for (let r = 0; r < 15; r++) {
-
-        for (let c = 0; c < 15; c++) {
-
-            const inYard =
-                (r < 6 && c < 6) ||
-                (r < 6 && c > 8) ||
-                (r > 8 && c < 6) ||
-                (r > 8 && c > 8);
-
-            const inCenter =
-                r >= 6 &&
-                r <= 8 &&
-                c >= 6 &&
-                c <= 8;
-
-            if (inYard || inCenter)
-                continue;
-
-            const cell =
-                document.createElement("div");
-
-            cell.className =
-                "cell track";
-
-            cell.dataset.row = r;
-            cell.dataset.col = c;
-
-            cell.style.left =
-                (c * 100 / 15) + "%";
-
-            cell.style.top =
-                (r * 100 / 15) + "%";
-
-            const idx =
-                TRACK.findIndex(
-                    ([rr,cc]) =>
-                        rr === r &&
-                        cc === c
-                );
-
-            if (idx >= 0) {
-
-                if (idx === 0)
-                    cell.classList.add("start-red");
-
-                if (idx === 13)
-                    cell.classList.add("start-green");
-
-                if (idx === 26)
-                    cell.classList.add("start-yellow");
-
-                if (idx === 39)
-                    cell.classList.add("start-blue");
-
-                if (SAFE.includes(idx))
-                    cell.classList.add("safe-cell");
+                }));
             }
 
-            board.appendChild(cell);
-        }
-    }
+            document
+                .querySelectorAll('.yard')
+                .forEach(el => {
+                el.style.display = 'flex';
+                });
 
-    allPlayers.forEach((pl,p) => {
+            const legendHTML = players
+                .filter(p => p.active)
+                .map(p => {
+                let emoji =
+                    p.color === 'red'
+                    ? '🔴 Red'
+                    : p.color === 'green'
+                        ? '🟢 Green'
+                        : p.color === 'yellow'
+                        ? '🟡 Yellow'
+                        : '🔵 Blue';
 
-        HOME[p].forEach(([r,c],i) => {
+                if (p.isAI) {
+                    emoji += ' (AI)';
+                }
 
-            if (i === 5)
-                return;
+                return '<span>' + emoji + '</span>';
+                })
+                .join('');
 
-            const cell =
-                document.createElement("div");
-
-            cell.className =
-                "cell home-" + pl.color;
-
-            cell.dataset.row = r;
-            cell.dataset.col = c;
-
-            cell.style.left =
-                (c * 100 / 15) + "%";
-
-            cell.style.top =
-                (r * 100 / 15) + "%";
-
-            board.appendChild(cell);
-        });
-    });
-}
-
-/* =========================
-   MODE BUTTON EVENTS
-========================= */
-
-document
-    .querySelectorAll(".mode-btn")
-    .forEach(button => {
-
-        button.addEventListener(
-            "click",
-            () => {
-
-                gameMode =
-                    button.dataset.mode;
-
-                document
-                    .querySelectorAll(".mode-btn")
-                    .forEach(b =>
-                        b.classList.remove("active")
-                    );
-
-                button.classList.add("active");
-
-                configurePlayers();
-
-                newGame();
+            $('legendContainer').innerHTML =
+                legendHTML;
             }
-        );
-    });
 
-/* =========================
-   POSITION
-========================= */
+            function buildBoard() {
+            for (let r = 0; r < 15; r++) {
+                for (let c = 0; c < 15; c++) {
 
-function absolute(pIndex, rel) {
+                const inYard =
+                    (r < 6 && c < 6) ||
+                    (r < 6 && c > 8) ||
+                    (r > 8 && c < 6) ||
+                    (r > 8 && c > 8);
 
-    const player =
-        players[pIndex];
+                const inCenter =
+                    r >= 6 &&
+                    r <= 8 &&
+                    c >= 6 &&
+                    c <= 8;
 
-    const originalIndex =
-        allPlayers.findIndex(
-            p => p.name === player.name
-        );
+                if (inYard || inCenter) {
+                    continue;
+                }
 
-    return (
-        allPlayers[originalIndex].start +
-        rel
-    ) % 52;
-}
+                const cell =
+                    document.createElement('div');
 
-/* =========================
-   MOVE VALIDATION
-========================= */
+                cell.className = 'cell track';
+                cell.dataset.row = r;
+                cell.dataset.col = c;
 
-function calcMove(pIndex,pos,d) {
+                cell.style.left =
+                    (c * 100 / 15) + '%';
 
-    if (
-        !players[pIndex].active ||
-        rankings.includes(pIndex)
-    )
-        return -1;
-
-    if (pos === -1)
-        return d === 6 ? 0 : -1;
-
-    const target =
-        pos + d;
-
-    if (target > 56)
-        return -1;
-
-    return target;
-}
-
-/* =========================
-   ACTIVE PLAYERS
-========================= */
-
-function getActivePlayers() {
-
-    return players
-        .map((p,i) =>
-            p.active &&
-            !rankings.includes(i)
-                ? i
-                : -1
-        )
-        .filter(i => i !== -1);
-}
-
-/* =========================
-   VALID TOKENS
-========================= */
-
-function validTokens() {
-
-    if (dice === null)
-        return [];
-
-    return positions[current]
-        .map((pos,t) =>
-            calcMove(
-                current,
-                pos,
-                dice
-            ) >= 0
-                ? t
-                : -1
-        )
-        .filter(t => t >= 0);
-}
-
-/* =========================
-   RENDER
-========================= */
-
-function render() {
-
-    board
-        .querySelectorAll(".token")
-        .forEach(e => e.remove());
-
-    players.forEach(pl => {
-
-        const slot =
-            $("homeSlot" + pl.name);
-
-        if (slot)
-            slot.innerHTML = "";
-    });
-
-    players.forEach((pl,p) => {
-
-        if (!pl.active)
-            return;
-
-        for (let t = 0; t < 4; t++) {
-
-            const pos =
-                positions[p][t];
-
-            const token =
-                document.createElement("div");
-
-            token.className =
-                "token token-" +
-                pl.color;
-
-            token.dataset.player = p;
-            token.dataset.token = t;
-
-            token.addEventListener(
-                "click",
-                () => moveToken(p,t)
-            );
-
-            let target;
-
-            const originalIndex =
-                allPlayers.findIndex(
-                    ap => ap.name === pl.name
-                );
-
-            if (pos === -1) {
-
-                target =
-                    document.querySelector(
-                        \`.yard-\${pl.color} .home-spot[data-token="\${t}"]\`
-                    );
-
-            } else if (pos <= 50) {
+                cell.style.top =
+                    (r * 100 / 15) + '%';
 
                 const idx =
-                    absolute(p,pos);
-
-                const [r,c] =
-                    TRACK[idx];
-
-                target =
-                    document.querySelector(
-                        \`.cell[data-row="\${r}"][data-col="\${c}"]\`
+                    TRACK.findIndex(
+                    ([rr, cc]) =>
+                        rr === r && cc === c
                     );
 
-            } else if (pos < 56) {
+                if (idx >= 0) {
+                    if (idx === 0) {
+                    cell.classList.add('start-red');
+                    }
 
-                const [r,c] =
-                    HOME[originalIndex][pos - 51];
+                    if (idx === 13) {
+                    cell.classList.add('start-green');
+                    }
 
-                target =
-                    document.querySelector(
-                        \`.cell[data-row="\${r}"][data-col="\${c}"]\`
-                    );
+                    if (idx === 26) {
+                    cell.classList.add('start-yellow');
+                    }
 
-            } else if (pos === 56) {
+                    if (idx === 39) {
+                    cell.classList.add('start-blue');
+                    }
 
-                target =
-                    $("homeSlot" + pl.name);
+                    if (SAFE.includes(idx)) {
+                    cell.classList.add('safe-cell');
+                    }
+                }
+
+                board.appendChild(cell);
+                }
             }
 
-            if (target)
-                target.appendChild(token);
-        }
-    });
+            allPlayers.forEach((pl, p) => {
+                HOME[p].forEach(([r, c], i) => {
 
-    document
-        .querySelectorAll(".cell")
-        .forEach(cell => {
+                if (i === 5) {
+                    return;
+                }
 
-            const count =
-                cell.querySelectorAll(".token").length;
+                const cell =
+                    document.createElement('div');
 
-            cell.classList.remove(
-                "stack-1",
-                "stack-2",
-                "stack-3",
-                "stack-4"
-            );
+                cell.className =
+                    'cell home-' + pl.color;
 
-            if (count)
-                cell.classList.add(
-                    "stack-" +
-                    Math.min(count,4)
+                cell.dataset.row = r;
+                cell.dataset.col = c;
+
+                cell.style.left =
+                    (c * 100 / 15) + '%';
+
+                cell.style.top =
+                    (r * 100 / 15) + '%';
+
+                board.appendChild(cell);
+                });
+            });
+            }
+
+            function absolute(pIndex, rel) {
+            const globalP = players[pIndex];
+
+            const originalIdx =
+                allPlayers.findIndex(
+                ap => ap.name === globalP.name
                 );
-        });
-}
 
-/* =========================
-   HIGHLIGHT
-========================= */
+            return (
+                allPlayers[originalIdx].start +
+                rel
+            ) % 52;
+            }
 
-function highlight() {
+            function calcMove(pIndex, pos, d) {
+            if (
+                !players[pIndex].active ||
+                rankings.includes(pIndex)
+            ) {
+                return -1;
+            }
 
-    document
-        .querySelectorAll(".token")
-        .forEach(e =>
-            e.classList.remove("highlight")
-        );
+            if (pos === -1) {
+                return d === 6 ? 0 : -1;
+            }
 
-    if (players[current].isAI)
-        return;
+            if (pos < 0 || pos > 56) {
+                return -1;
+            }
 
-    validTokens().forEach(t => {
+            const targetPos = pos + d;
 
-        const token =
-            document.querySelector(
-                \`.token.token-\${players[current].color}[data-token="\${t}"]\`
-            );
+            if (targetPos > 56) {
+                return -1;
+            }
 
-        if (token)
-            token.classList.add("highlight");
-    });
-}
+            return targetPos;
+            }
 
-/* =========================
-   DICE
-========================= */
+            function render() {
+            document
+                .querySelectorAll('.token')
+                .forEach(e => e.remove());
 
-function setFace(value) {
+            players.forEach(pl => {
+                const slot =
+                $('homeSlot' + pl.name);
 
-    for (let i=1;i<=6;i++)
-        diceEl.classList.remove(
-            "value-" + i
-        );
+                if (slot) {
+                slot.innerHTML = '';
+                }
+            });
 
-    diceEl.classList.add(
-        "value-" + value
-    );
-}
+            for (let p = 0; p < players.length; p++) {
 
-function updateDiceColor() {
+                if (!players[p].active) {
+                continue;
+                }
 
-    diceEl.classList.remove(
-        "player-red",
-        "player-green",
-        "player-yellow",
-        "player-blue"
-    );
+                for (let t = 0; t < 4; t++) {
 
-    diceEl.classList.add(
-        "player-" +
-        players[current].color
-    );
-}
+                const pos = positions[p][t];
 
-/* =========================
-   ROLL
-========================= */
+                const el =
+                    document.createElement('div');
 
-function rollDice() {
+                const originalIdx =
+                    allPlayers.findIndex(
+                    ap =>
+                        ap.name === players[p].name
+                    );
 
-    if (
-        rolled ||
-        rolling ||
-        gameOver
-    )
-        return;
+                el.className =
+                    'token token-' +
+                    players[p].color;
 
-    rolling = true;
-    rolled = true;
+                el.dataset.player = p;
+                el.dataset.token = t;
 
-    rollBtn.disabled = true;
+                el.onclick = () =>
+                    moveToken(p, t);
 
-    updateDiceColor();
+                let target;
 
-    dice =
-        Math.floor(
-            Math.random() * 6
-        ) + 1;
+                if (pos === -1) {
+                    target =
+                    document.querySelector(
+                        '.yard-' +
+                        players[p].color +
+                        ' .home-spot[data-token="' +
+                        t +
+                        '"]'
+                    );
+                }
 
-    const targets = {
-        1: [0,0],
-        2: [0,90],
-        3: [-90,0],
-        4: [90,0],
-        5: [0,-90],
-        6: [0,180]
-    };
+                else if (pos <= 50) {
 
-    const [x,y] =
-        targets[dice];
+                    const idx =
+                    absolute(p, pos);
 
-    diceEl.style.setProperty(
-        "--target-x",
-        (720 + x) + "deg"
-    );
+                    const [r, c] =
+                    TRACK[idx];
 
-    diceEl.style.setProperty(
-        "--target-y",
-        (720 + y) + "deg"
-    );
+                    target =
+                    document.querySelector(
+                        '.cell[data-row="' +
+                        r +
+                        '"][data-col="' +
+                        c +
+                        '"]'
+                    );
+                }
 
-    diceEl.classList.remove("rolling");
+                else if (pos < 56) {
 
-    void diceEl.offsetWidth;
+                    const [r, c] =
+                    HOME[originalIdx][pos - 51];
 
-    diceEl.classList.add("rolling");
+                    target =
+                    document.querySelector(
+                        '.cell[data-row="' +
+                        r +
+                        '"][data-col="' +
+                        c +
+                        '"]'
+                    );
+                }
 
-    stage.classList.add("is-rolling");
+                else if (pos === 56) {
+                    target =
+                    $('homeSlot' + players[p].name);
+                }
 
-    if (dice === 6)
-        sixes++;
-    else
-        sixes = 0;
+                else {
+                    continue;
+                }
 
-    timer(() => {
+                if (target) {
+                    target.appendChild(el);
+                }
+                }
+            }
 
-        diceEl.classList.remove("rolling");
+            document
+                .querySelectorAll('.cell')
+                .forEach(cell => {
 
-        stage.classList.remove("is-rolling");
+                const n =
+                    cell.querySelectorAll('.token').length;
 
-        setFace(dice);
+                cell.classList.remove(
+                    'stack-1',
+                    'stack-2',
+                    'stack-3',
+                    'stack-4'
+                );
 
-        rolling = false;
+                if (n) {
+                    cell.classList.add(
+                    'stack-' + Math.min(n, 4)
+                    );
+                }
+                });
+            }
 
-        if (sixes >= 3) {
+            function getActivePlayers() {
+            return players
+                .map((p, i) =>
+                p.active &&
+                !rankings.includes(i)
+                    ? i
+                    : -1
+                )
+                .filter(i => i !== -1);
+            }
 
-            status.textContent =
-                "⚠️ Three 6s! Turn lost.";
-
-            timer(() => {
-
-                sixes = 0;
-                extraTurn = false;
-
-                nextTurn();
-
-            },700);
-
-            return;
-        }
-
-        const moves =
-            validTokens();
-
-        if (!moves.length) {
-
-            status.textContent =
-                players[current].name +
-                " has no valid move.";
-
-            timer(nextTurn,800);
-
-            return;
-        }
-
-        if (players[current].isAI) {
-
-            status.textContent =
-                "🤖 " +
-                players[current].name +
-                " is thinking...";
-
-            timer(() => {
-
-                const chosen =
-                    chooseAIMove(moves);
-
-                moveToken(
+            function validTokens() {
+            return positions[current]
+                .map((pos, t) =>
+                calcMove(
                     current,
-                    chosen
+                    pos,
+                    dice
+                ) >= 0
+                    ? t
+                    : -1
+                )
+                .filter(x => x >= 0);
+            }
+
+            function highlight() {
+            document
+                .querySelectorAll('.token')
+                .forEach(e =>
+                e.classList.remove('highlight')
                 );
 
-            },650);
+            if (players[current].isAI) {
+                return;
+            }
 
-        } else if (moves.length === 1) {
+            validTokens().forEach(t => {
 
-            status.textContent =
-                "Automatic move...";
+                const el =
+                document.querySelector(
+                    '.token.token-' +
+                    players[current].color +
+                    '[data-token="' +
+                    t +
+                    '"]'
+                );
+
+                if (el) {
+                el.classList.add('highlight');
+                }
+            });
+            }
+
+            function setFace(v) {
+            for (let i = 1; i <= 6; i++) {
+                diceEl.classList.remove(
+                'value-' + i
+                );
+            }
+
+            diceEl.classList.add(
+                'value-' + v
+            );
+            }
+
+            function updateDiceColor() {
+            diceEl.classList.remove(
+                'player-red',
+                'player-green',
+                'player-yellow',
+                'player-blue'
+            );
+
+            diceEl.classList.add(
+                'player-' +
+                players[current].color
+            );
+            }
+
+            function rollDice() {
+            if (
+                rolled ||
+                rolling ||
+                gameOver
+            ) {
+                return;
+            }
+
+            rolling = true;
+            rolled = true;
+            rollBtn.disabled = true;
+
+            updateDiceColor();
+
+            dice =
+                Math.floor(
+                Math.random() * 6
+                ) + 1;
+
+            const targets = {
+                1: { x: 0, y: 0 },
+                2: { x: 0, y: 90 },
+                3: { x: -90, y: 0 },
+                4: { x: 90, y: 0 },
+                5: { x: 0, y: -90 },
+                6: { x: 0, y: 180 }
+            };
+
+            diceEl.style.setProperty(
+                '--target-x',
+                (720 + targets[dice].x) + 'deg'
+            );
+
+            diceEl.style.setProperty(
+                '--target-y',
+                (720 + targets[dice].y) + 'deg'
+            );
+
+            diceEl.classList.add('rolling');
+            stage.classList.add('is-rolling');
+
+            if (dice === 6) {
+                sixes++;
+            } else {
+                sixes = 0;
+            }
 
             timer(() => {
 
-                if (
+                diceEl.classList.remove('rolling');
+                stage.classList.remove('is-rolling');
+
+                setFace(dice);
+                rolling = false;
+
+                if (sixes >= 3) {
+
+                status.textContent =
+                    'Three 6s! ' +
+                    players[current].name +
+                    ' loses the turn.';
+
+                timer(() => {
+                    sixes = 0;
+                    extraTurn = false;
+                    nextTurn();
+                }, 700);
+
+                return;
+                }
+
+                const moves = validTokens();
+
+                if (!moves.length) {
+
+                status.textContent =
+                    players[current].name +
+                    ' has no valid move.';
+
+                timer(nextTurn, 850);
+                }
+
+                else if (players[current].isAI) {
+
+                status.textContent =
+                    players[current].name +
+                    ' (AI) is thinking...';
+
+                timer(() => {
+
+                    let chosenMove = moves[0];
+
+                    for (let m of moves) {
+
+                    let target =
+                        calcMove(
+                        current,
+                        positions[current][m],
+                        dice
+                        );
+
+                    if (
+                        target >= 0 &&
+                        target <= 50
+                    ) {
+
+                        let landed =
+                        absolute(
+                            current,
+                            target
+                        );
+
+                        if (!SAFE.includes(landed)) {
+
+                        for (
+                            let op = 0;
+                            op < players.length;
+                            op++
+                        ) {
+
+                            if (
+                            op !== current &&
+                            players[op].active
+                            ) {
+
+                            for (
+                                let ot = 0;
+                                ot < 4;
+                                ot++
+                            ) {
+
+                                if (
+                                positions[op][ot] >= 0 &&
+                                positions[op][ot] <= 50 &&
+                                absolute(
+                                    op,
+                                    positions[op][ot]
+                                ) === landed
+                                ) {
+                                chosenMove = m;
+                                break;
+                                }
+                            }
+                            }
+                        }
+                        }
+                    }
+                    }
+
+                    moveToken(
+                    current,
+                    chosenMove
+                    );
+
+                }, 700);
+                }
+
+                else if (moves.length === 1) {
+
+                status.textContent =
+                    players[current].name +
+                    ' has one move — moving automatically.';
+
+                timer(() => {
+
+                    if (
                     !rolled ||
                     rolling ||
                     gameOver
-                )
+                    ) {
                     return;
+                    }
 
-                moveToken(
+                    moveToken(
                     current,
                     moves[0]
-                );
+                    );
 
-            },350);
+                }, 350);
+                }
 
-        } else {
+                else {
 
-            status.textContent =
-                players[current].name +
-                ": choose a token";
+                status.textContent =
+                    players[current].name +
+                    ': choose a token';
 
-            highlight();
-        }
+                highlight();
+                }
 
-    },900);
-}
-
-/* =========================
-   AI
-========================= */
-
-function chooseAIMove(moves) {
-
-    let best =
-        moves[0];
-
-    let bestScore = -Infinity;
-
-    moves.forEach(t => {
-
-        const target =
-            calcMove(
-                current,
-                positions[current][t],
-                dice
-            );
-
-        let score = 0;
-
-        if (target === 0)
-            score += 80;
-
-        if (target === 56)
-            score += 100;
-
-        if (
-            target >= 0 &&
-            target <= 50
-        ) {
-
-            const landed =
-                absolute(
-                    current,
-                    target
-                );
-
-            if (!SAFE.includes(landed)) {
-
-                players.forEach((op,oi) => {
-
-                    if (
-                        oi === current ||
-                        !op.active
-                    )
-                        return;
-
-                    positions[oi].forEach(pos => {
-
-                        if (
-                            pos >= 0 &&
-                            pos <= 50 &&
-                            absolute(oi,pos) === landed
-                        ) {
-                            score += 70;
-                        }
-                    });
-                });
+            }, 900);
             }
-        }
 
-        score += target;
+            function moveToken(p, t) {
+            if (
+                gameOver ||
+                rolling ||
+                !rolled ||
+                p !== current
+            ) {
+                return;
+            }
 
-        if (score > bestScore) {
+            const old =
+                positions[p][t];
 
-            bestScore = score;
-            best = t;
-        }
-    });
+            const next =
+                calcMove(
+                p,
+                old,
+                dice
+                );
 
-    return best;
-}
+            if (next < 0) {
+                return;
+            }
 
-/* =========================
-   MOVE TOKEN
-========================= */
+            positions[p][t] = next;
 
-function moveToken(p,t) {
+            document
+                .querySelectorAll('.token')
+                .forEach(e =>
+                e.classList.remove('highlight')
+                );
 
-    if (
-        gameOver ||
-        rolling ||
-        !rolled ||
-        p !== current
-    )
-        return;
+            let captured = false;
+            const reachedHome = next === 56;
 
-    const old =
-        positions[p][t];
-
-    const next =
-        calcMove(
-            p,
-            old,
-            dice
-        );
-
-    if (next < 0)
-        return;
-
-    positions[p][t] = next;
-
-    document
-        .querySelectorAll(".token")
-        .forEach(e =>
-            e.classList.remove("highlight")
-        );
-
-    let captured = false;
-
-    if (
-        next >= 0 &&
-        next <= 50
-    ) {
-
-        const landed =
-            absolute(p,next);
-
-        if (!SAFE.includes(landed)) {
-
-            for (
-                let op=0;
-                op<players.length;
-                op++
+            if (
+                next >= 0 &&
+                next <= 50
             ) {
 
-                if (
-                    op === p ||
-                    !players[op].active
-                )
-                    continue;
+                const landed =
+                absolute(p, next);
+
+                if (!SAFE.includes(landed)) {
 
                 for (
-                    let ot=0;
-                    ot<4;
-                    ot++
+                    let op = 0;
+                    op < players.length;
+                    op++
                 ) {
 
-                    const enemyPos =
-                        positions[op][ot];
-
                     if (
-                        enemyPos >= 0 &&
-                        enemyPos <= 50 &&
-                        absolute(op,enemyPos) === landed
+                    op !== p &&
+                    players[op].active
                     ) {
 
-                        positions[op][ot] = -1;
+                    for (
+                        let ot = 0;
+                        ot < 4;
+                        ot++
+                    ) {
 
+                        if (
+                        positions[op][ot] >= 0 &&
+                        positions[op][ot] <= 50 &&
+                        absolute(
+                            op,
+                            positions[op][ot]
+                        ) === landed
+                        ) {
+
+                        positions[op][ot] = -1;
                         captured = true;
+                        }
+                    }
                     }
                 }
+                }
             }
-        }
-    }
 
-    render();
+            render();
 
-    const reachedHome =
-        next === 56;
+            if (
+                positions[p].every(
+                x => x === 56
+                ) &&
+                !rankings.includes(p)
+            ) {
 
-    if (
-        positions[p].every(
-            x => x === 56
-        ) &&
-        !rankings.includes(p)
-    ) {
+                rankings.push(p);
 
-        rankings.push(p);
+                const activeCount =
+                players.filter(
+                    pl => pl.active
+                ).length;
 
-        const place =
-            ["1st","2nd","3rd","4th"]
-            [rankings.length - 1];
+                const placeStr =
+                [
+                    '1st',
+                    '2nd',
+                    '3rd',
+                    '4th'
+                ][rankings.length - 1];
 
-        status.textContent =
-            "🏆 " +
-            players[p].name +
-            " finished " +
-            place;
+                status.textContent =
+                '🏆 ' +
+                players[p].name +
+                ' finished in ' +
+                placeStr +
+                ' place!';
 
-        const activeCount =
-            players.filter(
-                pl => pl.active
-            ).length;
+                const completionThreshold =
+                activeCount === 2
+                    ? 1
+                    : activeCount - 1;
 
-        const threshold =
-            activeCount === 2
-                ? 1
-                : activeCount - 1;
+                if (
+                rankings.length >=
+                completionThreshold
+                ) {
 
-        if (
-            rankings.length >= threshold
-        ) {
-
-            players.forEach(
-                (pl,i) => {
-
+                players.forEach(
+                    (pl, i) => {
                     if (
                         pl.active &&
                         !rankings.includes(i)
                     ) {
                         rankings.push(i);
                     }
-                }
-            );
+                    }
+                );
 
-            gameOver = true;
+                gameOver = true;
 
-            const result =
-                rankings.map(
-                    (idx,i) =>
-                        ["1st","2nd","3rd","4th"][i] +
-                        ": " +
+                const placeNames =
+                    rankings
+                    .map(
+                        (idx, index) =>
+                        [
+                            '1st',
+                            '2nd',
+                            '3rd',
+                            '4th'
+                        ][index] +
+                        ': ' +
                         players[idx].name
-                ).join("  •  ");
+                    )
+                    .join(' | ');
+
+                status.textContent =
+                    '🎉 Game Over! Rankings — ' +
+                    placeNames;
+
+                return;
+                }
+            }
+
+            extraTurn =
+                dice === 6 ||
+                captured ||
+                reachedHome;
+
+            timer(nextTurn, 300);
+            }
+
+            function nextTurn() {
+            if (gameOver) {
+                return;
+            }
+
+            if (extraTurn) {
+
+                extraTurn = false;
+
+            } else {
+
+                const active =
+                getActivePlayers();
+
+                const idx =
+                active.indexOf(current);
+
+                if (idx === -1) {
+                current = active[0];
+                } else {
+                current =
+                    active[
+                    (idx + 1) % active.length
+                    ];
+                }
+
+                sixes = 0;
+            }
+
+            rolled = false;
+            dice = null;
+
+            setFace(1);
+
+            rollBtn.disabled = false;
+
+            updateDiceColor();
 
             status.textContent =
-                "🎉 Game Over! " +
-                result;
+                players[current].name +
+                "'s Turn";
 
-            rollBtn.disabled = true;
+            render();
 
-            return;
-        }
-    }
+            if (
+                players[current].isAI &&
+                !gameOver &&
+                !rolled
+            ) {
+                timer(
+                rollDice,
+                600
+                );
+            }
+            }
 
-    extraTurn =
-        dice === 6 ||
-        captured ||
-        reachedHome;
+            function newGame() {
+            clearTimers();
 
-    timer(nextTurn,350);
-}
+            gameOver = false;
+            dice = null;
+            rolled = false;
+            rolling = false;
+            extraTurn = false;
+            sixes = 0;
 
-/* =========================
-   NEXT TURN
-========================= */
+            rankings = [];
 
-function nextTurn() {
+            positions = Array.from(
+                { length: players.length },
+                () => [-1, -1, -1, -1]
+            );
 
-    if (gameOver)
-        return;
+            const active =
+                getActivePlayers();
 
-    if (extraTurn) {
-
-        extraTurn = false;
-
-    } else {
-
-        const active =
-            getActivePlayers();
-
-        const index =
-            active.indexOf(current);
-
-        current =
-            index === -1
+            current =
+                active[0] !== undefined
                 ? active[0]
-                : active[
-                    (index + 1) %
-                    active.length
-                ];
+                : 0;
 
-        sixes = 0;
-    }
+            diceEl.classList.remove(
+                'rolling'
+            );
 
-    rolled = false;
-    dice = null;
+            stage.classList.remove(
+                'is-rolling'
+            );
 
-    setFace(1);
+            setFace(1);
+            updateDiceColor();
 
-    rollBtn.disabled = false;
+            rollBtn.disabled = false;
 
-    updateDiceColor();
+            status.textContent =
+                players[current].name +
+                "'s Turn";
 
-    status.textContent =
-        players[current].isAI
-            ? "🤖 " +
-              players[current].name +
-              "'s Turn"
-            : players[current].name +
-              "'s Turn";
+            render();
+            }
 
-    render();
+            $('mode1vPC').addEventListener(
+            'click',
+            () => setGameMode('1vPC')
+            );
 
-    if (
-        players[current].isAI &&
-        !gameOver
-    ) {
+            $('mode2P').addEventListener(
+            'click',
+            () => setGameMode('2P')
+            );
 
-        timer(
-            rollDice,
-            600
-        );
-    }
-}
+            $('mode4P').addEventListener(
+            'click',
+            () => setGameMode('4P')
+            );
 
-/* =========================
-   NEW GAME
-========================= */
+            rollBtn.addEventListener(
+            'click',
+            rollDice
+            );
 
-function newGame() {
+            $('newGameBtn').addEventListener(
+            'click',
+            newGame
+            );
 
-    clearTimers();
-
-    gameOver = false;
-
-    dice = null;
-
-    rolled = false;
-
-    rolling = false;
-
-    extraTurn = false;
-
-    sixes = 0;
-
-    rankings = [];
-
-    positions =
-        Array.from(
-            {length: players.length},
-            () => [-1,-1,-1,-1]
-        );
-
-    const active =
-        getActivePlayers();
-
-    current =
-        active.length
-            ? active[0]
-            : 0;
-
-    diceEl.classList.remove(
-        "rolling"
-    );
-
-    stage.classList.remove(
-        "is-rolling"
-    );
-
-    setFace(1);
-
-    updateDiceColor();
-
-    rollBtn.disabled = false;
-
-    status.textContent =
-        players[current].name +
-        "'s Turn";
-
-    render();
-
-    if (
-        players[current].isAI
-    ) {
-
-        timer(
-            rollDice,
-            600
-        );
-    }
-}
-
-/* =========================
-   BUTTON EVENTS
-========================= */
-
-rollBtn.addEventListener(
-    "click",
-    rollDice
-);
-
-newGameBtn.addEventListener(
-    "click",
-    newGame
-);
-
-/* =========================
-   START
-========================= */
-
-buildBoard();
-
-configurePlayers();
-
-newGame();
-
-})();
+            buildBoard();
+            setGameMode('1vPC');
         `,
     },
+    // chess
     {
       title: "♟️ Chess — PvP / Computer",
 
@@ -7566,6 +10204,7 @@ newGame();
                 newGame();
             `,
     },
+    // 8 Ball Pool
     {
       title: "🎱 8 Ball Pool",
       html: `
@@ -8845,7 +11484,12 @@ newGame();
             if (!shotActive || paused) return;
 
             let moving = false;
-            const SUBSTEPS = 5;
+
+            // Faster, more responsive pool physics.  Keep enough substeps for
+            // reliable ball-to-ball collision detection at the higher speed.
+            const SUBSTEPS = 8;
+            const TABLE_FRICTION = 0.985;
+            const MIN_ROLL_SPEED = 0.010;
 
             for (let step = 0; step < SUBSTEPS; step++) {
                 for (const ball of balls) {
@@ -8881,7 +11525,7 @@ newGame();
                         }
                     }
 
-                    if (Math.abs(ball.vx) > .015 || Math.abs(ball.vy) > .015) {
+                    if (Math.abs(ball.vx) > MIN_ROLL_SPEED || Math.abs(ball.vy) > MIN_ROLL_SPEED) {
                         moving = true;
                     }
 
@@ -8898,8 +11542,10 @@ newGame();
 
             for (const ball of balls) {
                 if (ball.pocketed) continue;
-                ball.vx *= .992;
-                ball.vy *= .992;
+                // Lower friction keeps the balls moving longer and makes
+                // rebounds/collisions feel quicker and less sluggish.
+                ball.vx *= TABLE_FRICTION;
+                ball.vy *= TABLE_FRICTION;
             }
 
             if (!moving) stopShot();
@@ -9063,7 +11709,8 @@ newGame();
             };
 
             shotActive = true;
-            const speed = 5 + shotPower * 25;
+            // Stronger initial shot speed for a much more responsive cue ball.
+            const speed = 15 + shotPower * 64;
             cueBall.vx = Math.cos(angle) * speed;
             cueBall.vy = Math.sin(angle) * speed;
 
@@ -9847,7 +12494,7 @@ newGame();
         gameLoop();
     `,
     },
-
+    // Shell Game — Find the Ball
     {
       title: "🎩 Shell Game — Find the Ball",
       html: `
@@ -11127,6 +13774,7 @@ newGame();
 
         `,
     },
+    // snake and fruit
     {
       title: "🐍 Snake & Fruit 🍎",
 
@@ -13021,7 +15669,7 @@ newGame();
             startGame;
             `,
     },
-
+    // Picture Puzzle Game
     {
       title: "🧩 Picture Puzzle Game",
 
@@ -15013,7 +17661,7 @@ newGame();
     if (isExpanded) {
       setVisibleCount(4);
       document
-        .getElementById("playground")
+        .getElementById("games")
         .scrollIntoView({ behavior: "smooth" });
     } else {
       setVisibleCount((prev) => Math.min(prev + 4, games.length));
@@ -15070,13 +17718,13 @@ newGame();
 
 // --- 7. LIVE PROJECTS SECTION (WITH LOAD MORE) ---
 function LiveProjectsSection() {
-    const { isDark, t } = useContext(AppContext);
-    const [visibleCount, setVisibleCount] = useState(6);
+  const { isDark, t } = useContext(AppContext);
+  const [visibleCount, setVisibleCount] = useState(6);
 
-    const miniProjects = [
-      {
-        title: "🖼️ Image Format Converter",
-        html: `<div class="page">
+  const miniProjects = [
+    {
+      title: "🖼️ Image Format Converter",
+      html: `<div class="page">
         <div class="converter-card">
             <div class="header">
                 <div class="logo">🖼️</div>
@@ -15118,7 +17766,7 @@ function LiveProjectsSection() {
             <div class="privacy"> 🔒 Your image stays on your device. Nothing is uploaded to a server. </div>
         </div>
     </div>`,
-        css: `
+      css: `
         * {
             margin: 0;
             padding: 0;
@@ -15775,7 +18423,7 @@ function LiveProjectsSection() {
             }
         }
     `,
-        js: `
+      js: `
         const upload = document.getElementById("upload");
         const uploadArea = document.getElementById("uploadArea");
 
@@ -16040,10 +18688,10 @@ function LiveProjectsSection() {
         });
 
     `,
-      },
-      {
-        title: " 3D Waterfall",
-        html: `
+    },
+    {
+      title: " 3D Waterfall",
+      html: `
         <div id="loading">
             <div class="loader"></div>
             <div class="loading-text">CREATING WATERFALL</div>
@@ -16722,7 +19370,7 @@ function LiveProjectsSection() {
             }, 1500);
         </script>
     `,
-        css: `
+      css: `
             * {
                 margin: 0;
                 padding: 0;
@@ -16894,11 +19542,11 @@ function LiveProjectsSection() {
                 .help, .fps { display: none; }
                 .auto-button { right: 10px; bottom: 10px; }
             }`,
-        js: ``,
-      },
-      {
-        title: "🧬 DNA 3D",
-        html: `    <header class="navbar">
+      js: ``,
+    },
+    {
+      title: "🧬 DNA 3D",
+      html: `    <header class="navbar">
 
         <div class="logo">
             <span class="dna-symbol">🧬</span>
@@ -16968,7 +19616,7 @@ function LiveProjectsSection() {
         </section>
 
     </main>`,
-        css: `
+      css: `
         * {
             margin: 0;
             padding: 0;
@@ -17687,7 +20335,7 @@ MOBILE
 
         }
     `,
-        js: `
+      js: `
         const canvas = document.getElementById("dnaCanvas");
         const ctx = canvas.getContext("2d");
 
@@ -19011,10 +21659,10 @@ MOBILE
                 render();
 
     `,
-      },
-      {
-        title: "🖼️ Image Optimizer & Enhancer",
-        html: `    <div class="container">
+    },
+    {
+      title: "🖼️ Image Optimizer & Enhancer",
+      html: `    <div class="container">
 
         <header>
 
@@ -19182,7 +21830,7 @@ MOBILE
         </div>
 
     </div>`,
-        css: `
+      css: `
     *{
         margin:0;
         padding:0;
@@ -19424,7 +22072,7 @@ MOBILE
     }
 
     }`,
-        js: ` 
+      js: ` 
         const imageInput = document.getElementById("imageInput");
         const originalPreview = document.getElementById("originalPreview");
         const canvas = document.getElementById("canvas");
@@ -19639,16 +22287,16 @@ MOBILE
             return (bytes / 1024 / 1024).toFixed(2) + " MB";
 
         }`,
-      },
-      {
-        title: "Moonlight Garden",
-        html: `<div class="sky"></div>
+    },
+    {
+      title: "Moonlight Garden",
+      html: `<div class="sky"></div>
 
         <div class="moon"></div>
 
         <canvas id="grassCanvas"></canvas>
       `,
-        css: `
+      css: `
         * {
             margin: 0;
             padding: 0;
@@ -19722,7 +22370,7 @@ MOBILE
             z-index: 3;
         }
     `,
-        js: `
+      js: `
         /* =========================================
            CANVAS
         ========================================== */
@@ -21227,23 +23875,23 @@ MOBILE
         animate();
 
     `,
-      },
-      //   {
-      //     title: "",
-      //     html: ``,
-      //     css: ``,
-      //     js: `// No JS needed for this CSS magic!`
-      //   },
-      // {
-      //   title: "",
-      //   html: ``,
-      //   css: ``,
-      //   js: `// No JS needed for this CSS magic!`
-      // },
-      {
-        title: "𖣘 3D Old Windmill",
+    },
+    //   {
+    //     title: "",
+    //     html: ``,
+    //     css: ``,
+    //     js: `// No JS needed for this CSS magic!`
+    //   },
+    // {
+    //   title: "",
+    //   html: ``,
+    //   css: ``,
+    //   js: `// No JS needed for this CSS magic!`
+    // },
+    {
+      title: "𖣘 3D Old Windmill",
 
-        html: `
+      html: `
                 <div id="scene"></div>
 
                 <div class="title">OLD STONE WINDMILL</div>
@@ -21264,7 +23912,7 @@ MOBILE
                 </div>
             `,
 
-        css: `
+      css: `
                 * {
                 margin: 0;
                 padding: 0;
@@ -21435,7 +24083,7 @@ MOBILE
                 }
             `,
 
-        js: `
+      js: `
                 /* =========================================================
                 THREE.JS
                 ========================================================= */
@@ -24049,10 +26697,10 @@ MOBILE
                 }
                 );
             `,
-      },
-      {
-        title: "🖼️ Image Background Remover",
-        html: `
+    },
+    {
+      title: "🖼️ Image Background Remover",
+      html: `
           <div class="app">
 
 
@@ -24434,7 +27082,7 @@ MOBILE
 
     <div class="brush-cursor" id="brushCursor"></div>
     `,
-        css: `
+      css: `
         * {
             box-sizing: border-box;
             margin: 0;
@@ -25227,7 +27875,7 @@ MOBILE
 
         }
     `,
-        js: `
+      js: `
         /* =========================================================
            AI LIBRARY
         ========================================================= */
@@ -27070,15 +29718,15 @@ MOBILE
         );
 
     `,
-      },
-      {
-        title: "Starry Desert Oasis With Shooting Star",
-        html: `<div class="overlay">
+    },
+    {
+      title: "Starry Desert Oasis With Shooting Star",
+      html: `<div class="overlay">
             <!-- <h1>DESERT OASIS</h1> -->
           </div>
           <div class="moon"></div>
           <canvas id="sky"></canvas>`,
-        css: `
+      css: `
         /* Reset margins and hide scrollbars for a clean fullscreen look */
         * {
             margin: 0;
@@ -27140,7 +29788,7 @@ MOBILE
             
         }
     `,
-        js: `
+      js: `
         const canvas = document.getElementById('sky');
         const ctx = canvas.getContext('2d');
 
@@ -27544,11 +30192,11 @@ MOBILE
         }
         animate();
     `,
-      },
-      {
-        title: "🌌 Interactive Solar System",
+    },
+    {
+      title: "🌌 Interactive Solar System",
 
-        html: `
+      html: `
                 <div class="solar-app">
 
                 <!-- =========================================
@@ -27885,7 +30533,7 @@ MOBILE
                 </div>
             `,
 
-        css: `
+      css: `
                 /* =========================================
                 VARIABLES
                 ========================================== */
@@ -29332,7 +31980,7 @@ MOBILE
                 }
             `,
 
-        js: `
+      js: `
                 (async function () {
 
                 "use strict";
@@ -32272,17 +34920,17 @@ MOBILE
 
                 })();
             `,
-      },
+    },
 
-      // {
-      //   title: "",
-      //   html: ``,
-      //   css: ``,
-      //   js: `// No JS needed for this CSS magic!`
-      // },
-      {
-        title: "Hunter's Licence",
-        html: `<div class="licence-card">
+    // {
+    //   title: "",
+    //   html: ``,
+    //   css: ``,
+    //   js: `// No JS needed for this CSS magic!`
+    // },
+    {
+      title: "Hunter's Licence",
+      html: `<div class="licence-card">
         <div class="card-inside-left"></div>
         <div class="card-inside-right">
         </div>
@@ -32364,7 +35012,7 @@ MOBILE
         </div>
         
     </div>`,
-        css: `*{
+      css: `*{
     padding: 0;
     margin: 0;
 }
@@ -32629,17 +35277,17 @@ body{
 }
 
       /* barcode end*/`,
-        js: `// No JS needed for this CSS magic!`,
-      },
-      // {
-      //   title: "",
-      //   html: ``,
-      //   css: ``,
-      //   js: `// No JS needed for this CSS magic!`
-      // },
-      {
-        title: "Thor's Hammer Mjolnir",
-        html: `<main class="hammer">
+      js: `// No JS needed for this CSS magic!`,
+    },
+    // {
+    //   title: "",
+    //   html: ``,
+    //   css: ``,
+    //   js: `// No JS needed for this CSS magic!`
+    // },
+    {
+      title: "Thor's Hammer Mjolnir",
+      html: `<main class="hammer">
             <div class="hammer-head">
               <div class="cube">
                 <div class="face front">
@@ -32662,7 +35310,7 @@ body{
               <div></div>
             </div>
           </main>`,
-        css: `*{
+      css: `*{
             margin: 0;
             padding: 0;
             top: 0;
@@ -32795,12 +35443,12 @@ body{
               border-right-style: groove;
               animation: rotateCube 10s infinite linear;
 		      }`,
-        js: `// No JS needed for this CSS magic!`,
-      },
-      {
-        title: "Responsive TubeLight Text",
-        html: `<h2 contenteditable="true">HIRE ME</h2>`,
-        css: `*{
+      js: `// No JS needed for this CSS magic!`,
+    },
+    {
+      title: "Responsive TubeLight Text",
+      html: `<h2 contenteditable="true">HIRE ME</h2>`,
+      css: `*{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -32848,11 +35496,11 @@ h2{
     }
 
 }`,
-        js: `// No JS needed for this CSS magic!`,
-      },
-      {
-        title: "Cashel House",
-        html: `<main class="cashel">
+      js: `// No JS needed for this CSS magic!`,
+    },
+    {
+      title: "Cashel House",
+      html: `<main class="cashel">
               <div class="home"> 
                 <div class="main-cube">
           <!-- ground floor start -->
@@ -35431,7 +38079,7 @@ h2{
                 </div>
               </div>				
             </main>`,
-        css: `*{
+      css: `*{
               margin: 0;
               padding: 0;
               top: 0;
@@ -35950,11 +38598,11 @@ h2{
             .Tw6{
                 transform: rotateY(90deg) translateZ(4px) translateX(10px) translateY(-446px);
             }`,
-        js: `// No JS needed for this CSS magic!`,
-      },
-      {
-        title: "Rocket",
-        html: `<main>
+      js: `// No JS needed for this CSS magic!`,
+    },
+    {
+      title: "Rocket",
+      html: `<main>
               <div class="top"></div>
 
               <div class="middle">
@@ -35991,7 +38639,7 @@ h2{
                 <div></div>
               </div> -->
             </main>`,
-        css: `*{
+      css: `*{
               margin: 0;
               padding: 0;
               top: 0;
@@ -36184,11 +38832,11 @@ h2{
               animation: up 2s linear infinite;
               filter: drop-shadow(6px 47px 6px red);
             }`,
-        js: `// No JS needed for this CSS magic!`,
-      },
-      {
-        title: "Liquid Drop",
-        html: `<div id="liquid_drop">
+      js: `// No JS needed for this CSS magic!`,
+    },
+    {
+      title: "Liquid Drop",
+      html: `<div id="liquid_drop">
         <div class="container">
             <div class="drop" style="--clr:#ff0f5b;">
                 <div class="content">
@@ -36215,7 +38863,7 @@ h2{
         </div>
 
     </div>`,
-        css: `
+      css: `
           *{
               margin: 0;
               padding: 0;
@@ -36405,11 +39053,11 @@ h2{
               background: rgba(255, 255, 255, 0.5);
               border-radius: 5px;
           }`,
-        js: `// No JS needed for this CSS magic!`,
-      },
-      {
-        title: "Hot Coffee",
-        html: `<div class="container">
+      js: `// No JS needed for this CSS magic!`,
+    },
+    {
+      title: "Hot Coffee",
+      html: `<div class="container">
         <div class="plate"></div>
         <div class="cup">
               <div class="top">
@@ -36443,7 +39091,7 @@ h2{
             <div class="handle"></div>
         </div>
     </div>`,
-        css: `*{
+      css: `*{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -36599,11 +39247,11 @@ body{
         transform: translateY(-300px) scaleX(10);
     }
 }`,
-        js: `// No JS needed for this CSS magic!`,
-      },
-      {
-        title: "Firefly Background",
-        html: `<div class="firefly">
+      js: `// No JS needed for this CSS magic!`,
+    },
+    {
+      title: "Firefly Background",
+      html: `<div class="firefly">
         <div class="container">
             <div class="bubbles">
                 <span style="--i:11;"></span>
@@ -36654,7 +39302,7 @@ body{
             </div>
         </div>
     </div>`,
-        css: `*{
+      css: `*{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -36709,11 +39357,11 @@ body{
         transform: translateY(-100vh) scale(1);
     }
 }`,
-        js: `// No JS needed for this CSS magic!`,
-      },
-      {
-        title: "Day & Night Analog Clock",
-        html: `
+      js: `// No JS needed for this CSS magic!`,
+    },
+    {
+      title: "Day & Night Analog Clock",
+      html: `
         <div class="clock">
         
         <div class="hour">
@@ -36732,7 +39380,7 @@ body{
 
     <div class="toggleClass" onclick="toggleClass()"></div>
     `,
-        css: `*
+      css: `*
 {
     margin: 0;
     padding: 0;
@@ -36947,7 +39595,7 @@ body.light .toggleClass::before
     font-weight: bolder;
 
 }`,
-        js: `
+      js: `
         function toggleClass(){
             const body = document.querySelector('body');
             body.classList.toggle('light');
@@ -36971,21 +39619,21 @@ body.light .toggleClass::before
             sc.style.transform = \`rotateZ(\${ss}deg)\`;
 
         })`,
-      },
-      {
-        title: "Interactive Digital Clock",
-        html: `<div id="clock" class="clock">00:00:00</div>`,
-        css: `.clock {\n  font-size: 3rem;\n  font-family: monospace;\n  font-weight: bold;\n  color: #333;\n  padding: 20px;\n  border-radius: 10px;\n  background: #f0f0f0;\n  box-shadow: inset 5px 5px 10px #d9d9d9, inset -5px -5px 10px #ffffff;\n}`,
-        js: `function updateClock() {\n  const now = new Date();\n  const time = now.toLocaleTimeString('en-US', { hour12: true });\n  document.getElementById('clock').textContent = time;\n}\nsetInterval(updateClock, 1000);\nupdateClock();`,
-      },
-      {
-        title: "Minion",
-        html: `<div class="box">
+    },
+    {
+      title: "Interactive Digital Clock",
+      html: `<div id="clock" class="clock">00:00:00</div>`,
+      css: `.clock {\n  font-size: 3rem;\n  font-family: monospace;\n  font-weight: bold;\n  color: #333;\n  padding: 20px;\n  border-radius: 10px;\n  background: #f0f0f0;\n  box-shadow: inset 5px 5px 10px #d9d9d9, inset -5px -5px 10px #ffffff;\n}`,
+      js: `function updateClock() {\n  const now = new Date();\n  const time = now.toLocaleTimeString('en-US', { hour12: true });\n  document.getElementById('clock').textContent = time;\n}\nsetInterval(updateClock, 1000);\nupdateClock();`,
+    },
+    {
+      title: "Minion",
+      html: `<div class="box">
         <div class="eye"></div>
         <div class="eye"></div>
         <div class="smilee"></div>
     </div>`,
-        css: `*{
+      css: `*{
     margin: 0;
     padding: 0;
 }
@@ -37045,7 +39693,7 @@ box-shadow: 0 5px 45px rgba(0,0,0,0.2),
     box-shadow:0 10px 5px #f2762e;
 
 }`,
-        js: `document.querySelector('body').addEventListener('mousemove',eyeball)
+      js: `document.querySelector('body').addEventListener('mousemove',eyeball)
 
         function eyeball(){
             const eye = document.querySelectorAll('.eye');
@@ -37059,16 +39707,16 @@ box-shadow: 0 5px 45px rgba(0,0,0,0.2),
                 eye.style.transform = "rotate("+rotation+"deg)"
             })
         }`,
-      },
-      {
-        title: "Rainbow Ring",
-        html: ` <div class="loader">
+    },
+    {
+      title: "Rainbow Ring",
+      html: ` <div class="loader">
         <span></span>
         <span></span>
         <span></span>
         <span></span>
     </div>`,
-        css: `body
+      css: `body
 {
     margin: 0;
     padding: 0;
@@ -37142,599 +39790,1715 @@ box-shadow: 0 5px 45px rgba(0,0,0,0.2),
     background: #240229;
     border-radius: 50%;
 }`,
-        js: `// No JS needed for this CSS magic!`,
-      },
-      {
-        title: "Neon Glowing Button",
-        html: `<button class="neon-btn">Hover Me</button>`,
-        css: `.neon-btn {\n  padding: 15px 30px;\n  font-size: 1.2rem;\n  color: #0ff;\n  background: transparent;\n  border: 2px solid #0ff;\n  border-radius: 8px;\n  cursor: pointer;\n  transition: 0.3s;\n  text-transform: uppercase;\n  font-weight: bold;\n}\n.neon-btn:hover {\n  background: #0ff;\n  color: #000;\n  box-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 40px #0ff;\n}`,
-        js: `// No JS needed for this CSS magic!`,
-      },
-      {
-        title: "Animated Loader",
-        html: `<div class="loader"></div>`,
-        css: `.loader {\n  width: 50px;\n  height: 50px;\n  border: 5px solid #f3f3f3;\n  border-top: 5px solid #3498db;\n  border-radius: 50%;\n  animation: spin 1s linear infinite;\n}\n@keyframes spin {\n  0% { transform: rotate(0deg); }\n  100% { transform: rotate(360deg); }\n}`,
-        js: `// Pure CSS Loader`,
-      },
-      {
-        title: "3D Hover Card",
-        html: `<div class="card">Hover Me</div>`,
-        css: `.card {\n  width: 150px;\n  height: 200px;\n  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: 15px;\n  font-weight: bold;\n  color: white;\n  transition: transform 0.5s;\n  box-shadow: 0 10px 20px rgba(0,0,0,0.1);\n}\n.card:hover {\n  transform: translateY(-10px) rotateX(10deg) rotateY(10deg);\n  box-shadow: 0 20px 30px rgba(0,0,0,0.2);\n}`,
-        js: `// Pure CSS 3D Effect`,
-      },
-      {
-        title: "Random Color Generator",
-        html: `<div id="box" class="color-box">#3498db</div>\n<button onclick="changeColor()">Generate</button>`,
-        css: `.color-box {\n  width: 150px;\n  height: 100px;\n  background: #3498db;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  color: white;\n  font-family: monospace;\n  font-size: 1.5rem;\n  border-radius: 8px;\n  margin-bottom: 15px;\n  transition: 0.3s;\n}\nbutton {\n  padding: 10px 20px;\n  border: none;\n  background: #333;\n  color: white;\n  border-radius: 5px;\n  cursor: pointer;\n}`,
-        js: `function changeColor() {\n  const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);\n  const box = document.getElementById('box');\n  box.style.background = randomColor;\n  box.textContent = randomColor;\n}`,
-      },
-      {
-        title: "Glassmorphism Design",
-        html: `<div class="glass">Glass Effect</div>`,
-        css: `body {\n  background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);\n}\n.glass {\n  background: rgba(255, 255, 255, 0.2);\n  border-radius: 16px;\n  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);\n  backdrop-filter: blur(5px);\n  -webkit-backdrop-filter: blur(5px);\n  border: 1px solid rgba(255, 255, 255, 0.3);\n  padding: 40px;\n  color: white;\n  font-size: 1.5rem;\n  font-weight: bold;\n}`,
-        js: `// Pure CSS Glass Effect`,
-      },
-      {
-        title: "CSS Toggle Switch",
-        html: `<label class="switch">\n  <input type="checkbox">\n  <span class="slider"></span>\n</label>`,
-        css: `.switch {\n  position: relative;\n  display: inline-block;\n  width: 60px;\n  height: 34px;\n}\n.switch input { opacity: 0; width: 0; height: 0; }\n.slider {\n  position: absolute;\n  cursor: pointer;\n  top: 0; left: 0; right: 0; bottom: 0;\n  background-color: #ccc;\n  transition: .4s;\n  border-radius: 34px;\n}\n.slider:before {\n  position: absolute;\n  content: "";\n  height: 26px;\n  width: 26px;\n  left: 4px;\n  bottom: 4px;\n  background-color: white;\n  transition: .4s;\n  border-radius: 50%;\n}\ninput:checked + .slider {\n  background-color: #2196F3;\n}\ninput:checked + .slider:before {\n  transform: translateX(26px);\n}`,
-        js: `// Checkbox state handled via CSS pseudo-selectors`,
-      },
-      {
-        title: "Auto Typing Text",
-        html: `<h1 id="text" class="typing"></h1>`,
-        css: `.typing {\n  font-family: monospace;\n  font-size: 2rem;\n  white-space: nowrap;\n  overflow: hidden;\n  border-right: 3px solid #333;\n  animation: blink 0.7s step-end infinite;\n}\n@keyframes blink {\n  50% { border-color: transparent; }\n}`,
-        js: `const text = "Hello, World!";\nlet i = 0;\n\nfunction typeWriter() {\n  if (i < text.length) {\n    document.getElementById("text").innerHTML += text.charAt(i);\n    i++;\n    setTimeout(typeWriter, 150);\n  }\n}\ntypeWriter();`,
-      },
-      {
-        title: "Minimal CSS Tooltip",
-        html: `<div class="tooltip">Hover Me\n  <span class="tooltiptext">Tooltip Info!</span>\n</div>`,
-        css: `.tooltip {\n  position: relative;\n  display: inline-block;\n  cursor: pointer;\n  font-size: 1.2rem;\n  font-weight: bold;\n}\n.tooltip .tooltiptext {\n  visibility: hidden;\n  width: 120px;\n  background-color: #333;\n  color: #fff;\n  text-align: center;\n  border-radius: 6px;\n  padding: 5px 0;\n  position: absolute;\n  z-index: 1;\n  bottom: 150%;\n  left: 50%;\n  margin-left: -60px;\n  opacity: 0;\n  transition: opacity 0.3s;\n}\n.tooltip:hover .tooltiptext {\n  visibility: visible;\n  opacity: 1;\n}`,
-        js: `// Tooltip purely driven by CSS :hover`,
-      },
-      {
-        title: "Range Slider with Value",
-        html: `<div class="slider-container">\n  <input type="range" id="myRange" min="1" max="100" value="50">\n  <p>Value: <span id="val">50</span></p>\n</div>`,
-        css: `.slider-container {\n  width: 80%;\n  text-align: center;\n  font-family: sans-serif;\n  font-weight: bold;\n  color: #333;\n}\ninput[type=range] {\n  width: 100%;\n}`,
-        js: `const slider = document.getElementById("myRange");\nconst output = document.getElementById("val");\n\nslider.oninput = function() {\n  output.innerHTML = this.value;\n}`,
-      },
-      {
-        title: "Expanding Search Bar",
-        html: `<div class="search-box">\n  <input type="text" placeholder="Search...">\n</div>`,
-        css: `.search-box {\n  display: flex;\n  justify-content: center;\n}\ninput {\n  width: 40px;\n  height: 40px;\n  border-radius: 20px;\n  border: 2px solid #333;\n  padding: 0 15px;\n  font-size: 16px;\n  transition: width 0.4s ease-in-out;\n  outline: none;\n}\ninput:focus {\n  width: 250px;\n}`,
-        js: `// Click the search bar to see it expand!`,
-      },
-    ];
+      js: `// No JS needed for this CSS magic!`,
+    },
+    {
+      title: "Neon Glowing Button",
+      html: `<button class="neon-btn">Hover Me</button>`,
+      css: `.neon-btn {\n  padding: 15px 30px;\n  font-size: 1.2rem;\n  color: #0ff;\n  background: transparent;\n  border: 2px solid #0ff;\n  border-radius: 8px;\n  cursor: pointer;\n  transition: 0.3s;\n  text-transform: uppercase;\n  font-weight: bold;\n}\n.neon-btn:hover {\n  background: #0ff;\n  color: #000;\n  box-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 40px #0ff;\n}`,
+      js: `// No JS needed for this CSS magic!`,
+    },
+    {
+      title: "Animated Loader",
+      html: `<div class="loader"></div>`,
+      css: `.loader {\n  width: 50px;\n  height: 50px;\n  border: 5px solid #f3f3f3;\n  border-top: 5px solid #3498db;\n  border-radius: 50%;\n  animation: spin 1s linear infinite;\n}\n@keyframes spin {\n  0% { transform: rotate(0deg); }\n  100% { transform: rotate(360deg); }\n}`,
+      js: `// Pure CSS Loader`,
+    },
+    {
+      title: "3D Hover Card",
+      html: `<div class="card">Hover Me</div>`,
+      css: `.card {\n  width: 150px;\n  height: 200px;\n  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: 15px;\n  font-weight: bold;\n  color: white;\n  transition: transform 0.5s;\n  box-shadow: 0 10px 20px rgba(0,0,0,0.1);\n}\n.card:hover {\n  transform: translateY(-10px) rotateX(10deg) rotateY(10deg);\n  box-shadow: 0 20px 30px rgba(0,0,0,0.2);\n}`,
+      js: `// Pure CSS 3D Effect`,
+    },
+    {
+      title: "Random Color Generator",
+      html: `<div id="box" class="color-box">#3498db</div>\n<button onclick="changeColor()">Generate</button>`,
+      css: `.color-box {\n  width: 150px;\n  height: 100px;\n  background: #3498db;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  color: white;\n  font-family: monospace;\n  font-size: 1.5rem;\n  border-radius: 8px;\n  margin-bottom: 15px;\n  transition: 0.3s;\n}\nbutton {\n  padding: 10px 20px;\n  border: none;\n  background: #333;\n  color: white;\n  border-radius: 5px;\n  cursor: pointer;\n}`,
+      js: `function changeColor() {\n  const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);\n  const box = document.getElementById('box');\n  box.style.background = randomColor;\n  box.textContent = randomColor;\n}`,
+    },
+    {
+      title: "Glassmorphism Design",
+      html: `<div class="glass">Glass Effect</div>`,
+      css: `body {\n  background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);\n}\n.glass {\n  background: rgba(255, 255, 255, 0.2);\n  border-radius: 16px;\n  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);\n  backdrop-filter: blur(5px);\n  -webkit-backdrop-filter: blur(5px);\n  border: 1px solid rgba(255, 255, 255, 0.3);\n  padding: 40px;\n  color: white;\n  font-size: 1.5rem;\n  font-weight: bold;\n}`,
+      js: `// Pure CSS Glass Effect`,
+    },
+    {
+      title: "CSS Toggle Switch",
+      html: `<label class="switch">\n  <input type="checkbox">\n  <span class="slider"></span>\n</label>`,
+      css: `.switch {\n  position: relative;\n  display: inline-block;\n  width: 60px;\n  height: 34px;\n}\n.switch input { opacity: 0; width: 0; height: 0; }\n.slider {\n  position: absolute;\n  cursor: pointer;\n  top: 0; left: 0; right: 0; bottom: 0;\n  background-color: #ccc;\n  transition: .4s;\n  border-radius: 34px;\n}\n.slider:before {\n  position: absolute;\n  content: "";\n  height: 26px;\n  width: 26px;\n  left: 4px;\n  bottom: 4px;\n  background-color: white;\n  transition: .4s;\n  border-radius: 50%;\n}\ninput:checked + .slider {\n  background-color: #2196F3;\n}\ninput:checked + .slider:before {\n  transform: translateX(26px);\n}`,
+      js: `// Checkbox state handled via CSS pseudo-selectors`,
+    },
+    {
+      title: "Auto Typing Text",
+      html: `<h1 id="text" class="typing"></h1>`,
+      css: `.typing {\n  font-family: monospace;\n  font-size: 2rem;\n  white-space: nowrap;\n  overflow: hidden;\n  border-right: 3px solid #333;\n  animation: blink 0.7s step-end infinite;\n}\n@keyframes blink {\n  50% { border-color: transparent; }\n}`,
+      js: `const text = "Hello, World!";\nlet i = 0;\n\nfunction typeWriter() {\n  if (i < text.length) {\n    document.getElementById("text").innerHTML += text.charAt(i);\n    i++;\n    setTimeout(typeWriter, 150);\n  }\n}\ntypeWriter();`,
+    },
+    {
+      title: "Minimal CSS Tooltip",
+      html: `<div class="tooltip">Hover Me\n  <span class="tooltiptext">Tooltip Info!</span>\n</div>`,
+      css: `.tooltip {\n  position: relative;\n  display: inline-block;\n  cursor: pointer;\n  font-size: 1.2rem;\n  font-weight: bold;\n}\n.tooltip .tooltiptext {\n  visibility: hidden;\n  width: 120px;\n  background-color: #333;\n  color: #fff;\n  text-align: center;\n  border-radius: 6px;\n  padding: 5px 0;\n  position: absolute;\n  z-index: 1;\n  bottom: 150%;\n  left: 50%;\n  margin-left: -60px;\n  opacity: 0;\n  transition: opacity 0.3s;\n}\n.tooltip:hover .tooltiptext {\n  visibility: visible;\n  opacity: 1;\n}`,
+      js: `// Tooltip purely driven by CSS :hover`,
+    },
+    {
+      title: "Range Slider with Value",
+      html: `<div class="slider-container">\n  <input type="range" id="myRange" min="1" max="100" value="50">\n  <p>Value: <span id="val">50</span></p>\n</div>`,
+      css: `.slider-container {\n  width: 80%;\n  text-align: center;\n  font-family: sans-serif;\n  font-weight: bold;\n  color: #333;\n}\ninput[type=range] {\n  width: 100%;\n}`,
+      js: `const slider = document.getElementById("myRange");\nconst output = document.getElementById("val");\n\nslider.oninput = function() {\n  output.innerHTML = this.value;\n}`,
+    },
+    {
+      title: "Expanding Search Bar",
+      html: `<div class="search-box">\n  <input type="text" placeholder="Search...">\n</div>`,
+      css: `.search-box {\n  display: flex;\n  justify-content: center;\n}\ninput {\n  width: 40px;\n  height: 40px;\n  border-radius: 20px;\n  border: 2px solid #333;\n  padding: 0 15px;\n  font-size: 16px;\n  transition: width 0.4s ease-in-out;\n  outline: none;\n}\ninput:focus {\n  width: 250px;\n}`,
+      js: `// Click the search bar to see it expand!`,
+    },
+  ];
 
-    const isExpanded = visibleCount >= miniProjects.length;
+  const isExpanded = visibleCount >= miniProjects.length;
 
-    const handleToggle = () => {
-        if (isExpanded) {
-            setVisibleCount(6);
-            document.getElementById('playground').scrollIntoView({ behavior: 'smooth' });
-        } else {
-            setVisibleCount((prev) => Math.min(prev + 9, miniProjects.length));
-        }
-    };
+  const handleToggle = () => {
+    if (isExpanded) {
+      setVisibleCount(6);
+      document
+        .getElementById("playground")
+        .scrollIntoView({ behavior: "smooth" });
+    } else {
+      setVisibleCount((prev) => Math.min(prev + 9, miniProjects.length));
+    }
+  };
 
-    return (
-        <section id="playground" className="py-16 md:py-20 relative">
-            <h3 className={`text-2xl sm:text-3xl font-bold mb-2 flex items-center gap-3 sm:gap-4 transition-colors duration-1000 ${isDark ? 'text-slate-100' : 'text-stone-800'}`}>
-                {t('playground')}
-            </h3>
-            <p className={`mb-10 text-sm sm:text-base transition-colors duration-1000 ${isDark ? 'text-slate-400' : 'text-stone-600'}`}>
-                {t('playgroundDesc')}
-            </p>
+  return (
+    <section id="playground" className="py-16 md:py-20 relative">
+      <h3
+        className={`text-2xl sm:text-3xl font-bold mb-2 flex items-center gap-3 sm:gap-4 transition-colors duration-1000 ${isDark ? "text-slate-100" : "text-stone-800"}`}
+      >
+        {t("playground")}
+      </h3>
+      <p
+        className={`mb-10 text-sm sm:text-base transition-colors duration-1000 ${isDark ? "text-slate-400" : "text-stone-600"}`}
+      >
+        {t("playgroundDesc")}
+      </p>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8 transition-all duration-500">
-                {miniProjects.slice(0, visibleCount).map((project, i) => (
-                    <div key={i} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <MiniCodePen
-                            title={project.title}
-                            initialHtml={project.html}
-                            initialCss={project.css}
-                            initialJs={project.js}
-                        />
-                    </div>
-                ))}
-            </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8 transition-all duration-500">
+        {miniProjects.slice(0, visibleCount).map((project, i) => (
+          <div
+            key={i}
+            className="animate-in fade-in slide-in-from-bottom-4 duration-500"
+          >
+            <MiniCodePen
+              title={project.title}
+              initialHtml={project.html}
+              initialCss={project.css}
+              initialJs={project.js}
+            />
+          </div>
+        ))}
+      </div>
 
-            <div className="mt-12 flex justify-center sticky bottom-8 z-40">
-                <button
-                    onClick={handleToggle}
-                    className={`px-8 py-3 rounded-full font-bold shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 ${isDark
-                        ? 'bg-blue-600 text-white hover:bg-blue-500 shadow-blue-500/30'
-                        : 'bg-orange-500 text-white hover:bg-orange-600 shadow-orange-500/40'
-                        }`}
-                >
-                    {isExpanded ? t('hideProjects') : t('seeMoreProjects')}
-                </button>
-            </div>
-        </section>
-    );
+      <div className="mt-12 flex justify-center sticky bottom-8 z-40">
+        <button
+          onClick={handleToggle}
+          className={`px-8 py-3 rounded-full font-bold shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 ${
+            isDark
+              ? "bg-blue-600 text-white hover:bg-blue-500 shadow-blue-500/30"
+              : "bg-orange-500 text-white hover:bg-orange-600 shadow-orange-500/40"
+          }`}
+        >
+          {isExpanded ? t("hideProjects") : t("seeMoreProjects")}
+        </button>
+      </div>
+    </section>
+  );
 }
 
 // --- 8. REUSABLE SUB-COMPONENTS ---
 // --- 8.1 LANGUAGE CHANGING SECTION ---
 function Navbar() {
-    const { isDark, setIsDark, lang, setLang, t } = useContext(AppContext);
-    const [isOpen, setIsOpen] = useState(false);
-    const toggleLang = () => { if (lang === 'en') setLang('hi'); else if (lang === 'hi') setLang('or'); else setLang('en'); };
-    const langIcon = lang === 'en' ? 'A' : lang === 'hi' ? 'अ' : 'ଅ';
+  const { isDark, setIsDark, lang, setLang, t } = useContext(AppContext);
+  const [isOpen, setIsOpen] = useState(false);
+  const toggleLang = () => {
+    if (lang === "en") setLang("hi");
+    else if (lang === "hi") setLang("or");
+    else setLang("en");
+  };
+  const langIcon = lang === "en" ? "A" : lang === "hi" ? "अ" : "ଅ";
 
-    return (
-        <nav className={`sticky top-0 z-50 backdrop-blur-md border-b transition-colors duration-1000 ease-in-out ${isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-orange-50/80 border-orange-200/50'}`}>
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-                <span className={`text-xl font-bold tracking-tighter transition-colors duration-1000 ${isDark ? 'text-blue-500' : 'text-orange-600'}`}>&lt;Dev.Portfolio /&gt;</span>
-                <div className="hidden md:flex items-center gap-8">
-                    <div className="flex gap-6">
-                        <a href="#projects" className={`text-sm font-medium transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'text-stone-700 hover:text-orange-600'}`}>{t('navProjects')}</a>
-                        <a href="#playground" className={`text-sm font-medium transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'text-stone-700 hover:text-orange-600'}`}>{t('navPlayground')}</a>
-                        <a href="#games" className={`text-sm font-medium transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'text-stone-700 hover:text-orange-600'}`}>{t('navGames')}</a>
-                        <a href="#contact" className={`text-sm font-medium transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'text-stone-700 hover:text-orange-600'}`}>{t('navContact')}</a>
-                    </div>
-                    <div className={`flex items-center gap-4 border-l pl-6 transition-colors duration-1000 ${isDark ? 'border-slate-500/30' : 'border-stone-300'}`}>
-                        <AnimatedThemeToggle isDark={isDark} toggle={() => setIsDark(!isDark)} />
-                        <button onClick={toggleLang} className={`w-8 h-8 flex items-center justify-center rounded-full font-bold transition-colors duration-500 ${isDark ? 'bg-slate-800 hover:bg-slate-700 text-blue-400' : 'bg-orange-100 hover:bg-orange-200 text-orange-700'}`} title="Change Language">
-                            {langIcon}
-                        </button>
-                    </div>
-                </div>
-                <button className={`md:hidden text-2xl focus:outline-none transition-colors duration-1000 ${isDark ? 'text-slate-300' : 'text-stone-700'}`} onClick={() => setIsOpen(!isOpen)}>
-                    {isOpen ? '✕' : '☰'}
-                </button>
+  // Scroll manually instead of relying on native hash navigation. This keeps
+  // navigation reliable with the sticky navbar and avoids jumps caused by
+  // animated/deferred sections.
+  const handleNavClick = (event, id) => {
+    event.preventDefault();
+    const target = document.getElementById(id);
+    if (!target) return;
+
+    const nav = event.currentTarget.closest("nav");
+    const offset = (nav?.getBoundingClientRect().height || 0) + 12;
+    const top = target.getBoundingClientRect().top + window.scrollY - offset;
+
+    window.history.replaceState(null, "", `#${id}`);
+    window.scrollTo({ top: Math.max(0, top), left: 0, behavior: "smooth" });
+    setIsOpen(false);
+  };
+
+  const navLink = (id, label, mobile = false) => (
+    <a
+      href={`#${id}`}
+      onClick={(event) => handleNavClick(event, id)}
+      className={`${mobile ? "text-lg" : "text-sm"} font-medium transition-colors duration-500 ${isDark ? "text-slate-300 hover:text-blue-500" : "text-stone-700 hover:text-orange-600"}`}
+    >
+      {label}
+    </a>
+  );
+
+  return (
+    <nav
+      className={`sticky top-0 z-50 backdrop-blur-md border-b transition-colors duration-1000 ease-in-out ${isDark ? "bg-slate-900/90 border-slate-800" : "bg-orange-50/80 border-orange-200/50"}`}
+    >
+      {/* <SocialLinks isDark={isDark} /> */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+        <span
+          className={`text-xl font-bold tracking-tighter transition-colors duration-1000 ${isDark ? "text-blue-500" : "text-orange-600"}`}
+        >
+          {/* <a href="#"><img src={logo_icon} alt="." /> &lt;Deb. Portfolio /&gt; </a> */}
+          <a href="#"> &lt;Deb. Portfolio /&gt; </a>
+        </span>
+        <div className="hidden md:flex items-center gap-8">
+          <div className="flex gap-6">
+            {navLink("experience", t("navExperience"))}
+            {navLink("projects", t("navProjects"))}
+            {navLink("playground", t("navPlayground"))}
+            {navLink("games", t("navGames"))}
+            {navLink("contact", t("navContact"))}
+          </div>
+          <div
+            className={`flex items-center gap-4 border-l pl-6 transition-colors duration-1000 ${isDark ? "border-slate-500/30" : "border-stone-300"}`}
+          >
+            <SocialLinks isDark={isDark} />
+            <AnimatedThemeToggle
+              isDark={isDark}
+              toggle={() => setIsDark(!isDark)}
+            />
+            <button
+              onClick={toggleLang}
+              className={`w-8 h-8 flex items-center justify-center rounded-full font-bold transition-colors duration-500 ${isDark ? "bg-slate-800 hover:bg-slate-700 text-blue-400" : "bg-orange-100 hover:bg-orange-200 text-orange-700"}`}
+              title="Change Language"
+            >
+              {langIcon}
+            </button>
+          </div>
+        </div>
+        <button
+          className={`md:hidden text-2xl focus:outline-none transition-colors duration-1000 ${isDark ? "text-slate-300" : "text-stone-700"}`}
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {isOpen ? "✕" : "☰"}
+        </button>
+      </div>
+      {isOpen && (
+        <div
+          className={`md:hidden border-t px-4 py-6 flex flex-col gap-6 shadow-xl transition-colors duration-1000 ${isDark ? "border-slate-800 bg-slate-900/95" : "border-orange-100 bg-orange-50/95"}`}
+        >
+          <div
+            className={`flex justify-between items-center pb-4 border-b transition-colors duration-1000 ${isDark ? "border-slate-500/30 text-slate-500" : "border-stone-300 text-stone-500"}`}
+          >
+            <span className="font-medium text-sm">Preferences</span>
+            <SocialLinks isDark={isDark} />
+            <div className="flex gap-4 items-center">
+              <AnimatedThemeToggle
+                isDark={isDark}
+                toggle={() => setIsDark(!isDark)}
+              />
+              <button
+                onClick={toggleLang}
+                className={`w-8 h-8 flex items-center justify-center rounded-full font-bold transition-colors duration-500 ${isDark ? "bg-slate-800 text-blue-400" : "bg-orange-200 text-orange-700"}`}
+              >
+                {langIcon}
+              </button>
             </div>
-            {isOpen && (
-                <div className={`md:hidden border-t px-4 py-6 flex flex-col gap-6 shadow-xl transition-colors duration-1000 ${isDark ? 'border-slate-800 bg-slate-900/95' : 'border-orange-100 bg-orange-50/95'}`}>
-                    <div className={`flex justify-between items-center pb-4 border-b transition-colors duration-1000 ${isDark ? 'border-slate-500/30 text-slate-500' : 'border-stone-300 text-stone-500'}`}>
-                        <span className="font-medium text-sm">Preferences</span>
-                        <div className="flex gap-4 items-center">
-                            <AnimatedThemeToggle isDark={isDark} toggle={() => setIsDark(!isDark)} />
-                            <button onClick={toggleLang} className={`w-8 h-8 flex items-center justify-center rounded-full font-bold transition-colors duration-500 ${isDark ? 'bg-slate-800 text-blue-400' : 'bg-orange-200 text-orange-700'}`}>{langIcon}</button>
-                        </div>
-                    </div>
-                    <a href="#projects" onClick={() => setIsOpen(false)} className={`text-lg font-medium transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'text-stone-800 hover:text-orange-600'}`}>{t('navProjects')}</a>
-                    <a href="#playground" onClick={() => setIsOpen(false)} className={`text-lg font-medium transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'text-stone-800 hover:text-orange-600'}`}>{t('navPlayground')}</a>
-                    <a href="#games" onClick={() => setIsOpen(false)} className={`text-lg font-medium transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'text-stone-800 hover:text-orange-600'}`}>{t('navGames')}</a>
-                    <a href="#contact" onClick={() => setIsOpen(false)} className={`text-lg font-medium transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'text-stone-800 hover:text-orange-600'}`}>{t('navContact')}</a>
-                </div>
-            )}
-        </nav>
-    );
+          </div>
+          {navLink("experience", t("navExperience"), true)}
+          {navLink("projects", t("navProjects"), true)}
+          {navLink("playground", t("navPlayground"), true)}
+          {navLink("games", t("navGames"), true)}
+          {navLink("contact", t("navContact"), true)}
+        </div>
+      )}
+    </nav>
+  );
 }
 
 // --- 8.2 INTRODUCTION SECTION ---
 function HeroSection() {
-    const { isDark, t } = useContext(AppContext);
-    return (
-        <section className="py-20 sm:py-24 md:py-32 flex flex-col-reverse md:flex-row items-center justify-between gap-12 lg:gap-8 min-h-[80vh]">
-            <div className="flex-1 flex flex-col justify-center items-start w-full">
-                <p className={`font-mono mb-4 text-sm sm:text-base transition-colors duration-1000 ${isDark ? 'text-blue-500' : 'text-orange-600'}`}>Hi, my name is</p>
-                <h1 className={`text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight mb-4 leading-tight transition-colors duration-1000 ${isDark ? 'text-slate-100' : 'text-stone-900'}`}>
-                    DEBIDUTTA BEHERA
-                </h1>
-                <h2 className={`text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight mb-6 leading-tight transition-colors duration-1000 ${isDark ? 'text-slate-400' : 'text-stone-600'}`}>
-                    {t('heroTitle')}
-                </h2>
-                <p className={`max-w-2xl text-base sm:text-lg leading-relaxed mb-10 transition-colors duration-1000 ${isDark ? 'text-slate-400' : 'text-stone-600'}`}>
-                    Results-driven Full Stack Engineer with hands-on experience building scalable backend services, FastAPI, RESTful APIs, and responsive frontend interfaces. I demonstrate strong ownership over the full feature development lifecycle through deployment with a seeker mindset that actively pursues innovative, optimized solutions.
-                </p>
-                <div className="flex flex-col sm:flex-row flex-wrap gap-4 w-full sm:w-auto">
-                    <a href="#projects" className={`w-full sm:w-auto text-center px-6 py-3 text-white font-semibold rounded-lg transition-all duration-500 shadow-lg ${isDark ? 'bg-blue-600 hover:bg-blue-500 shadow-blue-500/20' : 'bg-orange-500 hover:bg-orange-600 shadow-orange-500/30'}`}>
-                        {t('viewWork')}
-                    </a>
-                    <a href="https://github.com/Mr-Debi" target="_blank" rel="noreferrer" className={`w-full sm:w-auto justify-center px-6 py-3 font-semibold rounded-lg transition-all duration-500 flex items-center gap-2 border ${isDark ? 'bg-slate-800 hover:bg-slate-700 text-white border-slate-700 hover:border-slate-600' : 'bg-white/80 hover:bg-white text-stone-800 border-orange-200 shadow-sm backdrop-blur-sm'}`}>
-                        {t('GitHub')}
-                    </a>
-                    <a href={profileResume} download="Debidutta_Behera_Resume.pdf" className={`w-full sm:w-auto text-center px-6 py-3 font-semibold rounded-lg transition-all duration-500 border ${isDark ? 'bg-transparent hover:bg-slate-800 text-blue-400 border-blue-400/50 hover:border-blue-400' : 'bg-orange-100/50 hover:bg-orange-100 text-orange-700 border-orange-300 hover:border-orange-400'}`}>
-                        {t('download')}
-                    </a>
-                    <a href="mailto:debidutta.db@gmail.com?subject=Job%20Opportunity:%20Hiring%20Inquiry" className={`w-full sm:w-auto text-center px-6 py-3 text-white font-bold rounded-lg transition-all duration-500 shadow-lg ${isDark ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-500/20' : 'bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/30'}`}>
-                        {t('hireMe')}
-                    </a>
-                </div>
-            </div>
-            <div className="flex-1 flex justify-center md:justify-end w-full max-w-sm md:max-w-md lg:max-w-lg">
-                <div className="relative group">
-                    <div className={`absolute -inset-1 rounded-full blur opacity-30 group-hover:opacity-70 transition duration-1000 ${isDark ? 'bg-blue-500' : 'bg-orange-500'}`}></div>
-                    <img src={profileImg} alt="Debidutta Behera" className={`relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 object-fill rounded-full shadow-2xl transition-transform duration-500 group-hover:scale-[1.02] ${isDark ? 'border-2 border-slate-700' : 'border-2 border-orange-200'}`} />
-                </div>
-            </div>
-        </section>
-    );
+  const { isDark, t } = useContext(AppContext);
+  return (
+    <section className="py-20 sm:py-24 md:py-32 flex flex-col-reverse md:flex-row items-center justify-between gap-12 lg:gap-8 min-h-[80vh]">
+      <div className="flex-1 flex flex-col justify-center items-start w-full">
+        <p
+          className={`font-mono mb-4 text-sm sm:text-base transition-colors duration-1000 ${isDark ? "text-blue-500" : "text-orange-600"}`}
+        >
+          Hi, my name is
+        </p>
+        <h1
+          className={`text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight mb-4 leading-tight transition-colors duration-1000 ${isDark ? "text-slate-100" : "text-stone-900"}`}
+        >
+          DEBIDUTTA BEHERA
+        </h1>
+        <h2
+          className={`text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight mb-6 leading-tight transition-colors duration-1000 ${isDark ? "text-slate-400" : "text-stone-600"}`}
+        >
+          {t("heroTitle")}
+        </h2>
+        <p
+          className={`max-w-2xl text-base sm:text-lg leading-relaxed mb-10 transition-colors duration-1000 ${isDark ? "text-slate-400" : "text-stone-600"}`}
+        >
+          {/* Results-driven Full Stack Engineer with hands-on experience building
+          scalable backend services, FastAPI, RESTful APIs, and responsive
+          frontend interfaces. I demonstrate strong ownership over the full
+          feature development lifecycle through deployment with a seeker mindset
+          that actively pursues innovative, optimized solutions. */}
+          Results-driven Software Engineer with 4+ years of experience building
+          scalable full-stack applications and backend services using Python,
+          FastAPI, Django, React.js, TypeScript, and REST APIs. Skilled in
+          developing AI-ready architectures, optimizing databases, and
+          delivering secure, high-performance enterprise solutions with strong
+          ownership across the SDLC.
+          {/* Results-driven Software Engineer with 4+ years of experience building scalable backend services and full-stack applications using Python, FastAPI, Django, React.js, TypeScript, and REST APIs. Experienced in designing AI-ready API architectures, optimizing databases, and developing enterprise-grade applications from concept to deployment. Demonstrates strong ownership across the software development lifecycle, with a proactive mindset focused on delivering innovative, reliable, and high-performance solutions. */}
+          {/* Full-Stack Software Engineer specializing in Python, FastAPI, Django, React.js, and TypeScript, with expertise in building scalable APIs, enterprise applications, and AI-ready systems. Strong experience in database optimization, authentication, automation, and Agile development, with a focus on creating efficient, maintainable, and production-ready solutions. */}
+        </p>
+        <div className="flex flex-col sm:flex-row flex-wrap gap-4 w-full sm:w-auto">
+          <a
+            href="#projects"
+            className={`w-full sm:w-auto text-center px-6 py-3 text-white font-semibold rounded-lg transition-all duration-500 shadow-lg ${isDark ? "bg-blue-600 hover:bg-blue-500 shadow-blue-500/20" : "bg-orange-500 hover:bg-orange-600 shadow-orange-500/30"}`}
+          >
+            {t("viewWork")}
+          </a>
+          <a
+            href="https://github.com/Mr-Debi"
+            target="_blank"
+            rel="noreferrer"
+            className={`w-full sm:w-auto justify-center px-6 py-3 font-semibold rounded-lg transition-all duration-500 flex items-center gap-2 border ${isDark ? "bg-slate-800 hover:bg-slate-700 text-white border-slate-700 hover:border-slate-600" : "bg-white/80 hover:bg-white text-stone-800 border-orange-200 shadow-sm backdrop-blur-sm"}`}
+          >
+            {t("GitHub")}
+          </a>
+          <a
+            href={profileResume}
+            download="Debidutta_Behera_Resume.pdf"
+            className={`w-full sm:w-auto text-center px-6 py-3 font-semibold rounded-lg transition-all duration-500 border ${isDark ? "bg-transparent hover:bg-slate-800 text-blue-400 border-blue-400/50 hover:border-blue-400" : "bg-orange-100/50 hover:bg-orange-100 text-orange-700 border-orange-300 hover:border-orange-400"}`}
+          >
+            {t("download")}
+          </a>
+          <a
+            href="mailto:debiduttabehera5@gmail.com?subject=Job%20Opportunity:%20Hiring%20Inquiry"
+            className={`w-full sm:w-auto text-center px-6 py-3 text-white font-bold rounded-lg transition-all duration-500 shadow-lg ${isDark ? "bg-emerald-600 hover:bg-emerald-500 shadow-emerald-500/20" : "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/30"}`}
+          >
+            {t("hireMe")}
+          </a>
+        </div>
+      </div>
+      <div className="flex-1 flex justify-center md:justify-end w-full max-w-sm md:max-w-md lg:max-w-lg">
+        <div className="relative group">
+          <div
+            className={`absolute -inset-1 rounded-full blur opacity-30 group-hover:opacity-70 transition duration-1000 ${isDark ? "bg-blue-500" : "bg-orange-500"}`}
+          ></div>
+          <img
+            src={profileImg}
+            alt="Debidutta Behera"
+            className={`relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 object-fill rounded-full shadow-2xl transition-transform duration-500 group-hover:scale-[1.02] ${isDark ? "border-2 border-slate-700" : "border-2 border-orange-200"}`}
+          />
+        </div>
+      </div>
+    </section>
+  );
 }
 // --- 8.3 SKILLS SECTION ---
 function SkillsMatrix() {
-    const { isDark, t } = useContext(AppContext);
-    const categories = [
-        { title: "Frontend", icon: <LaptopIcon />, skills: ["React.js", "TypeScript", "JavaScript (ES6+)", "HTML & CSS", "Responsive Design"] },
-        { title: "Backend & APIs", icon: <GearIcon />, skills: ["Python (Advanced)", "Django REST Framework", "FastAPI", "Flask", "RESTful APIs"] },
-        { title: "Databases", icon: <DatabaseIcon />, skills: ["PostgreSQL", "MongoDB", "MySQL", "SQLite", "Schema Design & Indexing"] },
-        { title: "Tools & DevOps", icon: <HammerIcon />, skills: ["Git & GitHub", "CI/CD Principles", "Python Selenium", "PyTest", "GCP (Familiarity)"] }
-    ];
+  const { isDark, t } = useContext(AppContext);
+  const categories = [
+    // {
+    //   title: "Frontend",
+    //   icon: <LaptopIcon />,
+    //   skills: [
+    //     "React.js",
+    //     "TypeScript",
+    //     "JavaScript (ES6+)",
+    //     "HTML & CSS",
+    //     "Responsive Design",
+    //   ],
+    // },
+    // {
+    //   title: "Backend & APIs",
+    //   icon: <GearIcon />,
+    //   skills: [
+    //     "Python (Advanced)",
+    //     "Django REST Framework",
+    //     "FastAPI",
+    //     "Flask",
+    //     "RESTful APIs",
+    //   ],
+    // },
+    // {
+    //   title: "Databases",
+    //   icon: <DatabaseIcon />,
+    //   skills: [
+    //     "PostgreSQL",
+    //     "MongoDB",
+    //     "MySQL",
+    //     "SQLite",
+    //     "Schema Design & Indexing",
+    //   ],
+    // },
+    // {
+    //   title: "Tools & DevOps",
+    //   icon: <HammerIcon />,
+    //   skills: [
+    //     "Git & GitHub",
+    //     "CI/CD Principles",
+    //     "Python Selenium",
+    //     "PyTest",
+    //     "GCP (Familiarity)",
+    //   ],
+    // },
+    // {
+    //   title: "AI Platforms",
+    //   icon: <HammerIcon />,
+    //   skills: [
+    //     "OpenAI (ChatGPT)",
+    //     "Google Gemini",
+    //     "Microsoft Copilot",
+    //     "Prompt Engineering",
+    //     "AI-Assisted Development",
+    //     "LLM API Integration"
+    //   ],
+    // },
+    // {
+    //   title: "Testing & Quality",
+    //   icon: <HammerIcon />,
+    //   skills: [
+    //     "PyTest",
+    //     "Selenium",
+    //     "Postman",
+    //     "API Testing",
+    //     "Integration Testing",
+    //     "Debugging & Performance Optimization"
+    //   ],
+    // },
+  ];
 
-    return (
-        <section id="skills" className="py-16 md:py-20">
-            <h3 className={`text-2xl sm:text-3xl font-bold mb-8 md:mb-10 flex items-center gap-3 sm:gap-4 transition-colors duration-1000 ${isDark ? 'text-slate-100' : 'text-stone-800'}`}>{t('skills')}</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                {categories.map((cat, i) => (
-                    <TiltCard key={i} className="h-full">
-                        <div className={`h-full p-6 rounded-xl border transition-colors duration-1000 ${isDark ? 'bg-slate-800/80 border-slate-700 shadow-xl' : 'bg-white/70 backdrop-blur-sm border-orange-200/60 shadow-lg shadow-orange-900/5'}`}>
-                            <div className={`w-12 h-12 mb-4 transition-colors duration-1000 ${isDark ? 'text-blue-400' : 'text-orange-500'}`}>
-                                {cat.icon}
-                            </div>
-                            <h4 className={`text-lg sm:text-xl font-semibold mb-4 transition-colors duration-1000 ${isDark ? 'text-slate-100' : 'text-stone-800'}`}>{cat.title}</h4>
-                            <ul className="space-y-2">
-                                {cat.skills.map((skill, j) => (
-                                    <li key={j} className={`flex items-center gap-2 text-sm transition-colors duration-1000 ${isDark ? 'text-slate-400' : 'text-stone-600'}`}>
-                                        <span className={`min-w-[6px] w-1.5 h-1.5 rounded-full transition-colors duration-1000 ${isDark ? 'bg-blue-500' : 'bg-orange-500'}`}></span>
-                                        {skill}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    </TiltCard>
+  return (
+    <section id="skills" className="py-16 md:py-10">
+    {/* <section id="skills" className="py-16 md:py-20"> */}
+      <h3
+        className={`text-2xl sm:text-3xl font-bold mb-8 md:mb-10 flex items-center gap-3 sm:gap-4 transition-colors duration-1000 ${isDark ? "text-slate-100" : "text-stone-800"}`}
+      >
+        {t("skills")}
+      </h3>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        {categories.map((cat, i) => (
+          <TiltCard key={i} className="h-full">
+            <div
+              className={`h-full p-6 rounded-xl border transition-colors duration-1000 ${isDark ? "bg-slate-800/80 border-slate-700 shadow-xl" : "bg-white/70 backdrop-blur-sm border-orange-200/60 shadow-lg shadow-orange-900/5"}`}
+            >
+              <div
+                className={`w-12 h-12 mb-4 transition-colors duration-1000 ${isDark ? "text-blue-400" : "text-orange-500"}`}
+              >
+                {cat.icon}
+              </div>
+              <h4
+                className={`text-lg sm:text-xl font-semibold mb-4 transition-colors duration-1000 ${isDark ? "text-slate-100" : "text-stone-800"}`}
+              >
+                {cat.title}
+              </h4>
+              <ul className="space-y-2">
+                {cat.skills.map((skill, j) => (
+                  <li
+                    key={j}
+                    className={`flex items-center gap-2 text-sm transition-colors duration-1000 ${isDark ? "text-slate-400" : "text-stone-600"}`}
+                  >
+                    <span
+                      className={`min-w-[6px] w-1.5 h-1.5 rounded-full transition-colors duration-1000 ${isDark ? "bg-blue-500" : "bg-orange-500"}`}
+                    ></span>
+                    {skill}
+                  </li>
                 ))}
+              </ul>
             </div>
-        </section>
-    );
+          </TiltCard>
+        ))}
+      </div>
+    </section>
+  );
 }
 // --- 8.4 PROJECT SECTION ---
 function ProjectsSection() {
-    const { isDark, t } = useContext(AppContext);
-    const projects = [
-        {
-            title: "Bus Charging Scheduler",
-            description:
-                "A scalable, data-driven discrete event simulation engine for EV fleet management, solving critical charging infrastructure bottlenecks.",
-            architecture:
-                "Python core logic with Pandas/JSON data handling, coupled with an interactive Streamlit visualization dashboard.",
-            feature:
-                "Tunable scoring algorithm proactively resolving station collisions and minimizing wait times across the fleet.",
-            tags: ["Python", "Streamlit", "Pandas", "Simulation Engine"],
-            demo: "https://bus-charging-scheduler-by-debi.streamlit.app/",
-            repo: "https://github.com/Mr-Debi/Bus-Charging-Scheduler",
-        },
-        {
-            title: "Donation Management System",
-            description:
-                "A secure, full-stack donation management platform streamlining online donations through automated verification, administrative approval workflows, and real-time transaction tracking.",
-            architecture:
-                "React.js frontend with a FastAPI backend, SQLAlchemy ORM, MySQL database, and RESTful APIs, deployed with Vercel and environment-based configuration.",
-            feature:
-                "Admin-controlled approval workflow, secure payment proof uploads, automated donor email notifications, transaction history management, RESTful API integration, and responsive user interface with optimized CRUD operations.",
-            tags: ["Python", "FastAPI", "React", "PostgreSQL", "Supabase", "Cloudinary", "Brevo Email API", "JWT Authentication", "SQLAlchemy ORM", "RESTful APIs", "Vercel", "Render"],
-            demo: "https://donation.free.je/donation_panel/",
-            repo: "https://github.com/Mr-Debi/Donation_Management_System",
-        },
-        {
-            title: "Cinema Seat Reservation System",
-            description:
-                "A comprehensive booking platform handling concurrent reservations and dynamic seat visualization.",
-            architecture:
-                "Django REST Framework backend processing seat-tier logic, paired with a React.js and TypeScript frontend.",
-            feature:
-                "Real-time booking transactions and data persistence in a normalized PostgreSQL database, optimizing query performance.",
-            tags: ["Python", "Django", "React.js", "TypeScript", "PostgreSQL"],
-            demo: "#",
-            repo: "#",
-        },
-        {
-            title: "Digital Attendance Tracker",
-            description:
-                "A full-stack web portal streamlining HR operations and reducing manual attendance errors.",
-            architecture: "Django backend and React.js frontend with TypeScript.",
-            feature:
-                "Role-based access control for administrators and employees with secure authentication.",
-            tags: ["Python", "Django", "React.js", "MySQL", "PostgreSQL"],
-            demo: "#",
-            repo: "#",
-        },
-        {
-            title: "AI-Powered Personal Assistant (JARVIS)",
-            description:
-                "A voice-activated assistant utilizing Natural Language Processing (NLP) to parse and execute system commands.",
-            architecture: "Built using Python NLP and SpeechRecognition libraries.",
-            feature:
-                "Implemented robust error-handling that improved command recognition accuracy by 20%.",
-            tags: ["Python", "NLP", "SpeechRecognition"],
-            demo: "#",
-            repo: "#",
-        },
-        {
-            title: "Automated Software Testing Framework",
-            description:
-                "A cross-browser automated UI testing framework validating workflows across Chrome, Firefox, and Edge.",
-            architecture: "Engineered using Python, Selenium, and PyTest.",
-            feature:
-                "Generated structured HTML test reports with automated screenshot capture on failure, enabling faster CI/CD feedback loops.",
-            tags: ["Python", "Selenium", "PyTest", "CI/CD"],
-            demo: "#",
-            repo: "#",
-        },
-    ];
+  const { isDark, t } = useContext(AppContext);
 
-    return (
-        <section id="projects" className="py-16 md:py-20">
-            <h3 className={`text-2xl sm:text-3xl font-bold mb-8 md:mb-10 flex items-center gap-3 sm:gap-4 transition-colors duration-1000 ${isDark ? 'text-slate-100' : 'text-stone-800'}`}>{t('projects')}</h3>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-                {projects.map((project, i) => (
-                    <TiltCard key={i} className="h-full">
-                        <div className={`p-6 sm:p-8 rounded-xl border flex flex-col h-full group transition-colors duration-1000 ${isDark ? 'bg-slate-800/80 border-slate-700 shadow-xl' : 'bg-white/70 backdrop-blur-sm border-orange-200/60 shadow-lg shadow-orange-900/5'}`}>
-                            <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
-                                <h4 className={`text-xl sm:text-2xl font-bold transition-colors duration-500 ${isDark ? 'text-slate-100 group-hover:text-blue-400' : 'text-stone-900 group-hover:text-orange-600'}`}>{project.title}</h4>
-                                <div className={`flex gap-4 text-sm font-mono transition-colors duration-1000 ${isDark ? 'text-blue-400' : 'text-orange-600'}`}>
-                                    <a href={project.repo} className={`transition-colors duration-500 ${isDark ? 'hover:text-white' : 'hover:text-orange-800'}`}>GitHub</a>
-                                </div>
-                            </div>
-                            <p className={`mb-6 text-sm sm:text-base transition-colors duration-1000 ${isDark ? 'text-slate-400' : 'text-stone-600'}`}>{project.description}</p>
-                            <div className="space-y-4 mb-8 flex-grow">
-                                <div>
-                                    <strong className={`text-xs sm:text-sm block mb-1 transition-colors duration-1000 ${isDark ? 'text-slate-300' : 'text-stone-800'}`}>Architecture:</strong>
-                                    <p className={`text-xs sm:text-sm leading-relaxed transition-colors duration-1000 ${isDark ? 'text-slate-400' : 'text-stone-600'}`}>{project.architecture}</p>
-                                </div>
-                                <div>
-                                    <strong className={`text-xs sm:text-sm block mb-1 transition-colors duration-1000 ${isDark ? 'text-slate-300' : 'text-stone-800'}`}>Key Feature:</strong>
-                                    <p className={`text-xs sm:text-sm leading-relaxed transition-colors duration-1000 ${isDark ? 'text-slate-400' : 'text-stone-600'}`}>{project.feature}</p>
-                                </div>
-                            </div>
-                            <div className="flex flex-wrap gap-2 mt-auto">
-                                {project.tags.map((tag, j) => (
-                                    <span key={j} className={`px-3 py-1 text-xs font-mono rounded-full border transition-colors duration-1000 ${isDark ? 'text-blue-300 bg-blue-900/30 border-blue-800/50' : 'text-orange-700 bg-orange-100/50 border-orange-300/50'}`}>{tag}</span>
-                                ))}
-                            </div>
+  const projects = [
 
-                            {/* LIVE DEMO AND GITHUB BUTTONS */}
-                            <div className="flex gap-3 mt-auto pt-4 border-t transition-colors duration-1000 border-slate-500/20">
-                                <a href={project.demo} target="_blank" rel="noreferrer" className={`flex-1 text-center px-4 py-2 text-sm font-bold rounded-lg transition-all duration-300 shadow-md flex items-center justify-center gap-1 ${isDark ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-500/20' : 'bg-orange-500 hover:bg-orange-400 text-white shadow-orange-500/30'}`}>
-                                    Live Demo ↗
-                                </a>
-                                <a href={project.repo} target="_blank" rel="noreferrer" className={`flex-1 text-center px-4 py-2 text-sm font-bold rounded-lg transition-all duration-300 border flex items-center justify-center gap-1 ${isDark ? 'bg-transparent border-slate-600 hover:bg-slate-700 text-slate-300' : 'bg-transparent border-orange-300 hover:bg-orange-100 text-orange-700'}`}>
-                                    GitHub
-                                </a>
-                            </div>
+        // =========================================================
+    // PROFESSIONAL / ENTERPRISE PROJECTS
+    // =========================================================
+    {
+      type: "professional",
+      title: "Enterprise Customer Service & Case Management Platform",
+      domain: "Banking & Financial Services",
+      role: "Software Engineer",
+      description:
+        "An enterprise customer service platform designed to manage customer profiles, service requests, support cases, and workflow transactions.",
+      architecture:
+        "Scalable Python and FastAPI backend with React.js and TypeScript frontend, PostgreSQL database, SQLAlchemy ORM, REST APIs, JWT authentication, and Axios integration.",
+      feature:
+        "Customer and case management, service request tracking, role-based access control, secure authentication, workflow transactions, searchable case records, and optimized database operations.",
+      contributions: [
+        "Developed scalable backend services using Python and FastAPI for customer and case management modules.",
+        "Designed RESTful APIs for creating, updating, searching, and tracking customer service cases.",
+        "Structured Pydantic data models to maintain clean and consistent API data contracts.",
+        "Developed responsive React.js and TypeScript interfaces for business users and administrators.",
+        "Integrated frontend applications with backend services using Axios.",
+        "Implemented JWT-based authentication and role-based access control.",
+        "Designed PostgreSQL schemas for customers, cases, users, service requests, and workflow transactions using SQLAlchemy ORM.",
+        "Performed API testing with Postman and backend testing using PyTest within an Agile/Scrum environment.",
+      ],
+      tags: [
+        "Python",
+        "FastAPI",
+        "React.js",
+        "TypeScript",
+        "PostgreSQL",
+        "SQLAlchemy",
+        "REST APIs",
+        "JWT",
+        "Axios",
+        "Git",
+      ],
+    },
+
+    {
+      type: "professional",
+      title: "Retail Order Management & Customer Analytics Platform",
+      domain: "Retail & E-Commerce",
+      role: "Software Engineer",
+      description:
+        "A full-stack retail platform for managing customers, products, inventory, orders, transactions, and business analytics.",
+      architecture:
+        "Python and Django backend with Django REST Framework APIs, React.js frontend, PostgreSQL/MySQL databases, Axios integration, and reusable UI components.",
+      feature:
+        "Product management, order processing, inventory management, customer management, analytics and reporting, CRUD operations, validation, role-based access, and optimized database queries.",
+      contributions: [
+        "Developed backend modules using Python and Django for customers, products, orders, inventory, and transactions.",
+        "Exposed application functionality through Django REST Framework APIs.",
+        "Built responsive React.js interfaces using reusable components and React Hooks.",
+        "Developed product management, order processing, customer management, and analytics interfaces.",
+        "Designed relational database structures using PostgreSQL and MySQL.",
+        "Optimized queries, joins, filtering, and indexing for improved application performance.",
+        "Implemented CRUD operations, business validation, and role-based access for application users.",
+        "Performed API testing using Postman and automated test cases while investigating defects and delivering enhancements.",
+      ],
+      tags: [
+        "Python",
+        "Django",
+        "Django REST Framework",
+        "React.js",
+        "JavaScript",
+        "PostgreSQL",
+        "MySQL",
+        "REST APIs",
+        "Axios",
+        "Bootstrap",
+        "Git",
+      ],
+    },
+
+    {
+      type: "professional",
+      title: "Digital Attendance & Workforce Management Portal",
+      domain: "Enterprise HR / Workforce Management",
+      role: "Software Engineer",
+      description:
+        "An enterprise workforce management portal designed to digitize employee attendance, employee records, authentication, reporting, and administrative workflows.",
+      architecture:
+        "Python and Django backend with REST APIs, React.js and TypeScript frontend, PostgreSQL/MySQL database, JWT authentication, and Git-based development workflow.",
+      feature:
+        "Employee management, attendance tracking, reporting, data filtering, role-based access control, secure authentication, and optimized database operations.",
+      contributions: [
+        "Developed Python/Django backend modules and RESTful APIs for attendance, employee records, authentication, and reporting.",
+        "Developed responsive React.js and TypeScript interfaces for administrators and employees.",
+        "Integrated the frontend with Django REST APIs for real-time application workflows.",
+        "Implemented role-based access control and secure authentication mechanisms.",
+        "Designed normalized PostgreSQL/MySQL database schemas for employee and attendance data.",
+        "Developed reporting and data-filtering functionality for workforce information.",
+        "Optimized database queries and backend business logic for improved performance.",
+        "Performed API testing using Postman and investigated application issues during development.",
+      ],
+      tags: [
+        "Python",
+        "Django",
+        "React.js",
+        "TypeScript",
+        "PostgreSQL",
+        "MySQL",
+        "REST APIs",
+        "JWT",
+        "Git",
+      ],
+    },
+
+    // =========================================================
+    // FEATURED / PUBLIC PROJECTS
+    // =========================================================
+    {
+      type: "featured",
+      title: "Donation Management System",
+      description:
+        "A secure, full-stack donation management platform streamlining online donations through automated verification, administrative approval workflows, and transaction tracking.",
+      architecture:
+        "React.js frontend with FastAPI backend, SQLAlchemy ORM, PostgreSQL/Supabase database, RESTful APIs, JWT authentication, and cloud-based services.",
+      feature:
+        "Admin-controlled approval workflow, secure payment proof uploads, automated donor email notifications, transaction history management, RESTful API integration, and responsive CRUD-based interface.",
+      tags: [
+        "Python",
+        "FastAPI",
+        "React",
+        "PostgreSQL",
+        "Supabase",
+        "Cloudinary",
+        "Brevo Email API",
+        "JWT",
+        "SQLAlchemy",
+        "REST APIs",
+        "Vercel",
+        "Render",
+      ],
+      demo: "https://donation.free.je/donation_panel/",
+      repo: "https://github.com/Mr-Debi/Donation_Management_System",
+    },
+
+    {
+      type: "featured",
+      title: "Cinema Seat Reservation System",
+      description:
+        "A full-stack cinema booking platform designed to manage concurrent seat reservations with dynamic seat visualization and booking workflows.",
+      architecture:
+        "Django REST Framework backend handling reservation and seat-tier logic, integrated with a React.js and TypeScript frontend.",
+      feature:
+        "Dynamic seat selection, booking validation, concurrent reservation handling, real-time seat visualization, and persistent PostgreSQL data management.",
+      tags: [
+        "Python",
+        "Django",
+        "Django REST Framework",
+        "React.js",
+        "TypeScript",
+        "PostgreSQL",
+      ],
+      demo: "#",
+      repo: "#",
+    },
+
+    // {
+    //   type: "featured",
+    //   title: "Digital Attendance Tracker",
+    //   description:
+    //     "A full-stack workforce attendance portal designed to streamline employee attendance management and reduce manual administrative operations.",
+    //   architecture:
+    //     "Django backend with REST APIs and React.js frontend using TypeScript for responsive administrator and employee interfaces.",
+    //   feature:
+    //     "Role-based access control, secure authentication, employee management, attendance tracking, reporting, and database-driven attendance records.",
+    //   tags: [
+    //     "Python",
+    //     "Django",
+    //     "React.js",
+    //     "TypeScript",
+    //     "MySQL",
+    //     "PostgreSQL",
+    //     "REST APIs",
+    //   ],
+    //   demo: "#",
+    //   repo: "#",
+    // },
+
+    {
+      type: "featured",
+      title: "AI-Powered Personal Assistant (JARVIS)",
+      description:
+        "A voice-activated personal assistant built with Python that uses speech recognition and natural language processing to interpret and execute system commands.",
+      architecture:
+        "Python-based application integrating NLP, SpeechRecognition, text-to-speech, and operating-system automation capabilities.",
+      feature:
+        "Voice command processing, system automation, application launching, web interaction, error handling, and improved command recognition reliability.",
+      tags: [
+        "Python",
+        "NLP",
+        "SpeechRecognition",
+        "Text-to-Speech",
+        "Automation",
+      ],
+      demo: "#",
+      repo: "#",
+    },
+
+    {
+      type: "featured",
+      title: "Automated Software Testing Framework",
+      description:
+        "A cross-browser automated UI testing framework designed to validate web application workflows across multiple browsers.",
+      architecture:
+        "Python-based automation framework using Selenium WebDriver and PyTest with reusable test cases and structured reporting.",
+      feature:
+        "Cross-browser testing across Chrome, Firefox, and Edge, automated screenshot capture on failures, reusable test workflows, and HTML test reporting.",
+      tags: [
+        "Python",
+        "Selenium",
+        "PyTest",
+        "WebDriver",
+        "Automation",
+        "CI/CD",
+      ],
+      demo: "#",
+      repo: "#",
+    },
+
+  ];
+
+  const featuredProjects = projects.filter(
+    (project) => project.type === "featured"
+  );
+
+  const professionalProjects = projects.filter(
+    (project) => project.type === "professional"
+  );
+
+  return (
+    <section id="projects" className="py-16 md:py-20">
+      {/* =====================================================
+          SECTION HEADER
+      ===================================================== */}
+      {/* <div className="mb-10 md:mb-14">
+        <h3
+          className={`text-2xl sm:text-3xl font-bold flex items-center gap-3 sm:gap-4 transition-colors duration-1000 ${
+            isDark ? "text-slate-100" : "text-stone-800"
+          }`}
+        >
+          {t("projects")}
+        </h3>
+
+        <p
+          className={`mt-3 max-w-3xl text-sm sm:text-base leading-relaxed transition-colors duration-1000 ${
+            isDark ? "text-slate-400" : "text-stone-600"
+          }`}
+        >
+          A collection of full-stack applications, automation solutions, and
+          enterprise-oriented software projects built using modern development
+          technologies and industry practices.
+        </p>
+      </div> */}
 
 
 
-                        </div>
-                    </TiltCard>
-                ))}
-            </div>
-        </section>
-    );
+     {/* =====================================================
+          PROFESSIONAL / ENTERPRISE PROJECTS
+      ===================================================== */}
+      <div>
+        <div className="flex items-center gap-3 mb-6">
+          <div
+            className={`h-8 w-1 rounded-full ${
+              isDark ? "bg-emerald-500" : "bg-teal-600"
+            }`}
+          />
+
+          <div>
+            <h4
+              className={`text-xl sm:text-2xl font-bold transition-colors duration-1000 ${
+                isDark ? "text-slate-100" : "text-stone-800"
+              }`}
+            >
+              Professional & Enterprise Projects
+            </h4>
+
+            <p
+              className={`text-xs sm:text-sm mt-1 transition-colors duration-1000 ${
+                isDark ? "text-slate-500" : "text-stone-500"
+              }`}
+            >
+              Enterprise-oriented projects demonstrating software engineering
+              practices and business-domain development.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 sm:gap-8">
+          {professionalProjects.map((project, i) => (
+            <TiltCard key={i} className="h-full">
+              <div
+                className={`p-6 sm:p-8 rounded-xl border h-full group transition-all duration-500 ${
+                  isDark
+                    ? "bg-slate-800/60 border-slate-700 hover:border-emerald-500/40 shadow-xl"
+                    : "bg-white/70 backdrop-blur-sm border-stone-200 shadow-lg shadow-stone-900/5 hover:border-teal-400/60"
+                }`}
+              >
+                {/* Enterprise Project Header */}
+                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-5 mb-5">
+                  <div className="flex-1">
+                    <div className="flex flex-wrap items-center gap-2 mb-3">
+                      <span
+                        className={`px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold border ${
+                          isDark
+                            ? "text-emerald-300 bg-emerald-900/20 border-emerald-800/50"
+                            : "text-teal-700 bg-teal-50 border-teal-200"
+                        }`}
+                      >
+                        Professional Project
+                      </span>
+
+                      <span
+                        className={`px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-medium border ${
+                          isDark
+                            ? "text-slate-300 bg-slate-700/50 border-slate-600"
+                            : "text-stone-600 bg-stone-100 border-stone-200"
+                        }`}
+                      >
+                        No Public Repository
+                      </span>
+                    </div>
+
+                    <h5
+                      className={`text-xl sm:text-2xl md:text-3xl font-bold transition-colors duration-500 ${
+                        isDark
+                          ? "text-slate-100 group-hover:text-emerald-400"
+                          : "text-stone-900 group-hover:text-teal-700"
+                      }`}
+                    >
+                      {project.title}
+                    </h5>
+                  </div>
+
+                  {/* Domain / Role */}
+                  <div
+                    className={`md:text-right text-xs sm:text-sm shrink-0 ${
+                      isDark ? "text-slate-400" : "text-stone-500"
+                    }`}
+                  >
+                    <div className="font-semibold">
+                      {project.domain}
+                    </div>
+
+                    <div
+                      className={`mt-1 font-mono ${
+                        isDark ? "text-emerald-400" : "text-teal-600"
+                      }`}
+                    >
+                      Role: {project.role}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <p
+                  className={`text-sm sm:text-base leading-relaxed mb-6 max-w-5xl ${
+                    isDark ? "text-slate-400" : "text-stone-600"
+                  }`}
+                >
+                  {project.description}
+                </p>
+
+                {/* Architecture + Feature */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-7">
+                  <div
+                    className={`p-4 rounded-lg border ${
+                      isDark
+                        ? "bg-slate-900/30 border-slate-700"
+                        : "bg-stone-50/70 border-stone-200"
+                    }`}
+                  >
+                    <strong
+                      className={`text-xs sm:text-sm block mb-2 ${
+                        isDark ? "text-slate-200" : "text-stone-800"
+                      }`}
+                    >
+                      Architecture
+                    </strong>
+
+                    <p
+                      className={`text-xs sm:text-sm leading-relaxed ${
+                        isDark ? "text-slate-400" : "text-stone-600"
+                      }`}
+                    >
+                      {project.architecture}
+                    </p>
+                  </div>
+
+                  <div
+                    className={`p-4 rounded-lg border ${
+                      isDark
+                        ? "bg-slate-900/30 border-slate-700"
+                        : "bg-stone-50/70 border-stone-200"
+                    }`}
+                  >
+                    <strong
+                      className={`text-xs sm:text-sm block mb-2 ${
+                        isDark ? "text-slate-200" : "text-stone-800"
+                      }`}
+                    >
+                      Key Capabilities
+                    </strong>
+
+                    <p
+                      className={`text-xs sm:text-sm leading-relaxed ${
+                        isDark ? "text-slate-400" : "text-stone-600"
+                      }`}
+                    >
+                      {project.feature}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Key Contributions */}
+                <div className="mb-7">
+                  <strong
+                    className={`text-sm sm:text-base block mb-4 ${
+                      isDark ? "text-slate-200" : "text-stone-800"
+                    }`}
+                  >
+                    Key Contributions
+                  </strong>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+                    {project.contributions.map((contribution, j) => (
+                      <div
+                        key={j}
+                        className={`flex items-start gap-3 text-xs sm:text-sm leading-relaxed ${
+                          isDark ? "text-slate-400" : "text-stone-600"
+                        }`}
+                      >
+                        <span
+                          className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${
+                            isDark ? "bg-emerald-400" : "bg-teal-600"
+                          }`}
+                        />
+
+                        <span>{contribution}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Technology Stack */}
+                <div
+                  className={`pt-5 border-t ${
+                    isDark
+                      ? "border-slate-700"
+                      : "border-stone-200"
+                  }`}
+                >
+                  <strong
+                    className={`text-xs sm:text-sm block mb-3 ${
+                      isDark ? "text-slate-300" : "text-stone-700"
+                    }`}
+                  >
+                    Technology Stack
+                  </strong>
+
+                  <div className="flex flex-wrap gap-2">
+                    {project.tags.map((tag, j) => (
+                      <span
+                        key={j}
+                        className={`px-3 py-1.5 text-xs font-mono rounded-full border transition-colors duration-300 ${
+                          isDark
+                            ? "text-emerald-300 bg-emerald-900/20 border-emerald-800/50 hover:bg-emerald-900/40"
+                            : "text-teal-700 bg-teal-50 border-teal-200 hover:bg-teal-100"
+                        }`}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Confidential / No Public Link */}
+                <div
+                  className={`mt-5 flex items-center gap-2 text-xs ${
+                    isDark ? "text-slate-500" : "text-stone-400"
+                  }`}
+                >
+                  <span className="text-sm">🔒</span>
+                  <span>
+                    Professional project — no public demo or source
+                    repository available.
+                  </span>
+                </div>
+              </div>
+            </TiltCard>
+          ))}
+        </div>
+      </div>
+
+      {/* =====================================================
+          FEATURED / PUBLIC PROJECTS
+      ===================================================== */}
+      <div className="mb-14 md:mb-16">
+        <div className="flex items-center gap-3 mb-6">
+          <div
+            className={`h-8 w-1 rounded-full ${
+              isDark ? "bg-blue-500" : "bg-orange-500"
+            }`}
+          />
+
+          <div>
+            <h4
+              className={`text-xl sm:text-2xl font-bold transition-colors duration-1000 ${
+                isDark ? "text-slate-100" : "text-stone-800"
+              }`}
+            >
+              Featured Projects
+            </h4>
+
+            <p
+              className={`text-xs sm:text-sm mt-1 transition-colors duration-1000 ${
+                isDark ? "text-slate-500" : "text-stone-500"
+              }`}
+            >
+              Public projects with live demonstrations and source code.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+          {featuredProjects.map((project, i) => {
+            const hasDemo = project.demo && project.demo !== "#";
+            const hasRepo = project.repo && project.repo !== "#";
+
+            return (
+              <TiltCard key={i} className="h-full">
+                <div
+                  className={`p-6 sm:p-8 rounded-xl border flex flex-col h-full group transition-all duration-500 ${
+                    isDark
+                      ? "bg-slate-800/80 border-slate-700 shadow-xl hover:border-blue-500/40"
+                      : "bg-white/70 backdrop-blur-sm border-orange-200/60 shadow-lg shadow-orange-900/5 hover:border-orange-400/70"
+                  }`}
+                >
+                  {/* Project Header */}
+                  <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-5">
+                    <div className="flex-1">
+                      <h5
+                        className={`text-xl sm:text-2xl font-bold transition-colors duration-500 ${
+                          isDark
+                            ? "text-slate-100 group-hover:text-blue-400"
+                            : "text-stone-900 group-hover:text-orange-600"
+                        }`}
+                      >
+                        {project.title}
+                      </h5>
+
+                      <span
+                        className={`inline-flex mt-2 items-center px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold border ${
+                          isDark
+                            ? "text-blue-300 bg-blue-900/20 border-blue-800/50"
+                            : "text-orange-700 bg-orange-100/60 border-orange-300/50"
+                        }`}
+                      >
+                        Featured Project
+                      </span>
+                    </div>
+
+                    {hasRepo && (
+                      <a
+                        href={project.repo}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`text-sm font-mono font-semibold transition-colors duration-300 ${
+                          isDark
+                            ? "text-blue-400 hover:text-white"
+                            : "text-orange-600 hover:text-orange-800"
+                        }`}
+                      >
+                        GitHub ↗
+                      </a>
+                    )}
+                  </div>
+
+                  {/* Description */}
+                  <p
+                    className={`mb-6 text-sm sm:text-base leading-relaxed transition-colors duration-1000 ${
+                      isDark ? "text-slate-400" : "text-stone-600"
+                    }`}
+                  >
+                    {project.description}
+                  </p>
+
+                  {/* Architecture + Features */}
+                  <div className="space-y-5 mb-7 flex-grow">
+                    <div>
+                      <strong
+                        className={`text-xs sm:text-sm block mb-1.5 transition-colors duration-1000 ${
+                          isDark ? "text-slate-200" : "text-stone-800"
+                        }`}
+                      >
+                        Architecture
+                      </strong>
+
+                      <p
+                        className={`text-xs sm:text-sm leading-relaxed transition-colors duration-1000 ${
+                          isDark ? "text-slate-400" : "text-stone-600"
+                        }`}
+                      >
+                        {project.architecture}
+                      </p>
+                    </div>
+
+                    <div>
+                      <strong
+                        className={`text-xs sm:text-sm block mb-1.5 transition-colors duration-1000 ${
+                          isDark ? "text-slate-200" : "text-stone-800"
+                        }`}
+                      >
+                        Key Feature
+                      </strong>
+
+                      <p
+                        className={`text-xs sm:text-sm leading-relaxed transition-colors duration-1000 ${
+                          isDark ? "text-slate-400" : "text-stone-600"
+                        }`}
+                      >
+                        {project.feature}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Technology Tags */}
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {project.tags.map((tag, j) => (
+                      <span
+                        key={j}
+                        className={`px-3 py-1 text-xs font-mono rounded-full border transition-colors duration-1000 ${
+                          isDark
+                            ? "text-blue-300 bg-blue-900/30 border-blue-800/50"
+                            : "text-orange-700 bg-orange-100/50 border-orange-300/50"
+                        }`}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Public Project Buttons */}
+                  <div
+                    className={`flex gap-3 pt-4 border-t transition-colors duration-1000 ${
+                      isDark
+                        ? "border-slate-600/50"
+                        : "border-orange-200/70"
+                    }`}
+                  >
+                    {hasDemo ? (
+                      <a
+                        href={project.demo}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`flex-1 text-center px-4 py-2.5 text-sm font-bold rounded-lg transition-all duration-300 shadow-md flex items-center justify-center gap-1 ${
+                          isDark
+                            ? "bg-blue-600 hover:bg-blue-500 text-white shadow-blue-500/20"
+                            : "bg-orange-500 hover:bg-orange-400 text-white shadow-orange-500/30"
+                        }`}
+                      >
+                        Live Demo ↗
+                      </a>
+                    ) : (
+                      <div
+                        className={`flex-1 text-center px-4 py-2.5 text-sm font-semibold rounded-lg border cursor-not-allowed opacity-60 ${
+                          isDark
+                            ? "bg-slate-700/40 border-slate-600 text-slate-400"
+                            : "bg-stone-100 border-stone-200 text-stone-400"
+                        }`}
+                      >
+                        Demo Unavailable
+                      </div>
+                    )}
+
+                    {hasRepo ? (
+                      <a
+                        href={project.repo}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`flex-1 text-center px-4 py-2.5 text-sm font-bold rounded-lg transition-all duration-300 border flex items-center justify-center gap-1 ${
+                          isDark
+                            ? "bg-transparent border-slate-600 hover:bg-slate-700 text-slate-300"
+                            : "bg-transparent border-orange-300 hover:bg-orange-100 text-orange-700"
+                        }`}
+                      >
+                        GitHub ↗
+                      </a>
+                    ) : (
+                      <div
+                        className={`flex-1 text-center px-4 py-2.5 text-sm font-semibold rounded-lg border cursor-not-allowed opacity-60 ${
+                          isDark
+                            ? "bg-transparent border-slate-700 text-slate-500"
+                            : "bg-transparent border-stone-200 text-stone-400"
+                        }`}
+                      >
+                        Private / Unavailable
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </TiltCard>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
 }
 
 // --- 8.5 WORK EXPERIENCE SECTION ---
 function ExperienceTimeline() {
-    const { isDark, t } = useContext(AppContext);
-    const experiences = [
-        {
-            role: "Apprentice Trainee - Python Developer",
-            company: "Integrated Test Range (ITR), DRDO",
-            date: "Jan 2025 - Jan 2026",
-            bullets: [
-                "Built and maintained Python-based backend services for mission-critical enterprise applications, achieving 99.8% system uptime.",
-                "Automated Ul testing protocols using Python Selenium and PyTest, reducing manual testing effort by 40% and deployment errors by 25%.",
-                "Optimized frontend/backend Python scripts to eliminate runtime bottlenecks, delivering a 35% reduction in execution time through proactive performance profiling."
-            ]
-        }
-    ];
+  const { isDark, t } = useContext(AppContext);
+  const experiences = [
+    {
+      role: "Software Engineer",
+      company: "HCLTech | India",
+      date: "January 2022 - Present",
+      bullets: [
+        "Develop and maintain enterprise-level web applications using Python, Django, FastAPI, React.js, JavaScript, and TypeScript.",
+        "Design and develop scalable RESTful APIs using Python, FastAPI, and Django REST Framework, including endpoints structured to support downstream data and AI/ML consumption.",
+        "Build responsive and reusable frontend components using React.js, React Hooks, TypeScript, HTML5, and CSS3.",
+        "Integrate React.js applications with Python backend services through REST APIs and Axios.",
+        "Implement business logic, CRUD operations, data validation (Pydantic), exception handling, and API integrations.",
+        "Develop secure authentication and authorization functionality using JWT and role-based access control.",
+        "Design and maintain relational database schemas using PostgreSQL and MySQL; use SQLAlchemy and Django ORM for efficient data persistence.",
+        "Optimize SQL queries, joins, indexes, and database operations to improve application performance.",
+        "Develop reusable UI components, dashboards, forms, filters, and data-driven interfaces.",
+        "Perform API testing using Postman and automated testing using PyTest and Selenium.",
+        "Troubleshoot application defects, perform root-cause analysis, and implement corrective solutions.",
+        "Use Git and GitHub for source-code management, branching, pull requests, and peer code reviews.",
+        "Participate in Agile/Scrum ceremonies including sprint planning, daily stand-ups, sprint reviews, and retrospectives.",
+        "Collaborate with developers, QA engineers, business analysts, and stakeholders throughout the SDLC."
+      ],
+    },
 
-    return (
-        <section id="experience" className="py-16 md:py-20">
-            <h3 className={`text-2xl sm:text-3xl font-bold mb-8 md:mb-10 flex items-center gap-3 sm:gap-4 transition-colors duration-1000 ${isDark ? 'text-slate-100' : 'text-stone-800'}`}>{t('experience')}</h3>
-            <div className={`relative border-l ml-3 sm:ml-4 space-y-10 sm:space-y-12 transition-colors duration-1000 ${isDark ? 'border-slate-700' : 'border-orange-300'}`}>
-                {experiences.map((exp, i) => (
-                    <div key={i} className="relative pl-6 sm:pl-10">
-                        <div className={`absolute w-4 h-4 rounded-full -left-[8.5px] top-1.5 border-4 transition-colors duration-1000 ${isDark ? 'bg-blue-500 border-slate-900 shadow-[0_0_15px_rgba(59,130,246,0.5)]' : 'bg-orange-500 border-orange-100 shadow-[0_0_15px_rgba(249,115,22,0.4)]'}`}></div>
-                        <h4 className={`text-lg sm:text-xl font-bold transition-colors duration-1000 ${isDark ? 'text-slate-100' : 'text-stone-900'}`}>{exp.role}</h4>
-                        <div className={`font-mono text-xs sm:text-sm mb-4 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-0 transition-colors duration-1000 ${isDark ? 'text-blue-500' : 'text-orange-600'}`}>
-                            <span>{exp.company}</span>
-                            <span className={`hidden sm:inline mx-2 transition-colors duration-1000 ${isDark ? 'text-slate-500' : 'text-stone-400'}`}>|</span>
-                            <span className={`transition-colors duration-1000 ${isDark ? 'text-slate-400 sm:text-blue-400' : 'text-stone-600 sm:text-orange-600'}`}>{exp.date}</span>
-                        </div>
-                        <ul className="space-y-3">
-                            {exp.bullets.map((bullet, j) => (
-                                <li key={j} className={`text-sm leading-relaxed flex items-start gap-2 transition-colors duration-1000 ${isDark ? 'text-slate-400' : 'text-stone-600'}`}>
-                                    <span className={`mt-1 transition-colors duration-1000 ${isDark ? 'text-blue-500' : 'text-orange-500'}`}>▹</span> {bullet}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                ))}
+  ];
+
+  return (
+    <section id="experience" className="py-16 md:py-20">
+      <h3
+        className={`text-2xl sm:text-3xl font-bold mb-8 md:mb-10 flex items-center gap-3 sm:gap-4 transition-colors duration-1000 ${isDark ? "text-slate-100" : "text-stone-800"}`}
+      >
+        {t("experience")}
+      </h3>
+      <div
+        className={`relative border-l ml-3 sm:ml-4 space-y-10 sm:space-y-12 transition-colors duration-1000 ${isDark ? "border-slate-700" : "border-orange-300"}`}
+      >
+        {experiences.map((exp, i) => (
+          <div key={i} className="relative pl-6 sm:pl-10">
+            <div
+              className={`absolute w-4 h-4 rounded-full -left-[8.5px] top-1.5 border-4 transition-colors duration-1000 ${isDark ? "bg-blue-500 border-slate-900 shadow-[0_0_15px_rgba(59,130,246,0.5)]" : "bg-orange-500 border-orange-100 shadow-[0_0_15px_rgba(249,115,22,0.4)]"}`}
+            ></div>
+            <h4
+              className={`text-lg sm:text-xl font-bold transition-colors duration-1000 ${isDark ? "text-slate-100" : "text-stone-900"}`}
+            >
+              {exp.role}
+            </h4>
+            <div
+              className={`font-mono text-xs sm:text-sm mb-4 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-0 transition-colors duration-1000 ${isDark ? "text-blue-500" : "text-orange-600"}`}
+            >
+              <span>{exp.company}</span>
+              <span
+                className={`hidden sm:inline mx-2 transition-colors duration-1000 ${isDark ? "text-slate-500" : "text-stone-400"}`}
+              >
+                |
+              </span>
+              <span
+                className={`transition-colors duration-1000 ${isDark ? "text-slate-400 sm:text-blue-400" : "text-stone-600 sm:text-orange-600"}`}
+              >
+                {exp.date}
+              </span>
             </div>
-        </section>
-    );
+            <ul className="space-y-3">
+              {exp.bullets.map((bullet, j) => (
+                <li
+                  key={j}
+                  className={`text-sm leading-relaxed flex items-start gap-2 transition-colors duration-1000 ${isDark ? "text-slate-400" : "text-stone-600"}`}
+                >
+                  <span
+                    className={`mt-1 transition-colors duration-1000 ${isDark ? "text-blue-500" : "text-orange-500"}`}
+                  >
+                    ▹
+                  </span>{" "}
+                  {bullet}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
 }
 
 // --- 8.6 MAILING SECTION ---
 function ContactForm() {
-    const { isDark, t } = useContext(AppContext);
-    const [status, setStatus] = useState('idle');
+  const { isDark, t } = useContext(AppContext);
+  const [status, setStatus] = useState("idle");
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setStatus('submitting');
-        const formData = new FormData(e.target);
-        formData.append("access_key", "117d60c4-ee5b-4a91-a298-bfc546d9f225");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus("submitting");
+    const formData = new FormData(e.target);
+    formData.append("access_key", "117d60c4-ee5b-4a91-a298-bfc546d9f225");
 
-        formData.append("subject", "New Message From Portfolio");
+    formData.append("subject", "New Message From Portfolio");
 
-        formData.append("from_name", "Portfolio Mail");
-        try {
-            const response = await fetch("https://api.web3forms.com/submit", { method: "POST", body: formData });
-            const data = await response.json();
-            if (data.success) { setStatus('success'); e.target.reset(); } else setStatus('error');
-        } catch (error) { setStatus('error'); }
-    };
+    formData.append("from_name", "Portfolio Mail");
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      if (data.success) {
+        setStatus("success");
+        e.target.reset();
+      } else setStatus("error");
+    } catch (error) {
+      setStatus("error");
+    }
+  };
 
-    return (
-        <section id="contact" className="py-16 md:py-20 max-w-3xl mx-auto text-center">
-            <h3 className={`text-2xl sm:text-3xl font-bold mb-4 flex items-center justify-center gap-3 sm:gap-4 transition-colors duration-1000 ${isDark ? 'text-slate-100' : 'text-stone-800'}`}>{t('contact')}</h3>
-            <p className={`mb-4 text-sm sm:text-base px-4 transition-colors duration-1000 ${isDark ? 'text-slate-400' : 'text-stone-600'}`}>I am available for remote, hybrid, and on-site opportunities, ready for immediate joining.</p>
-            <p className={`font-mono mb-8 sm:mb-10 text-xs sm:text-sm flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4 transition-colors duration-1000 ${isDark ? 'text-slate-300' : 'text-stone-700'}`}>
-                <span>📍 Cuttack, Odisha, India</span><span className="hidden sm:inline">|</span>
-                <a href="tel:+917978213833" className={`transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'hover:text-orange-600'}`}>📞 +91-7978213833</a><span className="hidden sm:inline">|</span>
-                <a href="mailto:debidutta.db@gmail.com" className={`transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'hover:text-orange-600'}`}>✉️ debidutta.db@gmail.com</a>
-            </p>
+  return (
+    <section id="contact" className="mx-auto text-center">
+      <h3
+        className={`text-2xl sm:text-3xl font-bold mb-4 flex items-center justify-center gap-3 sm:gap-4 transition-colors duration-1000 ${isDark ? "text-slate-100" : "text-stone-800"}`}
+      >
+        {t("contact")}
+      </h3>
+      <p
+        className={`mb-4 text-sm sm:text-base px-4 transition-colors duration-1000 ${isDark ? "text-slate-400" : "text-stone-600"}`}
+      >
+        I am available for remote, hybrid, and on-site opportunities, ready for
+        immediate joining.
+      </p>
+      <p
+        className={`font-mono mb-8 sm:mb-10 text-xs sm:text-sm flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4 transition-colors duration-1000 ${isDark ? "text-slate-300" : "text-stone-700"}`}
+      >
+        <span>📍 Cuttack, Odisha, India</span>
+        <span className="hidden sm:inline">|</span>
+        <a
+          href="tel:+917735256195"
+          className={`transition-colors duration-500 ${isDark ? "hover:text-blue-500" : "hover:text-orange-600"}`}
+        >
+          📞 +91-7735256195
+        </a>
+        <span className="hidden sm:inline">|</span>
+        <a
+          href="mailto:debiduttabehera5@gmail.com"
+          className={`transition-colors duration-500 ${isDark ? "hover:text-blue-500" : "hover:text-orange-600"}`}
+        >
+          ✉️ debiduttabehera5@gmail.com
+        </a>
+      </p>
 
-            {status === 'success' ? (
-                <div className={`p-6 sm:p-8 border rounded-xl flex flex-col items-center gap-4 transition-colors duration-1000 ${isDark ? 'bg-emerald-900/20 border-emerald-500/30' : 'bg-emerald-50 border-emerald-200'}`}>
-                    <div className="text-4xl">✅</div>
-                    <h4 className={`text-lg sm:text-xl font-bold transition-colors duration-1000 ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>Message Sent!</h4>
-                    <p className={`text-sm sm:text-base transition-colors duration-1000 ${isDark ? 'text-emerald-200/70' : 'text-emerald-600'}`}>I have received your message and will get back to you soon.</p>
-                    <button onClick={() => setStatus('idle')} className={`mt-2 sm:mt-4 text-sm underline transition-colors duration-1000 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>Send another message</button>
+      <div className="flex flex-col-reverse md:flex-row items-center justify-center gap-4 lg:gap-8 min-h-[60vh] w-full">
+        {/* EARTH - SMALLER AREA */}
+        <div className="w-full md:w-[38%] lg:w-[40%] flex items-center justify-center">
+          <div className="flex-1 flex flex-col justify-center items-start w-80%">
+            <Earth />
+          </div>
+        </div>
+
+        {/* CONTACT FORM - BIGGER AREA */}
+        <div className="w-full md:w-[62%] lg:w-[60%] flex justify-center">
+          {status === "success" ? (
+            <div
+              className={`w-full p-4 sm:p-6 border rounded-xl flex flex-col items-center gap-2 transition-colors duration-1000 ${
+                isDark
+                  ? "bg-emerald-900/20 border-emerald-500/30"
+                  : "bg-emerald-50 border-emerald-200"
+              }`}
+            >
+              <div className="text-4xl">✅</div>
+
+              <h4
+                className={`text-lg sm:text-xl font-bold transition-colors duration-1000 ${
+                  isDark ? "text-emerald-400" : "text-emerald-700"
+                }`}
+              >
+                Message Sent!
+              </h4>
+
+              <p
+                className={`text-sm sm:text-base text-center transition-colors duration-1000 ${
+                  isDark ? "text-emerald-200/70" : "text-emerald-600"
+                }`}
+              >
+                I have received your message and will get back to you soon.
+              </p>
+
+              <button
+                onClick={() => setStatus("idle")}
+                className={`mt-2 sm:mt-4 text-sm underline transition-colors duration-1000 ${
+                  isDark ? "text-emerald-400" : "text-emerald-600"
+                }`}
+              >
+                Send another message
+              </button>
+            </div>
+          ) : status === "error" ? (
+            <div
+              className={`w-full p-6 sm:p-8 border rounded-xl flex flex-col items-center gap-4 transition-colors duration-1000 ${
+                isDark
+                  ? "bg-red-900/20 border-red-500/30"
+                  : "bg-red-50 border-red-200"
+              }`}
+            >
+              <div className="text-4xl">❌</div>
+
+              <h4
+                className={`text-lg sm:text-xl font-bold transition-colors duration-1000 ${
+                  isDark ? "text-red-400" : "text-red-700"
+                }`}
+              >
+                Something went wrong.
+              </h4>
+
+              <p
+                className={`text-sm sm:text-base text-center transition-colors duration-1000 ${
+                  isDark ? "text-red-200/70" : "text-red-600"
+                }`}
+              >
+                Please try again or email me directly.
+              </p>
+
+              <button
+                onClick={() => setStatus("idle")}
+                className={`mt-2 sm:mt-4 text-sm underline transition-colors duration-1000 ${
+                  isDark ? "text-red-400" : "text-red-600"
+                }`}
+              >
+                Try again
+              </button>
+            </div>
+          ) : (
+            <form
+              onSubmit={handleSubmit}
+              className={`w-full text-left space-y-4 sm:space-y-6 p-6 sm:p-8 rounded-xl border shadow-xl transition-colors duration-1000 ${
+                isDark
+                  ? "bg-slate-800/30 border-slate-700/50"
+                  : "bg-white/70 backdrop-blur-sm border-orange-200/60 shadow-orange-900/5"
+              }`}
+            >
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                <div className="space-y-2">
+                  <label
+                    htmlFor="name"
+                    className={`text-xs sm:text-sm font-medium transition-colors duration-1000 ${
+                      isDark ? "text-slate-300" : "text-stone-700"
+                    }`}
+                  >
+                    Name
+                  </label>
+
+                  <input
+                    required
+                    type="text"
+                    id="name"
+                    name="name"
+                    className={`w-full border rounded-lg px-3 py-2 sm:px-4 sm:py-3 focus:outline-none transition-all duration-1000 text-sm sm:text-base shadow-inner ${
+                      isDark
+                        ? "bg-slate-900/50 border-slate-700 text-slate-100 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        : "bg-white/80 border-orange-200 text-stone-900 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+                    }`}
+                    placeholder="John Doe"
+                  />
                 </div>
-            ) : status === 'error' ? (
-                <div className={`p-6 sm:p-8 border rounded-xl flex flex-col items-center gap-4 transition-colors duration-1000 ${isDark ? 'bg-red-900/20 border-red-500/30' : 'bg-red-50 border-red-200'}`}>
-                    <div className="text-4xl">❌</div>
-                    <h4 className={`text-lg sm:text-xl font-bold transition-colors duration-1000 ${isDark ? 'text-red-400' : 'text-red-700'}`}>Something went wrong.</h4>
-                    <p className={`text-sm sm:text-base transition-colors duration-1000 ${isDark ? 'text-red-200/70' : 'text-red-600'}`}>Please try again or email me directly.</p>
-                    <button onClick={() => setStatus('idle')} className={`mt-2 sm:mt-4 text-sm underline transition-colors duration-1000 ${isDark ? 'text-red-400' : 'text-red-600'}`}>Try again</button>
+
+                <div className="space-y-2">
+                  <label
+                    htmlFor="email"
+                    className={`text-xs sm:text-sm font-medium transition-colors duration-1000 ${
+                      isDark ? "text-slate-300" : "text-stone-700"
+                    }`}
+                  >
+                    Email
+                  </label>
+
+                  <input
+                    required
+                    type="email"
+                    id="email"
+                    name="email"
+                    className={`w-full border rounded-lg px-3 py-2 sm:px-4 sm:py-3 focus:outline-none transition-all duration-1000 text-sm sm:text-base shadow-inner ${
+                      isDark
+                        ? "bg-slate-900/50 border-slate-700 text-slate-100 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        : "bg-white/80 border-orange-200 text-stone-900 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+                    }`}
+                    placeholder="john@example.com"
+                  />
                 </div>
-            ) : (
-                <form onSubmit={handleSubmit} className={`text-left space-y-4 sm:space-y-6 p-6 sm:p-8 rounded-xl border shadow-xl transition-colors duration-1000 ${isDark ? 'bg-slate-800/30 border-slate-700/50' : 'bg-white/70 backdrop-blur-sm border-orange-200/60 shadow-orange-900/5'}`}>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                        <div className="space-y-2">
-                            <label htmlFor="name" className={`text-xs sm:text-sm font-medium transition-colors duration-1000 ${isDark ? 'text-slate-300' : 'text-stone-700'}`}>Name</label>
-                            <input required type="text" id="name" name="name" className={`w-full border rounded-lg px-3 py-2 sm:px-4 sm:py-3 focus:outline-none transition-all duration-1000 text-sm sm:text-base shadow-inner ${isDark ? 'bg-slate-900/50 border-slate-700 text-slate-100 focus:border-blue-500 focus:ring-1 focus:ring-blue-500' : 'bg-white/80 border-orange-200 text-stone-900 focus:border-orange-500 focus:ring-1 focus:ring-orange-500'}`} placeholder="John Doe" />
-                        </div>
-                        <div className="space-y-2">
-                            <label htmlFor="email" className={`text-xs sm:text-sm font-medium transition-colors duration-1000 ${isDark ? 'text-slate-300' : 'text-stone-700'}`}>Email</label>
-                            <input required type="email" id="email" name="email" className={`w-full border rounded-lg px-3 py-2 sm:px-4 sm:py-3 focus:outline-none transition-all duration-1000 text-sm sm:text-base shadow-inner ${isDark ? 'bg-slate-900/50 border-slate-700 text-slate-100 focus:border-blue-500 focus:ring-1 focus:ring-blue-500' : 'bg-white/80 border-orange-200 text-stone-900 focus:border-orange-500 focus:ring-1 focus:ring-orange-500'}`} placeholder="john@example.com" />
-                        </div>
-                    </div>
-                    <div className="space-y-2">
-                        <label htmlFor="message" className={`text-xs sm:text-sm font-medium transition-colors duration-1000 ${isDark ? 'text-slate-300' : 'text-stone-700'}`}>Message</label>
-                        <textarea required id="message" name="message" rows={4} className={`w-full border rounded-lg px-3 py-2 sm:px-4 sm:py-3 focus:outline-none transition-all duration-1000 resize-none text-sm sm:text-base shadow-inner ${isDark ? 'bg-slate-900/50 border-slate-700 text-slate-100 focus:border-blue-500 focus:ring-1 focus:ring-blue-500' : 'bg-white/80 border-orange-200 text-stone-900 focus:border-orange-500 focus:ring-1 focus:ring-orange-500'}`} placeholder="Hello, I'd like to talk about..."></textarea>
-                    </div>
-                    <button type="submit" disabled={status === 'submitting'} className={`w-full flex items-center justify-center gap-2 text-white font-semibold py-3 rounded-lg transition-all duration-500 text-sm sm:text-base shadow-lg ${isDark ? 'bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 shadow-blue-500/20' : 'bg-orange-500 hover:bg-orange-600 disabled:bg-orange-400 shadow-orange-500/30'}`}>
-                        {status === 'submitting' ? 'Sending...' : 'Send Message ✈️'}
-                    </button>
-                </form>
-            )}
-        </section>
-    );
+              </div>
+
+              <div className="space-y-2">
+                <label
+                  htmlFor="message"
+                  className={`text-xs sm:text-sm font-medium transition-colors duration-1000 ${
+                    isDark ? "text-slate-300" : "text-stone-700"
+                  }`}
+                >
+                  Message
+                </label>
+
+                <textarea
+                  required
+                  id="message"
+                  name="message"
+                  rows={5}
+                  className={`w-full border rounded-lg px-3 py-2 sm:px-4 sm:py-3 focus:outline-none transition-all duration-1000 resize-none text-sm sm:text-base shadow-inner ${
+                    isDark
+                      ? "bg-slate-900/50 border-slate-700 text-slate-100 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      : "bg-white/80 border-orange-200 text-stone-900 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+                  }`}
+                  placeholder="Hello, I'd like to talk about..."
+                ></textarea>
+              </div>
+
+              <button
+                type="submit"
+                disabled={status === "submitting"}
+                className={`w-full flex items-center justify-center gap-2 text-white font-semibold py-3 rounded-lg transition-all duration-500 text-sm sm:text-base shadow-lg ${
+                  isDark
+                    ? "bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 shadow-blue-500/20"
+                    : "bg-orange-500 hover:bg-orange-600 disabled:bg-orange-400 shadow-orange-500/30"
+                }`}
+              >
+                {status === "submitting" ? "Sending..." : "Send Message ✈️"}
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
+    </section>
+  );
 }
 
 // --- 9. LIVE VISITOR & LIKE COUNTER ---
 function VisitorStats() {
-    const { isDark } = useContext(AppContext);
-    const [views, setViews] = useState('...');
-    const [likes, setLikes] = useState('...');
-    const [hasLiked, setHasLiked] = useState(false);
+  const { isDark } = useContext(AppContext);
+  const [views, setViews] = useState(0);
+  const [likes, setLikes] = useState(0);
+  const [hasLiked, setHasLiked] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [likeUpdating, setLikeUpdating] = useState(false);
 
-    // We use a unique namespace for your project
-    const NAMESPACE = 'debidutta-portfolio-2026';
+  // CounterAPI is a lightweight hosted counter service, not a database in
+  // this project. It lets every visitor see the same global totals.
+  const NAMESPACE = "debidutta-portfolio-2026";
+  const API_BASE = `https://api.counterapi.dev/v1/${NAMESPACE}`;
+  const CACHE_VIEWS = "debi_views_cache";
+  const CACHE_LIKES = "debi_likes_cache";
 
-    useEffect(() => {
-        // 1. Handle Likes State
-        if (localStorage.getItem('debi_liked')) {
-            setHasLiked(true);
+  const readCache = (key) => {
+    const value = Number(localStorage.getItem(key));
+    return Number.isFinite(value) && value >= 0 ? value : 0;
+  };
+
+  const fetchCount = async (endpoint, signal) => {
+    const response = await fetch(`${API_BASE}/${endpoint}`, {
+      method: "GET",
+      cache: "no-store",
+      signal,
+      headers: { Accept: "application/json" },
+    });
+    if (!response.ok) throw new Error(`Counter API HTTP ${response.status}`);
+    const data = await response.json();
+    const count = Number(data?.count);
+    if (!Number.isFinite(count) || count < 0)
+      throw new Error("Invalid counter response");
+    return count;
+  };
+
+  useEffect(() => {
+    let stopped = false;
+    const controller = new AbortController();
+    const viewedThisSession = sessionStorage.getItem("debi_viewed") === "true";
+
+    setViews(readCache(CACHE_VIEWS));
+    setLikes(readCache(CACHE_LIKES));
+    setHasLiked(localStorage.getItem("debi_liked") === "true");
+
+    const sync = async (incrementView = false) => {
+      try {
+        const viewCount = await fetchCount(
+          incrementView ? "views/up" : "views",
+          controller.signal,
+        );
+        if (!stopped) {
+          setViews(viewCount);
+          localStorage.setItem(CACHE_VIEWS, String(viewCount));
+          if (incrementView) sessionStorage.setItem("debi_viewed", "true");
         }
+      } catch (error) {
+        if (error?.name !== "AbortError")
+          console.warn("Views counter unavailable:", error);
+      }
 
-        // 2. Fetch or Increment Views
-        if (!sessionStorage.getItem('debi_viewed')) {
-            // First time this session: Increment View
-            fetch(`https://api.counterapi.dev/v1/${NAMESPACE}/views/up`)
-                .then(res => res.json())
-                .then(data => {
-                    setViews(data.count);
-                    sessionStorage.setItem('debi_viewed', 'true');
-                })
-                .catch(() => setViews('1k+'));
-        } else {
-            // Already viewed this session: Just fetch current count
-            fetch(`https://api.counterapi.dev/v1/${NAMESPACE}/views`)
-                .then(res => res.json())
-                .then(data => setViews(data.count))
-                .catch(() => setViews('1k+'));
+      try {
+        const likeCount = await fetchCount("likes", controller.signal);
+        if (!stopped) {
+          setLikes(likeCount);
+          localStorage.setItem(CACHE_LIKES, String(likeCount));
         }
+      } catch (error) {
+        if (error?.name !== "AbortError")
+          console.warn("Likes counter unavailable:", error);
+      }
 
-        // 3. Fetch Initial Likes
-        fetch(`https://api.counterapi.dev/v1/${NAMESPACE}/likes`)
-            .then(res => res.json())
-            .then(data => setLikes(data.count))
-            .catch(() => setLikes('500+'));
-    }, []);
-
-    const handleLike = () => {
-        if (hasLiked) return;
-
-        // Optimistic UI Update (feels instant)
-        setLikes(prev => (typeof prev === 'number' ? prev + 1 : prev));
-        setHasLiked(true);
-        localStorage.setItem('debi_liked', 'true');
-
-        // API Call to database
-        fetch(`https://api.counterapi.dev/v1/${NAMESPACE}/likes/up`)
-            .then(res => res.json())
-            .then(data => setLikes(data.count))
-            .catch(console.error);
+      if (!stopped) setLoading(false);
     };
 
-    return (
-        <div className={`fixed bottom-6 left-6 z-50 flex items-center gap-4 px-5 py-2.5 rounded-full shadow-2xl border backdrop-blur-md transition-all duration-1000 ${isDark
-            ? 'bg-slate-800/90 border-slate-700 text-slate-300 shadow-black/50'
-            : 'bg-white/90 border-orange-200 text-stone-700 shadow-orange-900/10'
-            }`}>
-            {/* Views Counter */}
-            <div className="flex items-center gap-2 font-mono text-sm" title="Total Page Views">
-                <span className="text-lg">👁️</span>
-                <strong className={`transition-colors duration-1000 ${isDark ? 'text-white' : 'text-stone-900'}`}>{views}</strong>
-            </div>
+    // Count one page view per browser session, then keep both totals synced.
+    sync(!viewedThisSession);
+    const interval = window.setInterval(() => sync(false), 5000);
 
-            {/* Divider */}
-            <div className={`w-px h-5 transition-colors duration-1000 ${isDark ? 'bg-slate-600' : 'bg-orange-300'}`}></div>
+    return () => {
+      stopped = true;
+      controller.abort();
+      window.clearInterval(interval);
+    };
+  }, []);
 
-            {/* Like Button */}
-            <button
-                onClick={handleLike}
-                disabled={hasLiked}
-                className={`flex items-center gap-2 font-mono text-sm transition-all duration-300 ${hasLiked
-                    ? 'text-pink-500 cursor-default drop-shadow-[0_0_8px_rgba(236,72,153,0.5)]'
-                    : 'hover:scale-110 active:scale-95 cursor-pointer hover:text-pink-400'
-                    }`}
-                title="Like this portfolio!"
-            >
-                <span className={`text-lg transition-transform duration-300 ${hasLiked ? 'scale-110' : ''}`}>
-                    {hasLiked ? '❤️' : '🤍'}
-                </span>
-                <strong className={`transition-colors duration-1000 ${hasLiked ? 'text-pink-500' : (isDark ? 'text-white' : 'text-stone-900')}`}>
-                    {likes}
-                </strong>
-            </button>
-        </div>
-    );
+  const handleLike = async () => {
+    if (hasLiked || likeUpdating) return;
+
+    setLikeUpdating(true);
+    try {
+      const serverCount = await fetchCount("likes/up");
+      setLikes(serverCount);
+      localStorage.setItem(CACHE_LIKES, String(serverCount));
+      localStorage.setItem("debi_liked", "true");
+      setHasLiked(true);
+    } catch (error) {
+      console.warn("Like counter unavailable:", error);
+    } finally {
+      setLikeUpdating(false);
+    }
+  };
+
+  return (
+    <div
+      className={`fixed bottom-6 left-6 z-[120] flex items-center gap-4 px-5 py-2.5 rounded-full shadow-2xl border backdrop-blur-md ${
+        isDark
+          ? "bg-slate-800/95 border-slate-700 text-slate-300 shadow-black/50"
+          : "bg-white/95 border-orange-200 text-stone-700 shadow-orange-900/10"
+      }`}
+      aria-label="Portfolio visitor statistics"
+    >
+      <div
+        className="flex items-center gap-2 font-mono text-sm min-w-[78px]"
+        title="Total Page Views"
+      >
+        <span className="text-lg" aria-hidden="true">
+          👁️
+        </span>
+        <strong className={isDark ? "text-white" : "text-stone-900"}>
+          {loading && views === 0 ? "…" : views.toLocaleString()}
+        </strong>
+      </div>
+
+      <div
+        className={`w-px h-5 ${isDark ? "bg-slate-600" : "bg-orange-300"}`}
+      />
+
+      <button
+        type="button"
+        onClick={handleLike}
+        disabled={hasLiked || likeUpdating}
+        aria-label={
+          hasLiked ? "You liked this portfolio" : "Like this portfolio"
+        }
+        title={hasLiked ? "Thanks for liking!" : "Like this portfolio!"}
+        className={`flex items-center gap-2 font-mono text-sm min-w-[58px] transition-all duration-300 ${
+          hasLiked
+            ? "text-pink-500 cursor-default"
+            : "hover:scale-110 active:scale-95 cursor-pointer hover:text-pink-400"
+        }`}
+      >
+        <span className="text-lg" aria-hidden="true">
+          {hasLiked ? "❤️" : "🤍"}
+        </span>
+        <strong
+          className={
+            hasLiked
+              ? "text-pink-500"
+              : isDark
+                ? "text-white"
+                : "text-stone-900"
+          }
+        >
+          {likes.toLocaleString()}
+        </strong>
+      </button>
+    </div>
+  );
 }
 
 // --- 10. DONATION PANNEL ---
 function App() {
-    return (
-        <div>
-            <DonatePanel />
-        </div>
-    );
+  return (
+    <div>
+      <DonatePanel />
+    </div>
+  );
 }
-
 
 // --- 11. FOOTER SECTION ---
 function Footer() {
-    const { isDark } = useContext(AppContext);
-    return (
-        <footer className={`py-6 sm:py-8 text-center border-t px-4 transition-colors duration-1000 ${isDark ? 'border-slate-800' : 'border-orange-200'}`}>
-            <div className={`flex justify-center gap-6 mb-4 text-sm sm:text-base transition-colors duration-1000 ${isDark ? 'text-slate-500' : 'text-stone-500'}`}>
-                <a href="https://github.com/Mr-Debi" target="_blank" className={`font-medium transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'hover:text-orange-600'}`}>GitHub</a>
-                <a href="mailto:debidutta.db@gmail.com" target="_blank" className={`font-medium transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'hover:text-orange-600'}`}>Email</a>
-                <a href="https://www.linkedin.com/in/debidutta-behera-164642275/" target="_blank" className={`font-medium transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'hover:text-orange-600'}`}>LinkedIn</a>
-                <a href="https://www.instagram.com/mr.debi_/" target="_blank" className={`font-medium transition-colors duration-500 ${isDark ? 'hover:text-blue-500' : 'hover:text-orange-600'}`}>Instagram</a>
-            </div>
-            <p className={`text-xs sm:text-sm font-mono transition-colors duration-1000 ${isDark ? 'text-slate-500' : 'text-stone-400'}`}>Designed & Built by DEBIDUTTA BEHERA &copy; {new Date().getFullYear()}</p>
-        </footer>
-    );
+  const { isDark } = useContext(AppContext);
+  return (
+    <footer
+      className={`py-6 sm:py-8 text-center border-t px-4 transition-colors duration-1000 ${isDark ? "border-slate-800" : "border-orange-200"}`}
+    >
+      <div
+        className={`flex justify-center gap-6 mb-4 text-sm sm:text-base transition-colors duration-1000 ${isDark ? "text-slate-500" : "text-stone-500"}`}
+      >
+        <a
+          href="https://www.linkedin.com/in/debiduttabehera/"
+          target="_blank"
+          className={`font-medium transition-colors duration-500 ${isDark ? "hover:text-blue-500" : "hover:text-orange-600"}`}
+        >
+          LinkedIn
+        </a>
+        <a
+          href="https://github.com/Mr-Debi"
+          target="_blank"
+          className={`font-medium transition-colors duration-500 ${isDark ? "hover:text-blue-500" : "hover:text-orange-600"}`}
+        >
+          GitHub
+        </a>
+        <a
+          href="https://www.instagram.com/mr.debi_/"
+          target="_blank"
+          className={`font-medium transition-colors duration-500 ${isDark ? "hover:text-blue-500" : "hover:text-orange-600"}`}
+        >
+          Instagram
+        </a>
+        <a
+          href="mailto:debiduttabehera5@gmail.com"
+          target="_blank"
+          className={`font-medium transition-colors duration-500 ${isDark ? "hover:text-blue-500" : "hover:text-orange-600"}`}
+        >
+          Email
+        </a>
+      </div>
+      <p
+        className={`text-xs sm:text-sm font-mono transition-colors duration-1000 ${isDark ? "text-slate-500" : "text-stone-400"}`}
+      >
+        Designed & Built by DEBIDUTTA BEHERA &copy; {new Date().getFullYear()}
+      </p>
+    </footer>
+  );
 }
 
 function Divider() {
-    const { isDark } = useContext(AppContext);
-    return <div className={`h-[1px] w-full bg-gradient-to-r from-transparent to-transparent my-8 sm:my-10 transition-colors duration-1000 ${isDark ? 'via-slate-700' : 'via-orange-300'}`}></div>;
+  const { isDark } = useContext(AppContext);
+  return (
+    <div
+      className={`h-[1px] w-full bg-gradient-to-r from-transparent to-transparent my-8 sm:my-10 transition-colors duration-1000 ${isDark ? "via-slate-700" : "via-orange-300"}`}
+    ></div>
+  );
 }

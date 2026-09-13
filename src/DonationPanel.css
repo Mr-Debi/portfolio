@@ -10,14 +10,14 @@
   font-size: 18px;
   font-weight: bold;
   cursor: pointer;
-  animation: float 2.5s infinite;
+  /* animation: float 2.5s infinite; */
   box-shadow: 0 0 30px #ff416c;
   z-index: 999;
 }
 
 @keyframes float {
   50% {
-    transform: translateY(-15px);
+    /* transform: translateY(-15px); */
   }
 }
 
